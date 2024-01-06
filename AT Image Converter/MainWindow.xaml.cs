@@ -128,7 +128,9 @@ public sealed partial class MainWindow : Window
             var filePath = Path.Combine(directoryPath, fileName);
 
             var image = viewModel.MagickImage;
-            if (formatName != "ICO") await Task.Run(() => ResizeImageBySettings(image));
+            var sizeSetting = (SizeSetting)CbxSizeSettings.SelectedIndex;
+            var sizeUnit = (SizeUnit)CbxSizeUnit.SelectedIndex;
+            if (formatName != "ICO") await Task.Run(() => ResizeImageBySettings(image, sizeSetting, sizeUnit));
             // Convert to ico format if selected
             else
             {
@@ -187,12 +189,10 @@ public sealed partial class MainWindow : Window
         LvProgressLog.UpdateLayout();
     }
 
-    private void ResizeImageBySettings(MagickImage image)
+    private void ResizeImageBySettings(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit)
     {
-        var sizeSetting = (SizeSetting)CbxSizeSettings.SelectedIndex;
         if (sizeSetting == SizeSetting.NoResize) return;
 
-        var sizeUnit = (SizeUnit)CbxSizeUnit.SelectedIndex;
         var width = NbxWidth.Value;
         var height = NbxHeight.Value;
 
