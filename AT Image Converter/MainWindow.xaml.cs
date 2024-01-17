@@ -130,7 +130,10 @@ public sealed partial class MainWindow : Window
             var image = viewModel.MagickImage;
             var sizeSetting = (SizeSetting)CbxSizeSettings.SelectedIndex;
             var sizeUnit = (SizeUnit)CbxSizeUnit.SelectedIndex;
-            if (formatName != "ICO") await Task.Run(() => ResizeImageBySettings(image, sizeSetting, sizeUnit));
+            var width = (int)NbxWidth.Value;
+            var height = (int)NbxHeight.Value;
+
+            if (formatName != "ICO") await Task.Run(() => ResizeImage(image, sizeSetting, sizeUnit, width, height));
             // Convert to ico format if selected
             else
             {
@@ -189,18 +192,15 @@ public sealed partial class MainWindow : Window
         LvProgressLog.UpdateLayout();
     }
 
-    private void ResizeImageBySettings(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit)
+    private void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, int width, int height)
     {
         if (sizeSetting == SizeSetting.NoResize) return;
-
-        var width = NbxWidth.Value;
-        var height = NbxHeight.Value;
 
         if (sizeUnit == SizeUnit.Percent)
         {
             // Add 0.05 to round up to the nearest integer when converting from percent to pixel
-            width = (int)((image.Width * width / 100) + 0.05);
-            height = (int)((image.Height * height / 100) + 0.05);
+            width = (int)((image.Width * width / 100.0) + 0.05);
+            height = (int)((image.Height * height / 100.0) + 0.05);
         }
 
         if (sizeSetting == SizeSetting.ResizeToFill) image.Resize((int)width, (int)height);
