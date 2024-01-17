@@ -203,9 +203,14 @@ public sealed partial class MainWindow : Window
             height = (int)((image.Height * height / 100.0) + 0.05);
         }
 
-        if (sizeSetting == SizeSetting.ResizeToFill) image.Resize((int)width, (int)height);
-        else if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) image.Resize((int)width, 0);
-        else if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) image.Resize(0, (int)height);
+        if (sizeSetting == SizeSetting.ResizeToFill)
+        {
+            var size = new MagickGeometry(width, height);
+            size.IgnoreAspectRatio = true;
+            image.Resize(size);
+        }
+        else if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) image.Resize(width, 0);
+        else if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) image.Resize(0, height);
     }
 
     // Dispose view models when they are removed from the collection
