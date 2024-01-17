@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.Uwp.Notifications;
+using System.Diagnostics;
 
 namespace ImageConverterAT;
 
@@ -50,12 +51,25 @@ public partial class App : Application
     private Window _window;
 
 	public App()
-	{
-		InitializeComponent();
-		FileExplorerContextMenuHelper.TryAddProgramToSendToContextMenu();
-	}
+    {
+        ToastNotificationManagerCompat.OnActivated += OnToastNotificationActivated;
 
-	protected override async void OnLaunched(LaunchActivatedEventArgs args)
+        InitializeComponent();
+		FileExplorerContextMenuHelper.TryAddProgramToSendToContextMenu();
+    }
+
+    private static void OnToastNotificationActivated(ToastNotificationActivatedEventArgsCompat toastArgs)
+    {
+        ToastArguments args = ToastArguments.Parse(toastArgs.Argument);
+        var versionString = args["versionString"];
+        if (versionString != null)
+        {
+            var url = "https://github.com/airtaxi/AT-Image-Converter/releases/tag/" + versionString;
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        }
+    }
+
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
 	{
 		_window = new MainWindow();
 		_window.Activate();
