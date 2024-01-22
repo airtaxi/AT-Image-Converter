@@ -302,7 +302,7 @@ public sealed partial class MainWindow : Window
         NbQuality.Visibility = isQualityAvailable ? Visibility.Visible : Visibility.Collapsed;
 
         // Show or hide size settings depending on the selected format
-        var isSizeAvailable = format != "ico";
+        var isSizeAvailable = format != ".ico";
         SpSizeSettings.Visibility = isSizeAvailable ? Visibility.Visible : Visibility.Collapsed;
 
         // Update prefix format preview text box
