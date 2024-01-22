@@ -137,8 +137,6 @@ public sealed partial class MainWindow : Window
             // Convert to ico format if selected
             else
             {
-                image.Format = MagickFormat.Ico;
-
                 using var collection = new MagickImageCollection();
 
                 // Define icon sizes (all available size for ico format)
@@ -147,11 +145,12 @@ public sealed partial class MainWindow : Window
                 // Generate icon images with different sizes
                 foreach (var size in sizes)
                 {
-                    image.Resize(size, size);
-                    collection.Add(image);
+                    var iconImage = new MagickImage(viewModel.FilePath);
+                    iconImage.Resize(size, size);
+                    collection.Add(iconImage);
                 }
 
-                collection.Write(filePath);
+                collection.Write(filePath, MagickFormat.Ico);
                 continue;
             }
 
