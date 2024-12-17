@@ -130,8 +130,8 @@ public sealed partial class MainWindow : Window
             var image = viewModel.MagickImage;
             var sizeSetting = (SizeSetting)CbxSizeSettings.SelectedIndex;
             var sizeUnit = (SizeUnit)CbxSizeUnit.SelectedIndex;
-            var width = (int)NbxWidth.Value;
-            var height = (int)NbxHeight.Value;
+            var width = (uint)NbxWidth.Value;
+            var height = (uint)NbxHeight.Value;
 
             if (formatName != "ICO") await Task.Run(() => ResizeImage(image, sizeSetting, sizeUnit, width, height));
             // Convert to ico format if selected
@@ -140,7 +140,7 @@ public sealed partial class MainWindow : Window
                 using var collection = new MagickImageCollection();
 
                 // Define icon sizes (all available size for ico format)
-                int[] sizes = [16, 32, 48, 64, 128, 256];
+                uint[] sizes = [16, 32, 48, 64, 128, 256];
 
                 // Generate icon images with different sizes
                 foreach (var size in sizes)
@@ -157,22 +157,22 @@ public sealed partial class MainWindow : Window
             if (formatName == "JPG")
             {
                 image.Format = MagickFormat.Jpeg;
-                image.Quality = (int)NbQuality.Value;
+                image.Quality = (uint)NbQuality.Value;
             }
             else if (formatName == "WEBP")
             {
                 image.Format = MagickFormat.WebP;
-                image.Quality = (int)NbQuality.Value;
+                image.Quality = (uint)NbQuality.Value;
             }
             else if (formatName == "HEIF")
             {
                 image.Format = MagickFormat.Heif;
-                image.Quality = (int)NbQuality.Value;
+                image.Quality = (uint)NbQuality.Value;
             }
             else if (formatName == "TIFF")
             {
                 image.Format = MagickFormat.Tiff;
-                image.Quality = (int)NbQuality.Value;
+                image.Quality = (uint)NbQuality.Value;
             }
             else if (formatName == "PNG") image.Format = MagickFormat.Png;
             else if (formatName == "BMP") image.Format = MagickFormat.Bmp;
@@ -191,15 +191,15 @@ public sealed partial class MainWindow : Window
         LvProgressLog.UpdateLayout();
     }
 
-    private void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, int width, int height)
+    private void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
     {
         if (sizeSetting == SizeSetting.NoResize) return;
 
         if (sizeUnit == SizeUnit.Percent)
         {
             // Add 0.05 to round up to the nearest integer when converting from percent to pixel
-            width = (int)((image.Width * width / 100.0) + 0.05);
-            height = (int)((image.Height * height / 100.0) + 0.05);
+            width = (uint)((image.Width * width / 100.0) + 0.05);
+            height = (uint)((image.Height * height / 100.0) + 0.05);
         }
 
         if (sizeSetting == SizeSetting.ResizeToFill)
