@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Nodes;
+using System.Text.Json;
 using System.Threading;
 
 namespace ImageConverterAT;
@@ -40,7 +40,7 @@ public class Configuration
         {
             ValidateConfigurationFile();
             var content = File.ReadAllText(ConfigurationFilePath).Trim();
-            try { JObject.Parse(content); }
+            try { JsonNode.Parse(content); }
             catch (Exception) { content = File.ReadAllText(ConfigurationBackupFilePath).Trim(); }
             if (string.IsNullOrEmpty(content)) content = "{}";
             return content;
@@ -53,22 +53,10 @@ public class Configuration
         if (s_cache == null)
         {
             var configurationFileContentString = GetConfigurationFileContentString();
-            var convertedFileContent = JsonConvert.DeserializeObject<Dictionary<string, object>>(configurationFileContentString);
+            var convertedFileContent = JsonSerializer.Deserialize<Dictionary<string, object>>(configurationFileContentString);
             s_cache = new Dictionary<string, object>(convertedFileContent);
         }
         return s_cache;
-    }
-
-    public static object GetValue(string key)
-    {
-        Monitor.Enter(LockObject);
-        try
-        {
-            var convertedFileContent = GetConfigurationFileContent();
-            if (convertedFileContent.TryGetValue(key, out object value)) return value;
-            return null;
-        }
-        finally { Monitor.Exit(LockObject); }
     }
 
     public static T GetValue<T>(string key)
@@ -77,9 +65,19 @@ public class Configuration
         try
         {
             var convertedFileContent = GetConfigurationFileContent();
-            if (!convertedFileContent.ContainsKey(key)) return default;
-            var rawValue = convertedFileContent[key];
-            if (rawValue is JToken content) return content.ToObject<T>();
+            if (!convertedFileContent.TryGetValue(key, out object rawValue)) return default;
+            if (rawValue is JsonElement element)
+            {
+                var value = element.Deserialize<T>();
+                convertedFileContent[key] = value;
+                return value;
+            }
+            else if (rawValue is JsonArray array)
+            {
+                var value = array.Deserialize<T>();
+                convertedFileContent[key] = value;
+                return value;
+            }
             else if (rawValue is T value) return value;
             else return default;
         }
@@ -97,7 +95,7 @@ public class Configuration
             var convertedFileContent = GetConfigurationFileContent();
             if (convertedFileContent.ContainsKey(key)) convertedFileContent[key] = value;
             else convertedFileContent.TryAdd(key, value);
-            s_buffer = JsonConvert.SerializeObject(convertedFileContent);
+            s_buffer = JsonSerializer.Serialize(convertedFileContent);
 
             if (timer == null)
             {
@@ -110,6 +108,36 @@ public class Configuration
             }
             timer.Stop();
             timer.Start();
+        }
+        finally { Monitor.Exit(LockObject); }
+    }
+
+    public static void Import(string json)
+    {
+        Monitor.Enter(LockObject);
+        try
+        {
+            var content = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+            var convertedFileContent = GetConfigurationFileContent();
+            foreach (var (key, value) in content)
+            {
+                if (convertedFileContent.ContainsKey(key)) convertedFileContent[key] = value;
+                else convertedFileContent.TryAdd(key, value);
+            }
+            s_cache = new(convertedFileContent);
+            s_buffer = JsonSerializer.Serialize(convertedFileContent);
+            WriteBuffer();
+        }
+        finally { Monitor.Exit(LockObject); }
+    }
+
+    public static string Export()
+    {
+        Monitor.Enter(LockObject);
+        try
+        {
+            var convertedFileContent = GetConfigurationFileContent();
+            return JsonSerializer.Serialize(convertedFileContent);
         }
         finally { Monitor.Exit(LockObject); }
     }
