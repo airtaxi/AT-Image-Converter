@@ -191,7 +191,7 @@ public sealed partial class MainWindow : Window
         LvProgressLog.UpdateLayout();
     }
 
-    private void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
+    private static void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
     {
         if (sizeSetting == SizeSetting.NoResize) return;
 
@@ -240,8 +240,7 @@ public sealed partial class MainWindow : Window
     private void OnDeleteImageAppBarButtonClicked(object sender, RoutedEventArgs e)
     {
         // Get selected item
-        var imageFileViewModel = LvImages.SelectedItem as ImageFileViewModel;
-        if (imageFileViewModel == null) return;
+        if (LvImages.SelectedItem is not ImageFileViewModel imageFileViewModel) return;
 
         // Select next or previous item
         var advancedCollectionView = LvImages.ItemsSource as AdvancedCollectionView;
