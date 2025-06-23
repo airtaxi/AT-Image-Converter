@@ -1,4 +1,4 @@
-using CommunityToolkit.WinUI;
+﻿using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Collections;
 using ImageConverterAT.Enums;
 using ImageConverterAT.ViewModels;
@@ -159,9 +159,19 @@ public sealed partial class MainWindow : Window
                 image.Format = MagickFormat.Jpeg;
                 image.Quality = (uint)NbQuality.Value;
             }
+            else if (formatName == "JXL")
+            {
+                image.Format = MagickFormat.Jxl;
+                image.Quality = (uint)NbQuality.Value;
+            }
             else if (formatName == "WEBP")
             {
                 image.Format = MagickFormat.WebP;
+                image.Quality = (uint)NbQuality.Value;
+            }
+            else if (formatName == "AVIF")
+            {
+                image.Format = MagickFormat.Avif;
                 image.Quality = (uint)NbQuality.Value;
             }
             else if (formatName == "HEIF")
@@ -297,7 +307,7 @@ public sealed partial class MainWindow : Window
         var format = GetCurrentOutputFormat();
 
         // Show or hide quality NumberBox depending on the selected format
-        var isQualityAvailable = format == ".jpg" || format == ".webp" || format == ".heif" || format == ".tiff";
+        var isQualityAvailable = format == ".jpg" || format == ".jxl" || format == ".webp" || format == ".heif" || format == ".tiff";
         NbQuality.Visibility = isQualityAvailable ? Visibility.Visible : Visibility.Collapsed;
 
         // Show or hide size settings depending on the selected format
