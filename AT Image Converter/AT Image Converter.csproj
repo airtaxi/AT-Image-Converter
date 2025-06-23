@@ -16,6 +16,8 @@
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<Version>1.0.0.4</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
+		<PackageIcon>Icon.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -38,5 +40,12 @@
 	  <Content Update="Assets\Icon.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Assets\Icon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 </Project>
