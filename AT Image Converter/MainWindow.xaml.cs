@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources;
 using Windows.Storage.Pickers;
 namespace ImageConverterAT;
 
@@ -24,6 +25,7 @@ public sealed partial class MainWindow : Window
     private readonly AdvancedCollectionView _collectionView = [];
     private readonly ObservableCollection<ImageFileViewModel> _imageFileViewModels = [];
     private readonly ObservableCollection<string> _progressLog = [];
+    private readonly ResourceLoader _resourceLoader = new();
 
 	public MainWindow()
 	{
@@ -115,14 +117,14 @@ public sealed partial class MainWindow : Window
         SvSettings.IsEnabled = false;
         BtConvert.IsEnabled = false;
         GdProgress.Visibility = Visibility.Visible;
-        AddProgressLog("Conversion started");
+        AddProgressLog(_resourceLoader.GetString("ConversionStarted"));
 
     var formatName = CbxFormat.SelectedItem as string;
         foreach (ImageFileViewModel viewModel in _collectionView.Cast<ImageFileViewModel>())
         {
             var directoryPath = Path.GetDirectoryName(viewModel.FilePath);
             DispatcherQueue.TryEnqueue(() => LvImages.SelectedItem = viewModel);
-            AddProgressLog($"Converting {viewModel.FileName}");
+            AddProgressLog(string.Format(_resourceLoader.GetString("ConvertingFile"), viewModel.FileName));
 
             var fileName = GetSavedFileName(viewModel);
             var filePath = Path.Combine(directoryPath, fileName);
@@ -188,11 +190,11 @@ public sealed partial class MainWindow : Window
             else if (formatName == "BMP") image.Format = MagickFormat.Bmp;
 
             await Task.Run(() => image.Write(filePath));
-            AddProgressLog($"{viewModel.FileName} -> {fileName} Complete!");
+            AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
         }
 
-        AddProgressLog("Conversion complete!");
-        AddProgressLog("You can now close this window");
+        AddProgressLog(_resourceLoader.GetString("ConversionComplete"));
+        AddProgressLog(_resourceLoader.GetString("CanCloseWindow"));
     }
 
     public void AddProgressLog(string message)
@@ -363,9 +365,8 @@ public sealed partial class MainWindow : Window
         // Update width and height text boxes headers and values depending on the selected size unit
         if (sizeUnit == SizeUnit.Percent)
         {
-            // Change headers to percent
-            NbxWidth.Header = "Width (%)";
-            NbxHeight.Header = "Height (%)";
+            NbxWidth.Header = _resourceLoader.GetString("WidthPercent");
+            NbxHeight.Header = _resourceLoader.GetString("HeightPercent");
 
             // Reset values
             NbxWidth.Value = 100;
@@ -373,9 +374,8 @@ public sealed partial class MainWindow : Window
         }
         else if (sizeUnit == SizeUnit.Pixel) 
         {
-            // Change headers to px
-            NbxWidth.Header = "Width (px)";
-            NbxHeight.Header = "Height (px)";
+            NbxWidth.Header = _resourceLoader.GetString("WidthPixel");
+            NbxHeight.Header = _resourceLoader.GetString("HeightPixel");
 
             // Reset values
             NbxWidth.Value = 0;

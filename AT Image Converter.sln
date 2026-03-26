@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AT Image Converter", "AT Image Converter\AT Image Converter.csproj", "{0A10C6B8-EDF0-4D5D-B8F3-4AFAD0D7E0F2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ATICContextMenu", "ATICContextMenu\ATICContextMenu.vcxproj", "{7D4326F3-06AE-4750-8313-597EBE7BFB88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -33,6 +35,16 @@ Global
 		{0A10C6B8-EDF0-4D5D-B8F3-4AFAD0D7E0F2}.Release|x86.ActiveCfg = Release|x86
 		{0A10C6B8-EDF0-4D5D-B8F3-4AFAD0D7E0F2}.Release|x86.Build.0 = Release|x86
 		{0A10C6B8-EDF0-4D5D-B8F3-4AFAD0D7E0F2}.Release|x86.Deploy.0 = Release|x86
+		{7D4326F3-06AE-4750-8313-597EBE7BFB88}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{7D4326F3-06AE-4750-8313-597EBE7BFB88}.Debug|ARM64.Build.0 = Debug|ARM64
+		{7D4326F3-06AE-4750-8313-597EBE7BFB88}.Debug|x64.ActiveCfg = Debug|x64
+		{7D4326F3-06AE-4750-8313-597EBE7BFB88}.Debug|x64.Build.0 = Debug|x64
+		{7D4326F3-06AE-4750-8313-597EBE7BFB88}.Debug|x86.ActiveCfg = Debug|x64
+		{7D4326F3-06AE-4750-8313-597EBE7BFB88}.Release|ARM64.ActiveCfg = Release|ARM64
+		{7D4326F3-06AE-4750-8313-597EBE7BFB88}.Release|ARM64.Build.0 = Release|ARM64
+		{7D4326F3-06AE-4750-8313-597EBE7BFB88}.Release|x64.ActiveCfg = Release|x64
+		{7D4326F3-06AE-4750-8313-597EBE7BFB88}.Release|x64.Build.0 = Release|x64
+		{7D4326F3-06AE-4750-8313-597EBE7BFB88}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,7 @@
 {
   "profiles": {
-    "AT Image Converter": {
-      "commandName": "Project"
+    "AT Image Converter (Package)": {
+      "commandName": "MsixPackage"
     }
   }
 }

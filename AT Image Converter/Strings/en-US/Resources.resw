@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Window Title -->
+  <data name="AppTitle" xml:space="preserve"><value>AT Image Converter</value></data>
+
+  <!-- Section Titles -->
+  <data name="ImagesTitle.Text" xml:space="preserve"><value>Images</value></data>
+  <data name="FormatOptionsTitle.Text" xml:space="preserve"><value>Format Options</value></data>
+  <data name="SizeOptionsTitle.Text" xml:space="preserve"><value>Size Options</value></data>
+  <data name="SaveOptionsTitle.Text" xml:space="preserve"><value>Save Options</value></data>
+
+  <!-- Image List Buttons -->
+  <data name="AddButton.Label" xml:space="preserve"><value>Add</value></data>
+  <data name="DeleteButton.Label" xml:space="preserve"><value>Delete</value></data>
+  <data name="ClearButton.Label" xml:space="preserve"><value>Clear</value></data>
+
+  <!-- Format Options -->
+  <data name="OutputFormatComboBox.Header" xml:space="preserve"><value>Output Format</value></data>
+  <data name="QualityNumberBox.Header" xml:space="preserve"><value>Quality</value></data>
+
+  <!-- Size Options -->
+  <data name="SizeSettingsComboBox.Header" xml:space="preserve"><value>Size Settings</value></data>
+  <data name="SizeUnitComboBox.Header" xml:space="preserve"><value>Size Unit</value></data>
+  <data name="NoResizeItem.Content" xml:space="preserve"><value>Do not resize</value></data>
+  <data name="ResizeToFillItem.Content" xml:space="preserve"><value>Resize to fill</value></data>
+  <data name="ResizeToWidthItem.Content" xml:space="preserve"><value>Resize to width and keep aspect ratio</value></data>
+  <data name="ResizeToHeightItem.Content" xml:space="preserve"><value>Resize to height and keep aspect ratio</value></data>
+  <data name="PixelItem.Content" xml:space="preserve"><value>Pixel</value></data>
+  <data name="PercentItem.Content" xml:space="preserve"><value>Percent</value></data>
+
+  <!-- Save Options -->
+  <data name="PrefixTextBox.Header" xml:space="preserve"><value>File Name Prefix</value></data>
+  <data name="PrefixPreviewTextBox.Header" xml:space="preserve"><value>File Name Prefix (Preview)</value></data>
+  <data name="PrefixPreviewTextBox.PlaceholderText" xml:space="preserve"><value>No selected image</value></data>
+
+  <!-- Convert Button -->
+  <data name="ConvertButton.Content" xml:space="preserve"><value>Convert</value></data>
+
+  <!-- Preview Buttons -->
+  <data name="ZoomInButton.Label" xml:space="preserve"><value>Zoom In</value></data>
+  <data name="ZoomOutButton.Label" xml:space="preserve"><value>Zoom Out</value></data>
+  <data name="ResetZoomButton.Label" xml:space="preserve"><value>Reset Zoom</value></data>
+
+  <!-- Code-behind Strings -->
+  <data name="WidthPixel" xml:space="preserve"><value>Width (px)</value></data>
+  <data name="HeightPixel" xml:space="preserve"><value>Height (px)</value></data>
+  <data name="WidthPercent" xml:space="preserve"><value>Width (%)</value></data>
+  <data name="HeightPercent" xml:space="preserve"><value>Height (%)</value></data>
+  <data name="ConversionStarted" xml:space="preserve"><value>Conversion started</value></data>
+  <data name="ConvertingFile" xml:space="preserve"><value>Converting {0}</value></data>
+  <data name="ConversionFileComplete" xml:space="preserve"><value>{0} → {1} Complete!</value></data>
+  <data name="ConversionComplete" xml:space="preserve"><value>Conversion complete!</value></data>
+  <data name="CanCloseWindow" xml:space="preserve"><value>You can now close this window</value></data>
+
+</root>

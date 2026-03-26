@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Window Title -->
+  <data name="AppTitle" xml:space="preserve"><value>AT Image Converter</value></data>
+
+  <!-- Section Titles -->
+  <data name="ImagesTitle.Text" xml:space="preserve"><value>图片</value></data>
+  <data name="FormatOptionsTitle.Text" xml:space="preserve"><value>格式选项</value></data>
+  <data name="SizeOptionsTitle.Text" xml:space="preserve"><value>尺寸选项</value></data>
+  <data name="SaveOptionsTitle.Text" xml:space="preserve"><value>保存选项</value></data>
+
+  <!-- Image List Buttons -->
+  <data name="AddButton.Label" xml:space="preserve"><value>添加</value></data>
+  <data name="DeleteButton.Label" xml:space="preserve"><value>删除</value></data>
+  <data name="ClearButton.Label" xml:space="preserve"><value>清除</value></data>
+
+  <!-- Format Options -->
+  <data name="OutputFormatComboBox.Header" xml:space="preserve"><value>输出格式</value></data>
+  <data name="QualityNumberBox.Header" xml:space="preserve"><value>质量</value></data>
+
+  <!-- Size Options -->
+  <data name="SizeSettingsComboBox.Header" xml:space="preserve"><value>尺寸设置</value></data>
+  <data name="SizeUnitComboBox.Header" xml:space="preserve"><value>尺寸单位</value></data>
+  <data name="NoResizeItem.Content" xml:space="preserve"><value>不调整大小</value></data>
+  <data name="ResizeToFillItem.Content" xml:space="preserve"><value>调整为填充</value></data>
+  <data name="ResizeToWidthItem.Content" xml:space="preserve"><value>按宽度调整并保持纵横比</value></data>
+  <data name="ResizeToHeightItem.Content" xml:space="preserve"><value>按高度调整并保持纵横比</value></data>
+  <data name="PixelItem.Content" xml:space="preserve"><value>像素</value></data>
+  <data name="PercentItem.Content" xml:space="preserve"><value>百分比</value></data>
+
+  <!-- Save Options -->
+  <data name="PrefixTextBox.Header" xml:space="preserve"><value>文件名前缀</value></data>
+  <data name="PrefixPreviewTextBox.Header" xml:space="preserve"><value>文件名前缀（预览）</value></data>
+  <data name="PrefixPreviewTextBox.PlaceholderText" xml:space="preserve"><value>未选择图片</value></data>
+
+  <!-- Convert Button -->
+  <data name="ConvertButton.Content" xml:space="preserve"><value>转换</value></data>
+
+  <!-- Preview Buttons -->
+  <data name="ZoomInButton.Label" xml:space="preserve"><value>放大</value></data>
+  <data name="ZoomOutButton.Label" xml:space="preserve"><value>缩小</value></data>
+  <data name="ResetZoomButton.Label" xml:space="preserve"><value>重置缩放</value></data>
+
+  <!-- Code-behind Strings -->
+  <data name="WidthPixel" xml:space="preserve"><value>宽度 (px)</value></data>
+  <data name="HeightPixel" xml:space="preserve"><value>高度 (px)</value></data>
+  <data name="WidthPercent" xml:space="preserve"><value>宽度 (%)</value></data>
+  <data name="HeightPercent" xml:space="preserve"><value>高度 (%)</value></data>
+  <data name="ConversionStarted" xml:space="preserve"><value>开始转换</value></data>
+  <data name="ConvertingFile" xml:space="preserve"><value>正在转换 {0}</value></data>
+  <data name="ConversionFileComplete" xml:space="preserve"><value>{0} → {1} 完成！</value></data>
+  <data name="ConversionComplete" xml:space="preserve"><value>转换完成！</value></data>
+  <data name="CanCloseWindow" xml:space="preserve"><value>您现在可以关闭此窗口</value></data>
+
+</root>
