@@ -7,6 +7,8 @@
 
   <!-- Window Title -->
   <data name="AppTitle" xml:space="preserve"><value>AT Image Converter</value></data>
+  <data name="AppDisplayName" xml:space="preserve"><value>AT Image Converter</value></data>
+  <data name="AppDescription" xml:space="preserve"><value>支持 JPG、PNG、WEBP、AVIF、HEIF、ICO 等多种格式的简单快速图片转换工具。</value></data>
 
   <!-- Section Titles -->
   <data name="ImagesTitle.Text" xml:space="preserve"><value>图片</value></data>

@@ -7,6 +7,8 @@
 
   <!-- Window Title -->
   <data name="AppTitle" xml:space="preserve"><value>AT Image Converter</value></data>
+  <data name="AppDisplayName" xml:space="preserve"><value>AT Image Converter</value></data>
+  <data name="AppDescription" xml:space="preserve"><value>JPG、PNG、WEBP、AVIF、HEIF、ICOなど、さまざまなフォーマットに対応したシンプルで高速な画像変換ツールです。</value></data>
 
   <!-- Section Titles -->
   <data name="ImagesTitle.Text" xml:space="preserve"><value>画像</value></data>

@@ -7,6 +7,8 @@
 
   <!-- Window Title -->
   <data name="AppTitle" xml:space="preserve"><value>AT Image Converter</value></data>
+  <data name="AppDisplayName" xml:space="preserve"><value>AT Image Converter</value></data>
+  <data name="AppDescription" xml:space="preserve"><value>A simple and fast image converter supporting various formats including JPG, PNG, WEBP, AVIF, HEIF, ICO, and more.</value></data>
 
   <!-- Section Titles -->
   <data name="ImagesTitle.Text" xml:space="preserve"><value>Images</value></data>
