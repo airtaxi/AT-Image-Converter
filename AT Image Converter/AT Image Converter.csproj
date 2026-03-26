@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+		<TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 		<RootNamespace>ImageConverterAT</RootNamespace>
 		<Platforms>x86;x64;ARM64</Platforms>
@@ -14,26 +14,28 @@
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-		<PackageCertificateKeyFile>ATImageConverter_StoreKey.pfx</PackageCertificateKeyFile>
-		<PackageCertificatePassword>temp</PackageCertificatePassword>
-		<PackageCertificateThumbprint>1C6EB695F56F78D69EF6D3DEF876F741D6253DBA</PackageCertificateThumbprint>
+		<PackageCertificateKeyFile>AT Image Converter_TemporaryKey.pfx</PackageCertificateKeyFile>
 		<DefaultLanguage>en-US</DefaultLanguage>
 		<Version>1.0.0.5</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
 		<PackageIcon>Icon.png</PackageIcon>
+		<PublishAot>true</PublishAot>
+		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+		<AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+		<GenerateTestArtifacts>True</GenerateTestArtifacts>
+		<AppxBundle>Always</AppxBundle>
+		<AppxBundlePlatforms>x64|arm64</AppxBundlePlatforms>
+		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-		<PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.2.251219" />
 		<PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.11.1" />
 		<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="securifybv.ShellLink" Version="0.1.0" />
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
 

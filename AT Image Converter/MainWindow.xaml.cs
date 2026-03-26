@@ -1,11 +1,8 @@
-﻿using CommunityToolkit.WinUI;
-using CommunityToolkit.WinUI.Collections;
-using ImageConverterAT.Enums;
+﻿using ImageConverterAT.Enums;
 using ImageConverterAT.ViewModels;
 using ImageMagick;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
@@ -13,7 +10,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.Storage.Pickers;
@@ -22,7 +18,6 @@ namespace ImageConverterAT;
 public sealed partial class MainWindow : Window
 {
     private readonly bool _isInitialized = false;
-    private readonly AdvancedCollectionView _collectionView = [];
     private readonly ObservableCollection<ImageFileViewModel> _imageFileViewModels = [];
     private readonly ObservableCollection<string> _progressLog = [];
     private readonly ResourceLoader _resourceLoader = new();
@@ -42,12 +37,7 @@ public sealed partial class MainWindow : Window
 
         // Assign data source to list view
         _imageFileViewModels.CollectionChanged += OnImageFileViewModelsCollectionChanged;
-
-        // Sort image file view models by file name
-        var collectionView = new AdvancedCollectionView(_imageFileViewModels, true);
-        collectionView.SortDescriptions.Add(new SortDescription("FileName", SortDirection.Ascending));
-        LvImages.ItemsSource = collectionView;
-        _collectionView = collectionView;
+        LvImages.ItemsSource = _imageFileViewModels;
 
         LvProgressLog.ItemsSource = _progressLog;
 
@@ -67,8 +57,8 @@ public sealed partial class MainWindow : Window
         // remove duplicates
         viewModels = viewModels.Where(viewModel => !_imageFileViewModels.Any(existingViewModel => existingViewModel.FilePath == viewModel.FilePath));
 
-        // Add view models
-        foreach (var viewModel in viewModels) _imageFileViewModels.Add(viewModel);
+        // Add view models in sorted order by file name
+        foreach (var viewModel in viewModels) InsertSorted(viewModel);
 
         // Select first item and update prefix format preview text box if there was no item before
         if (previousCount == 0)
@@ -76,6 +66,17 @@ public sealed partial class MainWindow : Window
             LvImages.SelectedIndex = 0;
             UpdatePrefixFormatPreviewTextBox();
         }
+    }
+
+    private void InsertSorted(ImageFileViewModel viewModel)
+    {
+        var index = 0;
+        while (index < _imageFileViewModels.Count &&
+               string.Compare(_imageFileViewModels[index].FileName, viewModel.FileName, StringComparison.Ordinal) < 0)
+        {
+            index++;
+        }
+        _imageFileViewModels.Insert(index, viewModel);
     }
 
     private void UpdatePrefixFormatPreviewTextBox()
@@ -120,7 +121,7 @@ public sealed partial class MainWindow : Window
         AddProgressLog(_resourceLoader.GetString("ConversionStarted"));
 
     var formatName = CbxFormat.SelectedItem as string;
-        foreach (ImageFileViewModel viewModel in _collectionView.Cast<ImageFileViewModel>())
+        foreach (var viewModel in _imageFileViewModels.ToList())
         {
             var directoryPath = Path.GetDirectoryName(viewModel.FilePath);
             DispatcherQueue.TryEnqueue(() => LvImages.SelectedItem = viewModel);
@@ -201,7 +202,7 @@ public sealed partial class MainWindow : Window
         AddProgressLog(_resourceLoader.GetString("ConversionComplete"));
 
         await FrMain.ShowMessageDialogAsync(
-            string.Format(_resourceLoader.GetString("ConversionCompleteDialogContent"), _collectionView.Count),
+            string.Format(_resourceLoader.GetString("ConversionCompleteDialogContent"), _imageFileViewModels.Count),
             _resourceLoader.GetString("ConversionCompleteDialogTitle"));
 
         FrPreview.IsEnabled = true;
@@ -269,8 +270,7 @@ public sealed partial class MainWindow : Window
         if (LvImages.SelectedItem is not ImageFileViewModel imageFileViewModel) return;
 
         // Select next or previous item
-        var advancedCollectionView = LvImages.ItemsSource as AdvancedCollectionView;
-        var index = advancedCollectionView.IndexOf(imageFileViewModel);
+        var index = _imageFileViewModels.IndexOf(imageFileViewModel);
         var nextIndex = index + 1;
         var previousIndex = index - 1;
         var nextItemExists = nextIndex < _imageFileViewModels.Count;

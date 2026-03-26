@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:ImageConverterAT.ViewModels"
     Title="AT Image Converter"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
@@ -72,9 +73,14 @@
                                     Margin="0,7.5,0,0"
                                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                     CornerRadius="5"
-                                    DisplayMemberPath="FileName"
                                     SelectedIndex="0"
-                                    SelectionChanged="OnImageListViewSelectionChanged" />
+                                    SelectionChanged="OnImageListViewSelectionChanged">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:ImageFileViewModel">
+                                            <TextBlock Text="{x:Bind FileName}" />
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
                                 <CommandBar Background="Transparent" DefaultLabelPosition="Right">
                                     <AppBarButton
                                         x:Uid="AddButton"
@@ -262,13 +268,11 @@
                             <ItemsPanelTemplate>
                                 <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" />
                             </ItemsPanelTemplate>
-
                         </ListView.ItemsPanel>
+
                         <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <TextBlock Text="{Binding}" TextWrapping="Wrap" />
-                                </Grid>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{x:Bind}" TextWrapping="Wrap" />
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
