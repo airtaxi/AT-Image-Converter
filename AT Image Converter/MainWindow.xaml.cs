@@ -147,7 +147,12 @@ public sealed partial class MainWindow : Window
                 // Generate icon images with different sizes
                 foreach (var size in sizes)
                 {
-                    var iconImage = new MagickImage(viewModel.FilePath);
+                    var iconImage = new MagickImage();
+
+                    if (Path.GetExtension(viewModel.FilePath).Equals(".svg", StringComparison.OrdinalIgnoreCase))
+                        iconImage.BackgroundColor = MagickColors.Transparent;
+
+                    iconImage.Read(viewModel.FilePath);
                     iconImage.Resize(size, size);
                     collection.Add(iconImage);
                 }

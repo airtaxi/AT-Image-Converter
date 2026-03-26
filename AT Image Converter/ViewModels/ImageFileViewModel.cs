@@ -15,7 +15,18 @@ public class ImageFileViewModel : ObservableObject, IDisposable
     {
         FilePath = filePath;
         FileName = Path.GetFileName(filePath);
-        MagickImage = new MagickImage(filePath);
+        MagickImage = CreateMagickImage(filePath);
+    }
+
+    private static MagickImage CreateMagickImage(string filePath)
+    {
+        var image = new MagickImage();
+
+        if (Path.GetExtension(filePath).Equals(".svg", StringComparison.OrdinalIgnoreCase))
+            image.BackgroundColor = MagickColors.Transparent;
+
+        image.Read(filePath);
+        return image;
     }
 
     public void Dispose()
