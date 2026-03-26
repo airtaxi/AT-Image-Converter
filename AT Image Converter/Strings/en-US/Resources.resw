@@ -55,6 +55,9 @@
   <data name="ConvertingFile" xml:space="preserve"><value>Converting {0}</value></data>
   <data name="ConversionFileComplete" xml:space="preserve"><value>{0} → {1} Complete!</value></data>
   <data name="ConversionComplete" xml:space="preserve"><value>Conversion complete!</value></data>
-  <data name="CanCloseWindow" xml:space="preserve"><value>You can now close this window</value></data>
+  <data name="ConversionCompleteDialogTitle" xml:space="preserve"><value>Conversion Complete</value></data>
+  <data name="ConversionCompleteDialogContent" xml:space="preserve"><value>{0} file(s) converted successfully.</value></data>
+  <data name="DialogOkButton" xml:space="preserve"><value>OK</value></data>
+  <data name="DialogCancelButton" xml:space="preserve"><value>Cancel</value></data>
 
 </root>

@@ -194,7 +194,16 @@ public sealed partial class MainWindow : Window
         }
 
         AddProgressLog(_resourceLoader.GetString("ConversionComplete"));
-        AddProgressLog(_resourceLoader.GetString("CanCloseWindow"));
+
+        await FrMain.ShowMessageDialogAsync(
+            string.Format(_resourceLoader.GetString("ConversionCompleteDialogContent"), _collectionView.Count),
+            _resourceLoader.GetString("ConversionCompleteDialogTitle"));
+
+        FrPreview.IsEnabled = true;
+        SvSettings.IsEnabled = true;
+        BtConvert.IsEnabled = true;
+        GdProgress.Visibility = Visibility.Collapsed;
+        _progressLog.Clear();
     }
 
     public void AddProgressLog(string message)

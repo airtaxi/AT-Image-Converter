@@ -55,6 +55,9 @@
   <data name="ConvertingFile" xml:space="preserve"><value>正在转换 {0}</value></data>
   <data name="ConversionFileComplete" xml:space="preserve"><value>{0} → {1} 完成！</value></data>
   <data name="ConversionComplete" xml:space="preserve"><value>转换完成！</value></data>
-  <data name="CanCloseWindow" xml:space="preserve"><value>您现在可以关闭此窗口</value></data>
+  <data name="ConversionCompleteDialogTitle" xml:space="preserve"><value>转换完成</value></data>
+  <data name="ConversionCompleteDialogContent" xml:space="preserve"><value>已成功转换 {0} 个文件。</value></data>
+  <data name="DialogOkButton" xml:space="preserve"><value>确定</value></data>
+  <data name="DialogCancelButton" xml:space="preserve"><value>取消</value></data>
 
 </root>

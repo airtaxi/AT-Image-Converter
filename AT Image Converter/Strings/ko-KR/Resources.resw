@@ -55,6 +55,9 @@
   <data name="ConvertingFile" xml:space="preserve"><value>{0} 변환 중</value></data>
   <data name="ConversionFileComplete" xml:space="preserve"><value>{0} → {1} 완료!</value></data>
   <data name="ConversionComplete" xml:space="preserve"><value>변환 완료!</value></data>
-  <data name="CanCloseWindow" xml:space="preserve"><value>이제 이 창을 닫을 수 있습니다</value></data>
+  <data name="ConversionCompleteDialogTitle" xml:space="preserve"><value>변환 완료</value></data>
+  <data name="ConversionCompleteDialogContent" xml:space="preserve"><value>{0}개의 파일이 성공적으로 변환되었습니다.</value></data>
+  <data name="DialogOkButton" xml:space="preserve"><value>확인</value></data>
+  <data name="DialogCancelButton" xml:space="preserve"><value>취소</value></data>
 
 </root>

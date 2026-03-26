@@ -55,6 +55,9 @@
   <data name="ConvertingFile" xml:space="preserve"><value>{0} を変換中</value></data>
   <data name="ConversionFileComplete" xml:space="preserve"><value>{0} → {1} 完了！</value></data>
   <data name="ConversionComplete" xml:space="preserve"><value>変換完了！</value></data>
-  <data name="CanCloseWindow" xml:space="preserve"><value>このウィンドウを閉じることができます</value></data>
+  <data name="ConversionCompleteDialogTitle" xml:space="preserve"><value>変換完了</value></data>
+  <data name="ConversionCompleteDialogContent" xml:space="preserve"><value>{0}個のファイルが正常に変換されました。</value></data>
+  <data name="DialogOkButton" xml:space="preserve"><value>OK</value></data>
+  <data name="DialogCancelButton" xml:space="preserve"><value>キャンセル</value></data>
 
 </root>
