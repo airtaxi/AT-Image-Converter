@@ -6,16 +6,11 @@ namespace ImageConverterAT;
 
 public partial class App : Application
 {
-    static App()
-    {
-    }
-
     private Window _window;
 
 	public App()
     {
         InitializeComponent();
-		try { FileExplorerContextMenuHelper.TryAddProgramToSendToContextMenu(); } catch { }
     }
 
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
