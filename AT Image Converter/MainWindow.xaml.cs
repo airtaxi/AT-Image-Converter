@@ -49,14 +49,18 @@ public sealed partial class MainWindow : Window
         // Get previous count to know if we need to select the first item after adding
         var previousCount = _imageFileViewModels.Count;
 
-        // Create view models
-        var viewModels = paths.Select(path => new ImageFileViewModel(path));
+        // Create view models, excluding duplicates
+        var existingPaths = new HashSet<string>(_imageFileViewModels.Select(viewModel => viewModel.FilePath));
+        var newViewModels = paths
+            .Where(path => existingPaths.Add(path))
+            .Select(path => new ImageFileViewModel(path))
+            .ToList();
 
-        // remove duplicates
-        viewModels = viewModels.Where(viewModel => !_imageFileViewModels.Any(existingViewModel => existingViewModel.FilePath == viewModel.FilePath));
+        if (newViewModels.Count == 0) return;
 
-        // Add view models in sorted order by file name
-        foreach (var viewModel in viewModels) InsertSorted(viewModel);
+        // Add all items then re-sort
+        foreach (var viewModel in newViewModels) _imageFileViewModels.Add(viewModel);
+        SortImageFileViewModels();
 
         // Select first item and update prefix format preview text box if there was no item before
         if (previousCount == 0)
@@ -66,15 +70,14 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void InsertSorted(ImageFileViewModel viewModel)
+    private void SortImageFileViewModels()
     {
-        var index = 0;
-        while (index < _imageFileViewModels.Count &&
-               string.Compare(_imageFileViewModels[index].FileName, viewModel.FileName, StringComparison.Ordinal) < 0)
+        var sorted = _imageFileViewModels.OrderBy(viewModel => viewModel.FileName, StringComparer.Ordinal).ToList();
+        for (var i = 0; i < sorted.Count; i++)
         {
-            index++;
+            var currentIndex = _imageFileViewModels.IndexOf(sorted[i]);
+            if (currentIndex != i) _imageFileViewModels.Move(currentIndex, i);
         }
-        _imageFileViewModels.Insert(index, viewModel);
     }
 
     private void UpdatePrefixFormatPreviewTextBox()
