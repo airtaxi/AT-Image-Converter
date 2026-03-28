@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -51,32 +52,32 @@ public sealed partial class MainWindow : Window
 
         // Create view models, excluding duplicates
         var existingPaths = new HashSet<string>(_imageFileViewModels.Select(viewModel => viewModel.FilePath));
+
         var newViewModels = paths
-            .Where(path => existingPaths.Add(path))
+            .Where(existingPaths.Add)
             .Select(path => new ImageFileViewModel(path))
             .ToList();
 
         if (newViewModels.Count == 0) return;
 
-        // Add all items then re-sort
+        // Detach ItemsSource to prevent UI updates on each Add
+        LvImages.ItemsSource = null;
+
         foreach (var viewModel in newViewModels) _imageFileViewModels.Add(viewModel);
-        SortImageFileViewModels();
+
+        // Sort in-place: rebuild the collection in sorted order
+        var sorted = _imageFileViewModels.OrderBy(viewModel => viewModel.FileName, StringComparer.Ordinal).ToList();
+        _imageFileViewModels.Clear();
+        foreach (var viewModel in sorted) _imageFileViewModels.Add(viewModel);
+
+        // Reattach ItemsSource so UI renders once
+        LvImages.ItemsSource = _imageFileViewModels;
 
         // Select first item and update prefix format preview text box if there was no item before
         if (previousCount == 0)
         {
             LvImages.SelectedIndex = 0;
             UpdatePrefixFormatPreviewTextBox();
-        }
-    }
-
-    private void SortImageFileViewModels()
-    {
-        var sorted = _imageFileViewModels.OrderBy(viewModel => viewModel.FileName, StringComparer.Ordinal).ToList();
-        for (var i = 0; i < sorted.Count; i++)
-        {
-            var currentIndex = _imageFileViewModels.IndexOf(sorted[i]);
-            if (currentIndex != i) _imageFileViewModels.Move(currentIndex, i);
         }
     }
 
@@ -253,7 +254,7 @@ public sealed partial class MainWindow : Window
         }
 
         var files = await filePicker.PickMultipleFilesAsync();
-        AddImageFiles(files.Select(file => file.Path));
+        AddImageFiles(files.Select(file => file.Path).ToList());
     }
 
     private void OnDeleteImageAppBarButtonClicked(object sender, RoutedEventArgs e)
