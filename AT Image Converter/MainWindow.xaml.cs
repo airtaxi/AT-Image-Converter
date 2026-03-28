@@ -3,6 +3,7 @@ using ImageConverterAT.ViewModels;
 using ImageMagick;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
@@ -301,7 +302,6 @@ public sealed partial class MainWindow : Window
         else if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) image.Resize(width, 0);
         else if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) image.Resize(0, height);
     }
-
     private async void OnAddImageAppBarButtonClicked(object sender, RoutedEventArgs e)
     {
 		var filePicker = new FileOpenPicker();
@@ -316,6 +316,13 @@ public sealed partial class MainWindow : Window
 
         var files = await filePicker.PickMultipleFilesAsync();
         AddImageFiles(files.Select(file => file.Path).ToList());
+    }
+
+    private void OnAddImageAppBarButtonKeyboardAcceleratorInvoked(object sender, KeyboardAcceleratorInvokedEventArgs e)
+    {
+        e.Handled = true;
+
+        OnAddImageAppBarButtonClicked(sender, null);
     }
 
     private void OnDeleteImageAppBarButtonClicked(object sender, RoutedEventArgs e)

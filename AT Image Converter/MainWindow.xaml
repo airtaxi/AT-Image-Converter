@@ -85,7 +85,14 @@
                                     <AppBarButton
                                         x:Uid="AddButton"
                                         Click="OnAddImageAppBarButtonClicked"
-                                        Icon="Add" />
+                                        Icon="Add">
+                                        <AppBarButton.KeyboardAccelerators>
+                                            <KeyboardAccelerator
+                                                Key="O"
+                                                Invoked="OnAddImageAppBarButtonKeyboardAcceleratorInvoked"
+                                                Modifiers="Control" />
+                                        </AppBarButton.KeyboardAccelerators>
+                                    </AppBarButton>
                                     <AppBarButton
                                         x:Name="AbbDelete"
                                         x:Uid="DeleteButton"
