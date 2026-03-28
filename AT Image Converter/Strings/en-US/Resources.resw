@@ -61,5 +61,9 @@
   <data name="ConversionCompleteDialogContent" xml:space="preserve"><value>{0} file(s) converted successfully.</value></data>
   <data name="DialogOkButton" xml:space="preserve"><value>OK</value></data>
   <data name="DialogCancelButton" xml:space="preserve"><value>Cancel</value></data>
+  <data name="GhostscriptRequiredDialogTitle" xml:space="preserve"><value>Ghostscript Required</value></data>
+  <data name="GhostscriptRequiredDialogContent" xml:space="preserve"><value>PDF files require Ghostscript to be installed. Please install Ghostscript and try again.
+Download: https://www.ghostscript.com/releases/gsdnld.html</value></data>
+  <data name="ConversionFileFailed" xml:space="preserve"><value>{0} failed: {1}</value></data>
 
 </root>

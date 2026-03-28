@@ -61,5 +61,9 @@
   <data name="ConversionCompleteDialogContent" xml:space="preserve"><value>{0}個のファイルが正常に変換されました。</value></data>
   <data name="DialogOkButton" xml:space="preserve"><value>OK</value></data>
   <data name="DialogCancelButton" xml:space="preserve"><value>キャンセル</value></data>
+  <data name="GhostscriptRequiredDialogTitle" xml:space="preserve"><value>Ghostscriptが必要です</value></data>
+  <data name="GhostscriptRequiredDialogContent" xml:space="preserve"><value>PDFファイルの変換にはGhostscriptのインストールが必要です。Ghostscriptをインストールしてから再試行してください。
+ダウンロード: https://www.ghostscript.com/releases/gsdnld.html</value></data>
+  <data name="ConversionFileFailed" xml:space="preserve"><value>{0} 失敗: {1}</value></data>
 
 </root>

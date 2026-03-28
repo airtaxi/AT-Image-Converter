@@ -128,6 +128,18 @@ public sealed partial class MainWindow : Window
 
     private async Task ConvertImagesAsync()
     {
+        // Check if PDF files are included and Ghostscript is available
+        var hasPdfFiles = _imageFileViewModels.Any(viewModel =>
+            Path.GetExtension(viewModel.FilePath).Equals(".pdf", StringComparison.OrdinalIgnoreCase));
+
+        if (hasPdfFiles && !IsGhostscriptInstalled())
+        {
+            await FrMain.ShowMessageDialogAsync(
+                _resourceLoader.GetString("GhostscriptRequiredDialogContent"),
+                _resourceLoader.GetString("GhostscriptRequiredDialogTitle"));
+            return;
+        }
+
         // TODO: Convert images
         FrPreview.IsEnabled = false;
         SvSettings.IsEnabled = false;
@@ -231,6 +243,42 @@ public sealed partial class MainWindow : Window
     {
         _progressLog.Add(message);
         LvProgressLog.UpdateLayout();
+    }
+
+    private static bool IsGhostscriptInstalled()
+    {
+        // Check common Ghostscript installation paths
+        var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+        var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+
+        foreach (var baseDir in new[] { programFiles, programFilesX86 })
+        {
+            var gsDir = Path.Combine(baseDir, "gs");
+            if (!Directory.Exists(gsDir)) continue;
+
+            // Look for gswin64c.exe or gswin32c.exe in any version subdirectory
+            try
+            {
+                var found = Directory.EnumerateFiles(gsDir, "gswin*c.exe", SearchOption.AllDirectories).Any();
+                if (found) return true;
+            }
+            catch { }
+        }
+
+        // Check if gswin64c.exe or gswin32c.exe is on PATH
+        var pathEnv = Environment.GetEnvironmentVariable("PATH") ?? "";
+        foreach (var dir in pathEnv.Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            try
+            {
+                if (File.Exists(Path.Combine(dir, "gswin64c.exe")) ||
+                    File.Exists(Path.Combine(dir, "gswin32c.exe")))
+                    return true;
+            }
+            catch { }
+        }
+
+        return false;
     }
 
     private static void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
