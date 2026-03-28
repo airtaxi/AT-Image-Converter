@@ -33,7 +33,20 @@ public sealed partial class MainWindow : Window
 
 		// Add files from command line arguments if any
 		var args = Environment.GetCommandLineArgs();
-		if (args.Length > 1) AddImageFiles(args[1..]); // Skip first argument, which is the executable path
+		if (args.Length > 2 && args[1] == "--file-list")
+		{
+			var fileListPath = args[2];
+			if (File.Exists(fileListPath))
+			{
+				var filePaths = File.ReadAllLines(fileListPath).Where(line => !string.IsNullOrWhiteSpace(line));
+				AddImageFiles(filePaths);
+				try { File.Delete(fileListPath); } catch { }
+			}
+		}
+		else if (args.Length > 1)
+		{
+			AddImageFiles(args[1..]); // Skip first argument, which is the executable path
+		}
 
         // Assign data source to list view
         LvImages.ItemsSource = _imageFileViewModels;

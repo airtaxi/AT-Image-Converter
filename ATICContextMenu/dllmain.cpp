@@ -149,8 +149,21 @@ public:
         std::wstring moduleDirectory = GetModuleDirectoryPath();
         std::wstring executablePath = moduleDirectory + exe_filename;
 
-        // Build command line: "exe_path" "file1" "file2" ...
-        std::wstring commandLine = QuoteForCommandLineArgument(executablePath);
+        // Write file paths to a temporary file to avoid command line length limit
+        wchar_t tempDir[MAX_PATH] = {};
+        GetTempPathW(MAX_PATH, tempDir);
+
+        wchar_t tempFilePath[MAX_PATH] = {};
+        GetTempFileNameW(tempDir, L"ATIC", 0, tempFilePath);
+
+        HANDLE hFile = CreateFileW(tempFilePath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+        if (hFile == INVALID_HANDLE_VALUE)
+            return HRESULT_FROM_WIN32(GetLastError());
+
+        // Write BOM for UTF-8
+        const unsigned char bom[] = { 0xEF, 0xBB, 0xBF };
+        DWORD bytesWritten = 0;
+        WriteFile(hFile, bom, sizeof(bom), &bytesWritten, nullptr);
 
         for (DWORD i = 0; i < itemCount; ++i)
         {
@@ -160,9 +173,23 @@ public:
             wil::unique_cotaskmem_string filePath;
             RETURN_IF_FAILED(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
 
-            commandLine += L' ';
-            commandLine += QuoteForCommandLineArgument(filePath.get());
+            // Convert wide string to UTF-8
+            int utf8Length = WideCharToMultiByte(CP_UTF8, 0, filePath.get(), -1, nullptr, 0, nullptr, nullptr);
+            if (utf8Length > 0)
+            {
+                std::string utf8Path(utf8Length - 1, '\0');
+                WideCharToMultiByte(CP_UTF8, 0, filePath.get(), -1, utf8Path.data(), utf8Length, nullptr, nullptr);
+                utf8Path += '\n';
+                WriteFile(hFile, utf8Path.c_str(), static_cast<DWORD>(utf8Path.size()), &bytesWritten, nullptr);
+            }
         }
+
+        CloseHandle(hFile);
+
+        // Build command line: "exe_path" --file-list "tempfile"
+        std::wstring commandLine = QuoteForCommandLineArgument(executablePath);
+        commandLine += L" --file-list ";
+        commandLine += QuoteForCommandLineArgument(tempFilePath);
 
         STARTUPINFOW startupInfo = { sizeof(startupInfo) };
         PROCESS_INFORMATION processInfo = {};
@@ -181,6 +208,11 @@ public:
         {
             CloseHandle(processInfo.hThread);
             CloseHandle(processInfo.hProcess);
+        }
+        else
+        {
+            // Clean up temp file if process creation fails
+            DeleteFileW(tempFilePath);
         }
 
         return S_OK;
