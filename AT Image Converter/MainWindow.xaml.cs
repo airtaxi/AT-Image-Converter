@@ -93,6 +93,8 @@ public sealed partial class MainWindow : Window
             LvImages.SelectedIndex = 0;
             UpdatePrefixFormatPreviewTextBox();
         }
+
+        UpdateDropPlaceholderVisibility();
     }
 
     private void UpdatePrefixFormatPreviewTextBox()
@@ -246,6 +248,8 @@ public sealed partial class MainWindow : Window
         LvProgressLog.UpdateLayout();
     }
 
+    private void UpdateDropPlaceholderVisibility() => BtDropPlaceholder.Visibility = _imageFileViewModels.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
     private static bool IsGhostscriptInstalled()
     {
         // Check common Ghostscript installation paths
@@ -325,6 +329,32 @@ public sealed partial class MainWindow : Window
         OnAddImageAppBarButtonClicked(sender, null);
     }
 
+    private void OnDropPlaceholderButtonClicked(object sender, RoutedEventArgs e) => OnAddImageAppBarButtonClicked(sender, null);
+
+    private void OnImageListViewDragOver(object sender, DragEventArgs e)
+    {
+        if (e.DataView.Contains(Windows.ApplicationModel.DataTransfer.StandardDataFormats.StorageItems))
+        {
+            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+        }
+    }
+
+    private async void OnImageListViewDrop(object sender, DragEventArgs e)
+    {
+        if (!e.DataView.Contains(Windows.ApplicationModel.DataTransfer.StandardDataFormats.StorageItems)) return;
+
+        var items = await e.DataView.GetStorageItemsAsync();
+        var supportedExtensions = new HashSet<string>(Constants.ImageFileFormats, StringComparer.OrdinalIgnoreCase);
+
+        var filePaths = items
+            .OfType<Windows.Storage.StorageFile>()
+            .Where(file => supportedExtensions.Contains(file.FileType))
+            .Select(file => file.Path)
+            .ToList();
+
+        if (filePaths.Count > 0) AddImageFiles(filePaths);
+    }
+
     private void OnDeleteImageAppBarButtonClicked(object sender, RoutedEventArgs e)
     {
         // Get selected item
@@ -341,10 +371,15 @@ public sealed partial class MainWindow : Window
 
         // Remove item
         _imageFileViewModels.Remove(imageFileViewModel);
+        UpdateDropPlaceholderVisibility();
     }
 
     // Clear all items
-    private void OnClearImageAppBarButtonClicked(object sender, RoutedEventArgs e) => _imageFileViewModels.Clear();
+    private void OnClearImageAppBarButtonClicked(object sender, RoutedEventArgs e)
+    {
+        _imageFileViewModels.Clear();
+        UpdateDropPlaceholderVisibility();
+    }
 
     private ImageFileViewModel _selectedImageFileViewModel;
     private void OnImageListViewSelectionChanged(object sender, SelectionChangedEventArgs e)

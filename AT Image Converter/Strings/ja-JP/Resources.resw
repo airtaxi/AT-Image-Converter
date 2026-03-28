@@ -20,6 +20,7 @@
   <data name="AddButton.Label" xml:space="preserve"><value>追加</value></data>
   <data name="DeleteButton.Label" xml:space="preserve"><value>削除</value></data>
   <data name="ClearButton.Label" xml:space="preserve"><value>クリア</value></data>
+  <data name="DropPlaceholder.Text" xml:space="preserve"><value>画像ファイルをここにドラッグ＆ドロップしてください</value></data>
 
   <!-- Format Options -->
   <data name="OutputFormatComboBox.Header" xml:space="preserve"><value>出力形式</value></data>

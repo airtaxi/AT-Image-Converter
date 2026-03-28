@@ -20,6 +20,7 @@
   <data name="AddButton.Label" xml:space="preserve"><value>添加</value></data>
   <data name="DeleteButton.Label" xml:space="preserve"><value>删除</value></data>
   <data name="ClearButton.Label" xml:space="preserve"><value>清除</value></data>
+  <data name="DropPlaceholder.Text" xml:space="preserve"><value>将图片文件拖放到此处</value></data>
 
   <!-- Format Options -->
   <data name="OutputFormatComboBox.Header" xml:space="preserve"><value>输出格式</value></data>

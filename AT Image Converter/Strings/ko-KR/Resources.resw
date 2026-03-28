@@ -20,6 +20,7 @@
   <data name="AddButton.Label" xml:space="preserve"><value>추가</value></data>
   <data name="DeleteButton.Label" xml:space="preserve"><value>삭제</value></data>
   <data name="ClearButton.Label" xml:space="preserve"><value>초기화</value></data>
+  <data name="DropPlaceholder.Text" xml:space="preserve"><value>이미지 파일을 여기에 드래그 앤 드롭하세요</value></data>
 
   <!-- Format Options -->
   <data name="OutputFormatComboBox.Header" xml:space="preserve"><value>출력 포맷</value></data>

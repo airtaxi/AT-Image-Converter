@@ -20,6 +20,7 @@
   <data name="AddButton.Label" xml:space="preserve"><value>Add</value></data>
   <data name="DeleteButton.Label" xml:space="preserve"><value>Delete</value></data>
   <data name="ClearButton.Label" xml:space="preserve"><value>Clear</value></data>
+  <data name="DropPlaceholder.Text" xml:space="preserve"><value>Drag and drop image files here</value></data>
 
   <!-- Format Options -->
   <data name="OutputFormatComboBox.Header" xml:space="preserve"><value>Output Format</value></data>
