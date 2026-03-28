@@ -7,7 +7,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +35,6 @@ public sealed partial class MainWindow : Window
 		if (args.Length > 1) AddImageFiles(args[1..]); // Skip first argument, which is the executable path
 
         // Assign data source to list view
-        _imageFileViewModels.CollectionChanged += OnImageFileViewModelsCollectionChanged;
         LvImages.ItemsSource = _imageFileViewModels;
 
         LvProgressLog.ItemsSource = _progressLog;
@@ -130,7 +128,7 @@ public sealed partial class MainWindow : Window
             var fileName = GetSavedFileName(viewModel);
             var filePath = Path.Combine(directoryPath, fileName);
 
-            var image = viewModel.MagickImage;
+            using var image = viewModel.CreateMagickImage();
             var sizeSetting = (SizeSetting)CbxSizeSettings.SelectedIndex;
             var sizeUnit = (SizeUnit)CbxSizeUnit.SelectedIndex;
             var width = (uint)NbxWidth.Value;
@@ -237,15 +235,6 @@ public sealed partial class MainWindow : Window
         }
         else if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) image.Resize(width, 0);
         else if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) image.Resize(0, height);
-    }
-
-    // Dispose view models when they are removed from the collection
-    private void OnImageFileViewModelsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        var removedItems = e.OldItems?.Cast<ImageFileViewModel>();
-        if (removedItems == null) return; // Nothing to dispose of
-
-        foreach (var removedItem in removedItems) removedItem.Dispose();
     }
 
     private async void OnAddImageAppBarButtonClicked(object sender, RoutedEventArgs e)
