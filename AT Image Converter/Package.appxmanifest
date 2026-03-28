@@ -51,7 +51,52 @@
         <!-- File Explorer Context Menu (Windows 11) -->
         <desktop4:Extension Category="windows.fileExplorerContextMenus">
           <desktop4:FileExplorerContextMenus>
-            <desktop5:ItemType Type="*">
+            <desktop5:ItemType Type=".png">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".jpg">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".jpeg">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".bmp">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".gif">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".tiff">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".ico">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".svg">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".webp">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".heic">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".heif">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".heix">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".pdf">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".psd">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".xcf">
+              <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".raw">
               <desktop5:Verb Id="ATICConvert" Clsid="AB4DC84E-A904-401F-9A3D-3F55D3770D25" />
             </desktop5:ItemType>
           </desktop4:FileExplorerContextMenus>
