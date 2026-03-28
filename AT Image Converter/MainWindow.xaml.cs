@@ -315,7 +315,7 @@ public sealed partial class MainWindow : Window
         }
 
         var files = await filePicker.PickMultipleFilesAsync();
-        AddImageFiles(files.Select(file => file.Path).ToList());
+        AddImageFiles([.. files.Select(file => file.Path)]);
     }
 
     private void OnAddImageAppBarButtonKeyboardAcceleratorInvoked(object sender, KeyboardAcceleratorInvokedEventArgs e)

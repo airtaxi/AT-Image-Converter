@@ -5,16 +5,10 @@ using System.IO;
 
 namespace ImageConverterAT.ViewModels;
 
-public class ImageFileViewModel : ObservableObject
+public class ImageFileViewModel(string filePath) : ObservableObject
 {
-    public string FilePath { get; init; }
-    public string FileName { get; init; }
-
-    public ImageFileViewModel(string filePath)
-    {
-        FilePath = filePath;
-        FileName = Path.GetFileName(filePath);
-    }
+    public string FilePath { get; init; } = filePath;
+    public string FileName { get; init; } = Path.GetFileName(filePath);
 
     /// <summary>
     /// Creates a new MagickImage from the file path. Caller is responsible for disposing the returned image.
