@@ -74,6 +74,8 @@
   <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve"><value>꺼짐</value></data>
   <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve"><value>변환 이후 원본 파일 제거</value></data>
   <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>변환 이후 원본 파일 제거 안함</value></data>
+  <data name="SaveDefaultsButton.Content" xml:space="preserve"><value>기본값으로 저장</value></data>
+  <data name="ResetDefaultsButton.Content" xml:space="preserve"><value>기본값 초기화</value></data>
 
   <!-- Convert Button -->
   <data name="ConvertButtonContent" xml:space="preserve"><value>변환</value></data>

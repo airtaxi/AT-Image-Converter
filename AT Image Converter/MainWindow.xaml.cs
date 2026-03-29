@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
+using Windows.Storage;
 using Windows.Storage.Pickers;
 namespace ImageConverterAT;
 
@@ -22,6 +23,7 @@ public sealed partial class MainWindow : Window
     private readonly ObservableCollection<ImageFileViewModel> _imageFileViewModels = [];
     private readonly ObservableCollection<string> _progressLog = [];
     private readonly ResourceLoader _resourceLoader = new();
+    private readonly ApplicationDataContainer _localSettings = ApplicationData.Current.LocalSettings;
 
     public MainWindow()
     {
@@ -58,6 +60,7 @@ public sealed partial class MainWindow : Window
         CbxSizeSettings.SelectedIndex = 0;
         CbxSizeUnit.SelectedIndex = 0;
 
+        LoadSettings();
         UpdateImageListDependentControls();
     }
 
@@ -685,6 +688,89 @@ public sealed partial class MainWindow : Window
         BtOpenCustomFolder.IsEnabled = true;
         RbCustomFolder.IsChecked = true;
     }
+
+    private void SaveSettings()
+    {
+        _localSettings.Values["FormatIndex"] = CbxFormat.SelectedIndex;
+        _localSettings.Values["Quality"] = NbQuality.Value;
+        _localSettings.Values["RotationEnabled"] = TsRotation.IsOn;
+        _localSettings.Values["RotationIndex"] = CbxRotationSettings.SelectedIndex;
+        _localSettings.Values["SizeSettingIndex"] = CbxSizeSettings.SelectedIndex;
+        _localSettings.Values["SizeUnitIndex"] = CbxSizeUnit.SelectedIndex;
+        _localSettings.Values["Width"] = NbxWidth.Value;
+        _localSettings.Values["Height"] = NbxHeight.Value;
+        _localSettings.Values["Prefix"] = TbxPrefix.Text;
+        _localSettings.Values["OverwriteFile"] = TsOverwriteFile.IsOn;
+        _localSettings.Values["OutputFolderSetting"] = (int)GetOutputFolderSetting();
+        _localSettings.Values["CustomFolderPath"] = TbxCustomFolderPath.Text;
+        _localSettings.Values["SubfolderName"] = TbxSubfolderName.Text;
+        _localSettings.Values["ParallelExecution"] = TsParallelExecution.IsOn;
+        _localSettings.Values["PreserveFileDate"] = TsPreserveFileDate.IsOn;
+        _localSettings.Values["PreserveExif"] = TsPreserveExif.IsOn;
+        _localSettings.Values["DeleteOriginal"] = TsDeleteOriginal.IsOn;
+    }
+
+    private void LoadSettings()
+    {
+        var values = _localSettings.Values;
+        if (!values.TryGetValue("FormatIndex", out object value)) return;
+
+        CbxFormat.SelectedIndex = (int)value;
+        NbQuality.Value = (double)values["Quality"];
+        TsRotation.IsOn = (bool)values["RotationEnabled"];
+        CbxRotationSettings.SelectedIndex = (int)values["RotationIndex"];
+        CbxSizeSettings.SelectedIndex = (int)values["SizeSettingIndex"];
+        CbxSizeUnit.SelectedIndex = (int)values["SizeUnitIndex"];
+        NbxWidth.Value = (double)values["Width"];
+        NbxHeight.Value = (double)values["Height"];
+        TbxPrefix.Text = (string)values["Prefix"];
+        TsOverwriteFile.IsOn = (bool)values["OverwriteFile"];
+
+        var outputFolderSetting = (OutputFolderSetting)(int)values["OutputFolderSetting"];
+        RbSameFolder.IsChecked = outputFolderSetting == OutputFolderSetting.SameFolder;
+        RbPhotoFolder.IsChecked = outputFolderSetting == OutputFolderSetting.PhotoFolder;
+        RbCustomFolder.IsChecked = outputFolderSetting == OutputFolderSetting.CustomFolder;
+        RbSubfolder.IsChecked = outputFolderSetting == OutputFolderSetting.Subfolder;
+
+        TbxCustomFolderPath.Text = (string)values["CustomFolderPath"];
+        BtOpenCustomFolder.IsEnabled = !string.IsNullOrEmpty(TbxCustomFolderPath.Text);
+        TbxSubfolderName.Text = (string)values["SubfolderName"];
+        TsParallelExecution.IsOn = (bool)values["ParallelExecution"];
+        TsPreserveFileDate.IsOn = (bool)values["PreserveFileDate"];
+        TsPreserveExif.IsOn = (bool)values["PreserveExif"];
+        TsDeleteOriginal.IsOn = (bool)values["DeleteOriginal"];
+    }
+
+    private void ResetSettings()
+    {
+        _localSettings.Values.Clear();
+
+        CbxFormat.SelectedIndex = 0;
+        NbQuality.Value = 80;
+        TsRotation.IsOn = true;
+        CbxRotationSettings.SelectedIndex = 0;
+        CbxSizeSettings.SelectedIndex = 0;
+        CbxSizeUnit.SelectedIndex = 0;
+        NbxWidth.Value = 0;
+        NbxHeight.Value = 0;
+        TbxPrefix.Text = "ATIC_";
+        TsOverwriteFile.IsOn = true;
+        RbSameFolder.IsChecked = true;
+        RbPhotoFolder.IsChecked = false;
+        RbCustomFolder.IsChecked = false;
+        RbSubfolder.IsChecked = false;
+        TbxCustomFolderPath.Text = "";
+        BtOpenCustomFolder.IsEnabled = false;
+        TbxSubfolderName.Text = "output";
+        TsParallelExecution.IsOn = true;
+        TsPreserveFileDate.IsOn = true;
+        TsPreserveExif.IsOn = true;
+        TsDeleteOriginal.IsOn = false;
+    }
+
+    private void OnSaveDefaultsButtonClicked(object sender, RoutedEventArgs e) => SaveSettings();
+
+    private void OnResetDefaultsButtonClicked(object sender, RoutedEventArgs e) => ResetSettings();
 
     private async void OnConvertButtonClicked(object sender, RoutedEventArgs e) => await ConvertImagesAsync();
 }

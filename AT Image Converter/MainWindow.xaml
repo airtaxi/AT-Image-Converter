@@ -387,6 +387,22 @@
                                     x:Uid="PreserveExifToggleSwitch"
                                     IsOn="True" />
                                 <ToggleSwitch x:Name="TsDeleteOriginal" x:Uid="DeleteOriginalToggleSwitch" />
+                                <Grid ColumnSpacing="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button
+                                        x:Uid="SaveDefaultsButton"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Stretch"
+                                        Click="OnSaveDefaultsButtonClicked" />
+                                    <Button
+                                        x:Uid="ResetDefaultsButton"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Stretch"
+                                        Click="OnResetDefaultsButtonClicked" />
+                                </Grid>
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>

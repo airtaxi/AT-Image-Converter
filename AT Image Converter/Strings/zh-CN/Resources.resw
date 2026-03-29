@@ -74,6 +74,8 @@
   <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve"><value>关</value></data>
   <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve"><value>转换后删除原始文件</value></data>
   <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>转换后保留原始文件</value></data>
+  <data name="SaveDefaultsButton.Content" xml:space="preserve"><value>保存为默认</value></data>
+  <data name="ResetDefaultsButton.Content" xml:space="preserve"><value>恢复默认</value></data>
 
   <!-- Convert Button -->
   <data name="ConvertButtonContent" xml:space="preserve"><value>转换</value></data>
