@@ -153,7 +153,6 @@
                                         <x:String>BMP</x:String>
                                         <x:String>WEBP</x:String>
                                         <x:String>AVIF</x:String>
-                                        <x:String>HEIF</x:String>
                                         <x:String>ICO</x:String>
                                         <x:String>TIFF</x:String>
                                     </ComboBox.Items>

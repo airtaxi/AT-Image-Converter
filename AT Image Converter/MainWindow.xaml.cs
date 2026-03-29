@@ -291,11 +291,6 @@ public sealed partial class MainWindow : Window
                 image.Format = MagickFormat.Avif;
                 image.Quality = quality;
             }
-            else if (formatName == "HEIF")
-            {
-                image.Format = MagickFormat.Heif;
-                image.Quality = quality;
-            }
             else if (formatName == "TIFF")
             {
                 image.Format = MagickFormat.Tiff;
@@ -524,7 +519,7 @@ public sealed partial class MainWindow : Window
         var format = GetCurrentOutputFormat();
 
         // Show or hide quality NumberBox depending on the selected format
-        var isQualityAvailable = format == ".jpg" || format == ".jxl" || format == ".webp" || format == ".heif" || format == ".tiff";
+        var isQualityAvailable = format == ".jpg" || format == ".jxl" || format == ".webp" || format == ".avif" || format == ".tiff";
         NbQuality.Visibility = isQualityAvailable ? Visibility.Visible : Visibility.Collapsed;
 
         // Show or hide size settings depending on the selected format
