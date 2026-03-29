@@ -54,6 +54,13 @@
   <data name="OverwriteFileToggleSwitch.OnContent" xml:space="preserve"><value>ファイル名が重複する場合は上書き</value></data>
   <data name="OverwriteFileToggleSwitch.OffContent" xml:space="preserve"><value>ファイル名が重複する場合は名前変更</value></data>
 
+  <!-- Output Folder -->
+  <data name="OutputFolderTitle.Text" xml:space="preserve"><value>出力フォルダ</value></data>
+  <data name="SameFolderRadioButton.Content" xml:space="preserve"><value>同じフォルダに保存</value></data>
+  <data name="PhotoFolderRadioButton.Content" xml:space="preserve"><value>写真フォルダに保存</value></data>
+  <data name="CustomFolderRadioButton.Content" xml:space="preserve"><value>指定フォルダに保存:</value></data>
+  <data name="SubfolderRadioButton.Content" xml:space="preserve"><value>サブフォルダに保存:</value></data>
+
   <!-- Conversion Options -->
   <data name="ConversionOptionsTitle.Text" xml:space="preserve"><value>変換設定</value></data>
   <data name="ParallelExecutionToggleSwitch.Header" xml:space="preserve"><value>並列実行</value></data>

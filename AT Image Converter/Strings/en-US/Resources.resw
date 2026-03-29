@@ -54,6 +54,13 @@
   <data name="OverwriteFileToggleSwitch.OnContent" xml:space="preserve"><value>Overwrite if file name exists</value></data>
   <data name="OverwriteFileToggleSwitch.OffContent" xml:space="preserve"><value>Rename if file name exists</value></data>
 
+  <!-- Output Folder -->
+  <data name="OutputFolderTitle.Text" xml:space="preserve"><value>Output Folder</value></data>
+  <data name="SameFolderRadioButton.Content" xml:space="preserve"><value>Save to the same folder</value></data>
+  <data name="PhotoFolderRadioButton.Content" xml:space="preserve"><value>Save to Photo Folder</value></data>
+  <data name="CustomFolderRadioButton.Content" xml:space="preserve"><value>Save to:</value></data>
+  <data name="SubfolderRadioButton.Content" xml:space="preserve"><value>Save to a subfolder named:</value></data>
+
   <!-- Conversion Options -->
   <data name="ConversionOptionsTitle.Text" xml:space="preserve"><value>Conversion Options</value></data>
   <data name="ParallelExecutionToggleSwitch.Header" xml:space="preserve"><value>Parallel Execution</value></data>

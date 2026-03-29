@@ -269,6 +269,111 @@
                                 Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                                 CornerRadius="5"
                                 Spacing="5">
+                                <TextBlock x:Uid="OutputFolderTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                                <Grid ColumnSpacing="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <RadioButton
+                                        x:Name="RbSameFolder"
+                                        x:Uid="SameFolderRadioButton"
+                                        Grid.Column="0"
+                                        GroupName="OutputFolder"
+                                        IsChecked="True" />
+                                    <Button
+                                        x:Name="BtOpenSameFolder"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Click="OnOpenSameFolderButtonClicked"
+                                        IsEnabled="False">
+                                        <FontIcon FontSize="14" Glyph="&#xED25;" />
+                                    </Button>
+                                </Grid>
+                                <Grid ColumnSpacing="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <RadioButton
+                                        x:Name="RbPhotoFolder"
+                                        x:Uid="PhotoFolderRadioButton"
+                                        Grid.Column="0"
+                                        GroupName="OutputFolder" />
+                                    <Button
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Click="OnOpenPhotoFolderButtonClicked">
+                                        <FontIcon FontSize="14" Glyph="&#xED25;" />
+                                    </Button>
+                                </Grid>
+                                <Grid ColumnSpacing="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <RadioButton
+                                        x:Name="RbCustomFolder"
+                                        x:Uid="CustomFolderRadioButton"
+                                        Grid.Column="0"
+                                        GroupName="OutputFolder" />
+                                    <Button
+                                        x:Name="BtOpenCustomFolder"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Click="OnOpenCustomFolderButtonClicked"
+                                        IsEnabled="False">
+                                        <FontIcon FontSize="14" Glyph="&#xED25;" />
+                                    </Button>
+                                </Grid>
+                                <Grid Margin="28,0,0,0" ColumnSpacing="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox
+                                        x:Name="TbxCustomFolderPath"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Stretch"
+                                        IsReadOnly="True" />
+                                    <Button
+                                        Grid.Column="1"
+                                        VerticalAlignment="Bottom"
+                                        Click="OnBrowseCustomFolderButtonClicked">
+                                        <FontIcon FontSize="14" Glyph="&#xE712;" />
+                                    </Button>
+                                </Grid>
+                                <Grid ColumnSpacing="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <RadioButton
+                                        x:Name="RbSubfolder"
+                                        x:Uid="SubfolderRadioButton"
+                                        Grid.Column="0"
+                                        GroupName="OutputFolder" />
+                                    <Button
+                                        x:Name="BtOpenSubfolder"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Click="OnOpenSubfolderButtonClicked"
+                                        IsEnabled="False">
+                                        <FontIcon FontSize="14" Glyph="&#xED25;" />
+                                    </Button>
+                                </Grid>
+                                <TextBox
+                                    x:Name="TbxSubfolderName"
+                                    Margin="28,0,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    PlaceholderText="output"
+                                    Text="output" />
+                            </StackPanel>
+                            <StackPanel
+                                Padding="10,3.5,10,10"
+                                Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                                CornerRadius="5"
+                                Spacing="5">
                                 <TextBlock x:Uid="ConversionOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                                 <ToggleSwitch
                                     x:Name="TsParallelExecution"

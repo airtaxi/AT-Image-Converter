@@ -54,6 +54,13 @@
   <data name="OverwriteFileToggleSwitch.OnContent" xml:space="preserve"><value>파일명 중복 시 덮어쓰기</value></data>
   <data name="OverwriteFileToggleSwitch.OffContent" xml:space="preserve"><value>파일명 중복 시 이름 변경</value></data>
 
+  <!-- Output Folder -->
+  <data name="OutputFolderTitle.Text" xml:space="preserve"><value>출력 폴더</value></data>
+  <data name="SameFolderRadioButton.Content" xml:space="preserve"><value>같은 폴더에 저장</value></data>
+  <data name="PhotoFolderRadioButton.Content" xml:space="preserve"><value>사진 폴더에 저장</value></data>
+  <data name="CustomFolderRadioButton.Content" xml:space="preserve"><value>지정한 폴더에 저장:</value></data>
+  <data name="SubfolderRadioButton.Content" xml:space="preserve"><value>하위 폴더에 저장:</value></data>
+
   <!-- Conversion Options -->
   <data name="ConversionOptionsTitle.Text" xml:space="preserve"><value>변환 옵션</value></data>
   <data name="ParallelExecutionToggleSwitch.Header" xml:space="preserve"><value>병렬 실행</value></data>

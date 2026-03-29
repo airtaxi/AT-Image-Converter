@@ -165,10 +165,27 @@ public sealed partial class MainWindow : Window
         var overwriteFile = TsOverwriteFile.IsOn;
         var deleteOriginal = TsDeleteOriginal.IsOn;
         var quality = (uint)NbQuality.Value;
+        var outputFolderSetting = GetOutputFolderSetting();
+        var customFolderPath = TbxCustomFolderPath.Text;
+        var subfolderName = TbxSubfolderName.Text;
+
+        string GetOutputDirectory(string sourceFilePath)
+        {
+            var sourceDirectory = Path.GetDirectoryName(sourceFilePath);
+            if (outputFolderSetting == OutputFolderSetting.SameFolder) return sourceDirectory;
+            if (outputFolderSetting == OutputFolderSetting.PhotoFolder)
+                return Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            if (outputFolderSetting == OutputFolderSetting.CustomFolder && !string.IsNullOrEmpty(customFolderPath))
+                return customFolderPath;
+            if (outputFolderSetting == OutputFolderSetting.Subfolder && !string.IsNullOrEmpty(subfolderName))
+                return Path.Combine(sourceDirectory, subfolderName);
+            return sourceDirectory;
+        }
 
         async Task ConvertSingleImageAsync(ImageFileViewModel viewModel)
         {
-            var directoryPath = Path.GetDirectoryName(viewModel.FilePath);
+            var directoryPath = GetOutputDirectory(viewModel.FilePath);
+            Directory.CreateDirectory(directoryPath);
             DispatcherQueue.TryEnqueue(() =>
             {
                 if (!parallelExecution) LvImages.SelectedItem = viewModel;
@@ -476,6 +493,8 @@ public sealed partial class MainWindow : Window
 
         // Update app bar buttons state if item is selected
         AbbDelete.IsEnabled = imageFileViewModel != null;
+        BtOpenSameFolder.IsEnabled = imageFileViewModel != null;
+        BtOpenSubfolder.IsEnabled = imageFileViewModel != null;
 
         // Update prefix format preview text box
         UpdatePrefixFormatPreviewTextBox();
@@ -607,6 +626,60 @@ public sealed partial class MainWindow : Window
     }
 
     private void OnResetZoomAppBarButtonClicked(object sender, RoutedEventArgs e) => ResetImagePreviewZoomFactor();
+
+    private OutputFolderSetting GetOutputFolderSetting()
+    {
+        if (RbPhotoFolder.IsChecked == true) return OutputFolderSetting.PhotoFolder;
+        if (RbCustomFolder.IsChecked == true) return OutputFolderSetting.CustomFolder;
+        if (RbSubfolder.IsChecked == true) return OutputFolderSetting.Subfolder;
+        return OutputFolderSetting.SameFolder;
+    }
+
+    private void OnOpenSameFolderButtonClicked(object sender, RoutedEventArgs e)
+    {
+        if (_selectedImageFileViewModel == null) return;
+        var directoryPath = Path.GetDirectoryName(_selectedImageFileViewModel.FilePath);
+        Process.Start(new ProcessStartInfo(directoryPath) { UseShellExecute = true });
+    }
+
+    private void OnOpenPhotoFolderButtonClicked(object sender, RoutedEventArgs e)
+    {
+        var photoFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+        Process.Start(new ProcessStartInfo(photoFolder) { UseShellExecute = true });
+    }
+
+    private void OnOpenCustomFolderButtonClicked(object sender, RoutedEventArgs e)
+    {
+        var path = TbxCustomFolderPath.Text;
+        if (string.IsNullOrEmpty(path) || !Directory.Exists(path)) return;
+        Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+    }
+
+    private void OnOpenSubfolderButtonClicked(object sender, RoutedEventArgs e)
+    {
+        if (_selectedImageFileViewModel == null) return;
+        var sourceDirectory = Path.GetDirectoryName(_selectedImageFileViewModel.FilePath);
+        var subfolderName = TbxSubfolderName.Text;
+        if (string.IsNullOrEmpty(subfolderName)) return;
+        var subfolderPath = Path.Combine(sourceDirectory, subfolderName);
+        if (!Directory.Exists(subfolderPath)) return;
+        Process.Start(new ProcessStartInfo(subfolderPath) { UseShellExecute = true });
+    }
+
+    private async void OnBrowseCustomFolderButtonClicked(object sender, RoutedEventArgs e)
+    {
+        var folderPicker = new FolderPicker();
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, WinRT.Interop.WindowNative.GetWindowHandle(this));
+        folderPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+        folderPicker.FileTypeFilter.Add("*");
+
+        var folder = await folderPicker.PickSingleFolderAsync();
+        if (folder == null) return;
+
+        TbxCustomFolderPath.Text = folder.Path;
+        BtOpenCustomFolder.IsEnabled = true;
+        RbCustomFolder.IsChecked = true;
+    }
 
     private async void OnConvertButtonClicked(object sender, RoutedEventArgs e) => await ConvertImagesAsync();
 }
