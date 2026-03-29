@@ -76,7 +76,8 @@
   <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>Keep original file after conversion</value></data>
 
   <!-- Convert Button -->
-  <data name="ConvertButton.Content" xml:space="preserve"><value>Convert</value></data>
+  <data name="ConvertButtonContent" xml:space="preserve"><value>Convert</value></data>
+  <data name="ConvertButtonNoImagesContent" xml:space="preserve"><value>Please add images</value></data>
 
   <!-- Preview Buttons -->
   <data name="ZoomInButton.Label" xml:space="preserve"><value>Zoom In</value></data>

@@ -392,11 +392,11 @@
                     </ScrollViewer>
                     <Button
                         x:Name="BtConvert"
-                        x:Uid="ConvertButton"
                         Grid.Row="1"
                         Margin="0,10,0,0"
                         HorizontalAlignment="Stretch"
-                        Click="OnConvertButtonClicked" />
+                        Click="OnConvertButtonClicked"
+                        IsEnabled="False" />
                 </Grid>
                 <Frame x:Name="FrPreview" Grid.Column="1">
                     <Grid

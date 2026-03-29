@@ -76,7 +76,8 @@
   <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>변환 이후 원본 파일 제거 안함</value></data>
 
   <!-- Convert Button -->
-  <data name="ConvertButton.Content" xml:space="preserve"><value>변환</value></data>
+  <data name="ConvertButtonContent" xml:space="preserve"><value>변환</value></data>
+  <data name="ConvertButtonNoImagesContent" xml:space="preserve"><value>이미지를 추가하세요</value></data>
 
   <!-- Preview Buttons -->
   <data name="ZoomInButton.Label" xml:space="preserve"><value>확대</value></data>

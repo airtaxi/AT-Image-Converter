@@ -1,4 +1,4 @@
-﻿using ImageConverterAT.Enums;
+using ImageConverterAT.Enums;
 using ImageConverterAT.ViewModels;
 using ImageMagick;
 using Microsoft.UI.Xaml;
@@ -57,6 +57,8 @@ public sealed partial class MainWindow : Window
         // Select first item programmatically to trigger selection changed event after initialization
         CbxSizeSettings.SelectedIndex = 0;
         CbxSizeUnit.SelectedIndex = 0;
+
+        UpdateImageListDependentControls();
     }
 
     private void AddImageFiles(IEnumerable<string> paths)
@@ -94,7 +96,7 @@ public sealed partial class MainWindow : Window
             UpdatePrefixFormatPreviewTextBox();
         }
 
-        UpdateDropPlaceholderVisibility();
+        UpdateImageListDependentControls();
     }
 
     private void UpdatePrefixFormatPreviewTextBox()
@@ -260,7 +262,7 @@ public sealed partial class MainWindow : Window
                     DispatcherQueue.TryEnqueue(() =>
                     {
                         _imageFileViewModels.Remove(viewModel);
-                        UpdateDropPlaceholderVisibility();
+                        UpdateImageListDependentControls();
                         File.Delete(viewModel.FilePath);
                     });
                 }
@@ -318,7 +320,7 @@ public sealed partial class MainWindow : Window
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     _imageFileViewModels.Remove(viewModel);
-                    UpdateDropPlaceholderVisibility();
+                    UpdateImageListDependentControls();
                     File.Delete(viewModel.FilePath);
                 });
             }
@@ -346,7 +348,15 @@ public sealed partial class MainWindow : Window
         LvProgressLog.UpdateLayout();
     }
 
-    private void UpdateDropPlaceholderVisibility() => BtDropPlaceholder.Visibility = _imageFileViewModels.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    private void UpdateImageListDependentControls()
+    {
+        var hasImages = _imageFileViewModels.Count > 0;
+        BtDropPlaceholder.Visibility = hasImages ? Visibility.Collapsed : Visibility.Visible;
+        BtConvert.IsEnabled = hasImages;
+        BtConvert.Content = hasImages
+            ? _resourceLoader.GetString("ConvertButtonContent")
+            : _resourceLoader.GetString("ConvertButtonNoImagesContent");
+    }
 
     private static bool IsGhostscriptInstalled()
     {
@@ -469,14 +479,14 @@ public sealed partial class MainWindow : Window
 
         // Remove item
         _imageFileViewModels.Remove(imageFileViewModel);
-        UpdateDropPlaceholderVisibility();
+        UpdateImageListDependentControls();
     }
 
     // Clear all items
     private void OnClearImageAppBarButtonClicked(object sender, RoutedEventArgs e)
     {
         _imageFileViewModels.Clear();
-        UpdateDropPlaceholderVisibility();
+        UpdateImageListDependentControls();
     }
 
     private ImageFileViewModel _selectedImageFileViewModel;

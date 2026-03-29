@@ -76,7 +76,8 @@
   <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>转换后保留原始文件</value></data>
 
   <!-- Convert Button -->
-  <data name="ConvertButton.Content" xml:space="preserve"><value>转换</value></data>
+  <data name="ConvertButtonContent" xml:space="preserve"><value>转换</value></data>
+  <data name="ConvertButtonNoImagesContent" xml:space="preserve"><value>请添加图片</value></data>
 
   <!-- Preview Buttons -->
   <data name="ZoomInButton.Label" xml:space="preserve"><value>放大</value></data>
