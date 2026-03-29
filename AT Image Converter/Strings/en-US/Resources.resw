@@ -26,6 +26,17 @@
   <data name="OutputFormatComboBox.Header" xml:space="preserve"><value>Output Format</value></data>
   <data name="QualityNumberBox.Header" xml:space="preserve"><value>Quality</value></data>
 
+  <!-- Rotation Options -->
+  <data name="RotationOptionsTitle.Text" xml:space="preserve"><value>Rotation Options</value></data>
+  <data name="RotationToggleSwitch.Header" xml:space="preserve"><value>Rotation</value></data>
+  <data name="RotationToggleSwitch.OnContent" xml:space="preserve"><value>On</value></data>
+  <data name="RotationToggleSwitch.OffContent" xml:space="preserve"><value>Off</value></data>
+  <data name="RotationSettingsComboBox.Header" xml:space="preserve"><value>Rotation Settings</value></data>
+  <data name="AutoRotateByExifItem.Content" xml:space="preserve"><value>Auto-rotate based on EXIF</value></data>
+  <data name="RotateClockwise90Item.Content" xml:space="preserve"><value>Rotate 90° clockwise</value></data>
+  <data name="RotateCounterClockwise90Item.Content" xml:space="preserve"><value>Rotate 90° counter-clockwise</value></data>
+  <data name="Rotate180Item.Content" xml:space="preserve"><value>Rotate 180°</value></data>
+
   <!-- Size Options -->
   <data name="SizeSettingsComboBox.Header" xml:space="preserve"><value>Size Settings</value></data>
   <data name="SizeUnitComboBox.Header" xml:space="preserve"><value>Size Unit</value></data>
@@ -40,6 +51,22 @@
   <data name="PrefixTextBox.Header" xml:space="preserve"><value>File Name Prefix</value></data>
   <data name="PrefixPreviewTextBox.Header" xml:space="preserve"><value>File Name Prefix (Preview)</value></data>
   <data name="PrefixPreviewTextBox.PlaceholderText" xml:space="preserve"><value>No selected image</value></data>
+  <data name="OverwriteFileToggleSwitch.OnContent" xml:space="preserve"><value>Overwrite if file name exists</value></data>
+  <data name="OverwriteFileToggleSwitch.OffContent" xml:space="preserve"><value>Rename if file name exists</value></data>
+
+  <!-- Conversion Options -->
+  <data name="ConversionOptionsTitle.Text" xml:space="preserve"><value>Conversion Options</value></data>
+  <data name="ParallelExecutionToggleSwitch.Header" xml:space="preserve"><value>Parallel Execution</value></data>
+  <data name="ParallelExecutionToggleSwitch.OnContent" xml:space="preserve"><value>On</value></data>
+  <data name="ParallelExecutionToggleSwitch.OffContent" xml:space="preserve"><value>Off</value></data>
+  <data name="PreserveFileDateToggleSwitch.Header" xml:space="preserve"><value>Preserve File Date</value></data>
+  <data name="PreserveFileDateToggleSwitch.OnContent" xml:space="preserve"><value>On</value></data>
+  <data name="PreserveFileDateToggleSwitch.OffContent" xml:space="preserve"><value>Off</value></data>
+  <data name="PreserveExifToggleSwitch.Header" xml:space="preserve"><value>Preserve EXIF Data</value></data>
+  <data name="PreserveExifToggleSwitch.OnContent" xml:space="preserve"><value>On</value></data>
+  <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve"><value>Off</value></data>
+  <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve"><value>Delete original file after conversion</value></data>
+  <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>Keep original file after conversion</value></data>
 
   <!-- Convert Button -->
   <data name="ConvertButton.Content" xml:space="preserve"><value>Convert</value></data>

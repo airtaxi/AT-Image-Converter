@@ -23,31 +23,31 @@ public sealed partial class MainWindow : Window
     private readonly ObservableCollection<string> _progressLog = [];
     private readonly ResourceLoader _resourceLoader = new();
 
-	public MainWindow()
-	{
+    public MainWindow()
+    {
         InitializeComponent();
         _isInitialized = true;
 
         // Setup window
-		AppWindow.SetIcon("Assets/Icon.ico");
-		ExtendsContentIntoTitleBar = true;
+        AppWindow.SetIcon("Assets/Icon.ico");
+        ExtendsContentIntoTitleBar = true;
 
-		// Add files from command line arguments if any
-		var args = Environment.GetCommandLineArgs();
-		if (args.Length > 2 && args[1] == "--file-list")
-		{
-			var fileListPath = args[2];
-			if (File.Exists(fileListPath))
-			{
-				var filePaths = File.ReadAllLines(fileListPath).Where(line => !string.IsNullOrWhiteSpace(line));
-				AddImageFiles(filePaths);
-				try { File.Delete(fileListPath); } catch { }
-			}
-		}
-		else if (args.Length > 1)
-		{
-			AddImageFiles(args[1..]); // Skip first argument, which is the executable path
-		}
+        // Add files from command line arguments if any
+        var args = Environment.GetCommandLineArgs();
+        if (args.Length > 2 && args[1] == "--file-list")
+        {
+            var fileListPath = args[2];
+            if (File.Exists(fileListPath))
+            {
+                var filePaths = File.ReadAllLines(fileListPath).Where(line => !string.IsNullOrWhiteSpace(line));
+                AddImageFiles(filePaths);
+                try { File.Delete(fileListPath); } catch { }
+            }
+        }
+        else if (args.Length > 1)
+        {
+            AddImageFiles(args[1..]); // Skip first argument, which is the executable path
+        }
 
         // Assign data source to list view
         LvImages.ItemsSource = _imageFileViewModels;
@@ -60,7 +60,7 @@ public sealed partial class MainWindow : Window
     }
 
     private void AddImageFiles(IEnumerable<string> paths)
-	{
+    {
         // Get previous count to know if we need to select the first item after adding
         var previousCount = _imageFileViewModels.Count;
 
@@ -107,14 +107,15 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        TbxPrefixPreview.Text = GetSavedFileName(_selectedImageFileViewModel);
+        var prefix = TbxPrefix.Text;
+        var format = GetCurrentOutputFormat();
+        TbxPrefixPreview.Text = GetSavedFileName(_selectedImageFileViewModel, prefix, format);
     }
 
-    private string GetSavedFileName(ImageFileViewModel viewModel)
+    private string GetSavedFileName(ImageFileViewModel viewModel, string prefix, string format)
     {
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(viewModel.FileName);
-        var format = GetCurrentOutputFormat();
-        var fileName = TbxPrefix.Text + fileNameWithoutExtension + format;
+        var fileName = prefix + fileNameWithoutExtension + format;
         return fileName;
     }
 
@@ -150,23 +151,57 @@ public sealed partial class MainWindow : Window
         GdProgress.Visibility = Visibility.Visible;
         AddProgressLog(_resourceLoader.GetString("ConversionStarted"));
 
-    var formatName = CbxFormat.SelectedItem as string;
-        foreach (var viewModel in _imageFileViewModels.ToList())
+        var formatName = CbxFormat.SelectedItem as string;
+        var rotationSetting = TsRotation.IsOn ? (RotationSetting)CbxRotationSettings.SelectedIndex : (RotationSetting)(-1);
+        var sizeSetting = (SizeSetting)CbxSizeSettings.SelectedIndex;
+        var sizeUnit = (SizeUnit)CbxSizeUnit.SelectedIndex;
+        var width = (uint)NbxWidth.Value;
+        var height = (uint)NbxHeight.Value;
+        var prefix = TbxPrefix.Text;
+        var format = GetCurrentOutputFormat();
+        var parallelExecution = TsParallelExecution.IsOn;
+        var preserveFileDate = TsPreserveFileDate.IsOn;
+        var preserveExif = TsPreserveExif.IsOn;
+        var overwriteFile = TsOverwriteFile.IsOn;
+        var deleteOriginal = TsDeleteOriginal.IsOn;
+        var quality = (uint)NbQuality.Value;
+
+        async Task ConvertSingleImageAsync(ImageFileViewModel viewModel)
         {
             var directoryPath = Path.GetDirectoryName(viewModel.FilePath);
-            DispatcherQueue.TryEnqueue(() => LvImages.SelectedItem = viewModel);
-            AddProgressLog(string.Format(_resourceLoader.GetString("ConvertingFile"), viewModel.FileName));
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (!parallelExecution) LvImages.SelectedItem = viewModel;
+                AddProgressLog(string.Format(_resourceLoader.GetString("ConvertingFile"), viewModel.FileName));
+            });
 
-            var fileName = GetSavedFileName(viewModel);
+            var fileName = GetSavedFileName(viewModel, prefix, format);
             var filePath = Path.Combine(directoryPath, fileName);
 
-            using var image = viewModel.CreateMagickImage();
-            var sizeSetting = (SizeSetting)CbxSizeSettings.SelectedIndex;
-            var sizeUnit = (SizeUnit)CbxSizeUnit.SelectedIndex;
-            var width = (uint)NbxWidth.Value;
-            var height = (uint)NbxHeight.Value;
+            if (!overwriteFile && File.Exists(filePath))
+            {
+                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                var extension = Path.GetExtension(fileName);
+                var counter = 1;
+                do
+                {
+                    fileName = $"{fileNameWithoutExtension} ({counter}){extension}";
+                    filePath = Path.Combine(directoryPath, fileName);
+                    counter++;
+                } while (File.Exists(filePath));
+            }
 
-            if (formatName != "ICO") await Task.Run(() => ResizeImage(image, sizeSetting, sizeUnit, width, height));
+            // Preserve original file dates if needed
+            var originalCreationTime = preserveFileDate ? File.GetCreationTime(viewModel.FilePath) : default;
+            var originalLastWriteTime = preserveFileDate ? File.GetLastWriteTime(viewModel.FilePath) : default;
+
+            using var image = viewModel.CreateMagickImage();
+
+            if (formatName != "ICO") await Task.Run(() =>
+            {
+                if (rotationSetting >= 0) RotateImage(image, rotationSetting);
+                ResizeImage(image, sizeSetting, sizeUnit, width, height);
+            });
             // Convert to ico format if selected
             else
             {
@@ -184,50 +219,101 @@ public sealed partial class MainWindow : Window
                         iconImage.BackgroundColor = MagickColors.Transparent;
 
                     iconImage.Read(viewModel.FilePath);
+                    if (rotationSetting >= 0) RotateImage(iconImage, rotationSetting);
                     iconImage.Resize(size, size);
                     collection.Add(iconImage);
                 }
 
                 collection.Write(filePath, MagickFormat.Ico);
-                continue;
+
+                if (preserveFileDate)
+                {
+                    File.SetCreationTime(filePath, originalCreationTime);
+                    File.SetLastWriteTime(filePath, originalLastWriteTime);
+                }
+
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    if (parallelExecution) LvImages.SelectedItem = viewModel;
+                    AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
+                });
+
+                if (deleteOriginal && filePath != viewModel.FilePath)
+                {
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        _imageFileViewModels.Remove(viewModel);
+                        UpdateDropPlaceholderVisibility();
+                        File.Delete(viewModel.FilePath);
+                    });
+                }
+                return;
             }
+
+            // Handle EXIF: strip orientation if manually rotated, strip all if not preserving
+            if (!preserveExif) image.Strip();
+            else if (rotationSetting > 0) image.SetAttribute("exif:Orientation", "1");
 
             if (formatName == "JPG")
             {
                 image.Format = MagickFormat.Jpeg;
-                image.Quality = (uint)NbQuality.Value;
+                image.Quality = quality;
             }
             else if (formatName == "JXL")
             {
                 image.Format = MagickFormat.Jxl;
-                image.Quality = (uint)NbQuality.Value;
+                image.Quality = quality;
             }
             else if (formatName == "WEBP")
             {
                 image.Format = MagickFormat.WebP;
-                image.Quality = (uint)NbQuality.Value;
+                image.Quality = quality;
             }
             else if (formatName == "AVIF")
             {
                 image.Format = MagickFormat.Avif;
-                image.Quality = (uint)NbQuality.Value;
+                image.Quality = quality;
             }
             else if (formatName == "HEIF")
             {
                 image.Format = MagickFormat.Heif;
-                image.Quality = (uint)NbQuality.Value;
+                image.Quality = quality;
             }
             else if (formatName == "TIFF")
             {
                 image.Format = MagickFormat.Tiff;
-                image.Quality = (uint)NbQuality.Value;
+                image.Quality = quality;
             }
             else if (formatName == "PNG") image.Format = MagickFormat.Png;
             else if (formatName == "BMP") image.Format = MagickFormat.Bmp;
 
             await Task.Run(() => image.Write(filePath));
-            AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
+
+            if (preserveFileDate)
+            {
+                File.SetCreationTime(filePath, originalCreationTime);
+                File.SetLastWriteTime(filePath, originalLastWriteTime);
+            }
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (parallelExecution) LvImages.SelectedItem = viewModel;
+                AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
+            });
+
+            if (deleteOriginal && filePath != viewModel.FilePath)
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    _imageFileViewModels.Remove(viewModel);
+                    UpdateDropPlaceholderVisibility();
+                    File.Delete(viewModel.FilePath);
+                });
+            }
         }
+
+        if (parallelExecution) await Parallel.ForEachAsync(_imageFileViewModels.ToList(), async (viewModel, _) => await ConvertSingleImageAsync(viewModel));
+        else foreach (var viewModel in _imageFileViewModels.ToList()) await ConvertSingleImageAsync(viewModel);
 
         AddProgressLog(_resourceLoader.GetString("ConversionComplete"));
 
@@ -308,7 +394,7 @@ public sealed partial class MainWindow : Window
     }
     private async void OnAddImageAppBarButtonClicked(object sender, RoutedEventArgs e)
     {
-		var filePicker = new FileOpenPicker();
+        var filePicker = new FileOpenPicker();
         WinRT.Interop.InitializeWithWindow.Initialize(filePicker, WinRT.Interop.WindowNative.GetWindowHandle(this));
 
         filePicker.ViewMode = PickerViewMode.List;
@@ -331,7 +417,7 @@ public sealed partial class MainWindow : Window
 
     private void OnDropPlaceholderButtonClicked(object sender, RoutedEventArgs e) => OnAddImageAppBarButtonClicked(sender, null);
 
-    private void OnImageListViewDragOver(object sender, DragEventArgs e)
+    private void OnDropPlaceholderButtonDragOver(object sender, DragEventArgs e)
     {
         if (e.DataView.Contains(Windows.ApplicationModel.DataTransfer.StandardDataFormats.StorageItems))
         {
@@ -339,7 +425,7 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void OnImageListViewDrop(object sender, DragEventArgs e)
+    private async void OnDropPlaceholderButtonDrop(object sender, DragEventArgs e)
     {
         if (!e.DataView.Contains(Windows.ApplicationModel.DataTransfer.StandardDataFormats.StorageItems)) return;
 
@@ -385,11 +471,11 @@ public sealed partial class MainWindow : Window
     private void OnImageListViewSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // Get selected item
-		var imageFileViewModel = LvImages.SelectedItem as ImageFileViewModel;
+        var imageFileViewModel = LvImages.SelectedItem as ImageFileViewModel;
         _selectedImageFileViewModel = imageFileViewModel;
 
         // Update app bar buttons state if item is selected
-		AbbDelete.IsEnabled = imageFileViewModel != null;
+        AbbDelete.IsEnabled = imageFileViewModel != null;
 
         // Update prefix format preview text box
         UpdatePrefixFormatPreviewTextBox();
@@ -432,6 +518,20 @@ public sealed partial class MainWindow : Window
 
     private void OnPreviewScrollViewerSizeChanged(object sender, SizeChangedEventArgs e) => ResetImagePreviewZoomFactor();
 
+    private void OnRotationToggleSwitchToggled(object sender, RoutedEventArgs e)
+    {
+        if (!_isInitialized) return;
+        CbxRotationSettings.Visibility = TsRotation.IsOn ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private static void RotateImage(MagickImage image, RotationSetting rotationSetting)
+    {
+        if (rotationSetting == RotationSetting.AutoRotateByExif) image.AutoOrient();
+        else if (rotationSetting == RotationSetting.RotateClockwise90) image.Rotate(90);
+        else if (rotationSetting == RotationSetting.RotateCounterClockwise90) image.Rotate(270);
+        else if (rotationSetting == RotationSetting.Rotate180) image.Rotate(180);
+    }
+
     private void OnSizeSettingsComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var sizeSetting = (SizeSetting)CbxSizeSettings.SelectedIndex;
@@ -449,7 +549,7 @@ public sealed partial class MainWindow : Window
         }
 
         // Enable width and height text boxes
-        if(sizeSetting == SizeSetting.ResizeToFill)
+        if (sizeSetting == SizeSetting.ResizeToFill)
         {
             NbxWidth.IsEnabled = true;
             NbxHeight.IsEnabled = true;
@@ -482,7 +582,7 @@ public sealed partial class MainWindow : Window
             NbxWidth.Value = 100;
             NbxHeight.Value = 100;
         }
-        else if (sizeUnit == SizeUnit.Pixel) 
+        else if (sizeUnit == SizeUnit.Pixel)
         {
             NbxWidth.Header = _resourceLoader.GetString("WidthPixel");
             NbxHeight.Header = _resourceLoader.GetString("HeightPixel");

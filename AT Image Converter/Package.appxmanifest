@@ -15,7 +15,7 @@
   <Identity
     Name="49536HowonLee.ATImageConverter"
     Publisher="CN=7713B07B-6F8A-4FB4-877B-2FA9AF531D39"
-    Version="1.0.1.0" />
+    Version="1.0.2.0" />
 
   <mp:PhoneIdentity PhoneProductId="AB4DC84E-A904-401F-9A3D-3F55D3770D25" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

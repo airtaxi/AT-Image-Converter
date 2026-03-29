@@ -26,6 +26,17 @@
   <data name="OutputFormatComboBox.Header" xml:space="preserve"><value>出力形式</value></data>
   <data name="QualityNumberBox.Header" xml:space="preserve"><value>品質</value></data>
 
+  <!-- Rotation Options -->
+  <data name="RotationOptionsTitle.Text" xml:space="preserve"><value>回転設定</value></data>
+  <data name="RotationToggleSwitch.Header" xml:space="preserve"><value>回転</value></data>
+  <data name="RotationToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
+  <data name="RotationToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
+  <data name="RotationSettingsComboBox.Header" xml:space="preserve"><value>回転設定</value></data>
+  <data name="AutoRotateByExifItem.Content" xml:space="preserve"><value>EXIF情報に基づいて自動回転</value></data>
+  <data name="RotateClockwise90Item.Content" xml:space="preserve"><value>時計回りに90度回転</value></data>
+  <data name="RotateCounterClockwise90Item.Content" xml:space="preserve"><value>反時計回りに90度回転</value></data>
+  <data name="Rotate180Item.Content" xml:space="preserve"><value>180度回転</value></data>
+
   <!-- Size Options -->
   <data name="SizeSettingsComboBox.Header" xml:space="preserve"><value>サイズ設定</value></data>
   <data name="SizeUnitComboBox.Header" xml:space="preserve"><value>サイズ単位</value></data>
@@ -40,6 +51,22 @@
   <data name="PrefixTextBox.Header" xml:space="preserve"><value>ファイル名接頭辞</value></data>
   <data name="PrefixPreviewTextBox.Header" xml:space="preserve"><value>ファイル名接頭辞（プレビュー）</value></data>
   <data name="PrefixPreviewTextBox.PlaceholderText" xml:space="preserve"><value>画像が選択されていません</value></data>
+  <data name="OverwriteFileToggleSwitch.OnContent" xml:space="preserve"><value>ファイル名が重複する場合は上書き</value></data>
+  <data name="OverwriteFileToggleSwitch.OffContent" xml:space="preserve"><value>ファイル名が重複する場合は名前変更</value></data>
+
+  <!-- Conversion Options -->
+  <data name="ConversionOptionsTitle.Text" xml:space="preserve"><value>変換設定</value></data>
+  <data name="ParallelExecutionToggleSwitch.Header" xml:space="preserve"><value>並列実行</value></data>
+  <data name="ParallelExecutionToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
+  <data name="ParallelExecutionToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
+  <data name="PreserveFileDateToggleSwitch.Header" xml:space="preserve"><value>ファイル日付を保持</value></data>
+  <data name="PreserveFileDateToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
+  <data name="PreserveFileDateToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
+  <data name="PreserveExifToggleSwitch.Header" xml:space="preserve"><value>EXIF情報を保持</value></data>
+  <data name="PreserveExifToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
+  <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
+  <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve"><value>変換後に元のファイルを削除</value></data>
+  <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>変換後に元のファイルを保持</value></data>
 
   <!-- Convert Button -->
   <data name="ConvertButton.Content" xml:space="preserve"><value>変換</value></data>

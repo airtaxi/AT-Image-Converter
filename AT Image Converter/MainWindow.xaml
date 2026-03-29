@@ -72,11 +72,8 @@
                                     <ListView
                                         x:Name="LvImages"
                                         Height="121.5"
-                                        AllowDrop="True"
                                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                         CornerRadius="5"
-                                        DragOver="OnImageListViewDragOver"
-                                        Drop="OnImageListViewDrop"
                                         SelectedIndex="0"
                                         SelectionChanged="OnImageListViewSelectionChanged">
                                         <ListView.ItemTemplate>
@@ -89,10 +86,13 @@
                                         x:Name="BtDropPlaceholder"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
+                                        AllowDrop="True"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         Click="OnDropPlaceholderButtonClicked"
-                                        CornerRadius="5">
+                                        CornerRadius="5"
+                                        DragOver="OnDropPlaceholderButtonDragOver"
+                                        Drop="OnDropPlaceholderButtonDrop">
                                         <StackPanel
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
@@ -170,6 +170,31 @@
                                     Value="80" />
                             </StackPanel>
                             <StackPanel
+                                x:Name="SpRotationSettings"
+                                Padding="10,3.5,10,10"
+                                Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                                CornerRadius="5"
+                                Spacing="5">
+                                <TextBlock x:Uid="RotationOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                                <ToggleSwitch
+                                    x:Name="TsRotation"
+                                    x:Uid="RotationToggleSwitch"
+                                    IsOn="True"
+                                    Toggled="OnRotationToggleSwitchToggled" />
+                                <ComboBox
+                                    x:Name="CbxRotationSettings"
+                                    x:Uid="RotationSettingsComboBox"
+                                    HorizontalAlignment="Stretch"
+                                    SelectedIndex="0">
+                                    <ComboBox.Items>
+                                        <ComboBoxItem x:Uid="AutoRotateByExifItem" />
+                                        <ComboBoxItem x:Uid="RotateClockwise90Item" />
+                                        <ComboBoxItem x:Uid="RotateCounterClockwise90Item" />
+                                        <ComboBoxItem x:Uid="Rotate180Item" />
+                                    </ComboBox.Items>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel
                                 x:Name="SpSizeSettings"
                                 Padding="10,3.5,10,10"
                                 Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
@@ -234,6 +259,30 @@
                                     x:Uid="PrefixPreviewTextBox"
                                     HorizontalAlignment="Stretch"
                                     IsTabStop="False" />
+                                <ToggleSwitch
+                                    x:Name="TsOverwriteFile"
+                                    x:Uid="OverwriteFileToggleSwitch"
+                                    IsOn="True" />
+                            </StackPanel>
+                            <StackPanel
+                                Padding="10,3.5,10,10"
+                                Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                                CornerRadius="5"
+                                Spacing="5">
+                                <TextBlock x:Uid="ConversionOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                                <ToggleSwitch
+                                    x:Name="TsParallelExecution"
+                                    x:Uid="ParallelExecutionToggleSwitch"
+                                    IsOn="True" />
+                                <ToggleSwitch
+                                    x:Name="TsPreserveFileDate"
+                                    x:Uid="PreserveFileDateToggleSwitch"
+                                    IsOn="True" />
+                                <ToggleSwitch
+                                    x:Name="TsPreserveExif"
+                                    x:Uid="PreserveExifToggleSwitch"
+                                    IsOn="True" />
+                                <ToggleSwitch x:Name="TsDeleteOriginal" x:Uid="DeleteOriginalToggleSwitch" />
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
