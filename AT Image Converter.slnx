@@ -1,0 +1,17 @@
+<Solution>
+  <Configurations>
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="AT Image Converter/AT Image Converter.csproj">
+    <Platform Solution="*|ARM64" Project="ARM64" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy />
+  </Project>
+  <Project Path="ATICContextMenu/ATICContextMenu.vcxproj" Id="7d4326f3-06ae-4750-8313-597ebe7bfb88">
+    <Platform Solution="*|x86" Project="x64" />
+    <Build Solution="*|x86" Project="false" />
+  </Project>
+</Solution>
