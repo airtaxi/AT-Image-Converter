@@ -107,5 +107,6 @@
 다운로드: https://www.ghostscript.com/releases/gsdnld.html</value></data>
   <data name="ConversionFileFailed" xml:space="preserve"><value>{0} 실패: {1}</value></data>
   <data name="PreviewLoading" xml:space="preserve"><value>미리보기 불러오는 중...</value></data>
+  <data name="NoPreviewText.Text" xml:space="preserve"><value>미리보기 없음</value></data>
 
 </root>

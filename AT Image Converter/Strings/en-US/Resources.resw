@@ -107,5 +107,6 @@
 Download: https://www.ghostscript.com/releases/gsdnld.html</value></data>
   <data name="ConversionFileFailed" xml:space="preserve"><value>{0} failed: {1}</value></data>
   <data name="PreviewLoading" xml:space="preserve"><value>Loading preview...</value></data>
+  <data name="NoPreviewText.Text" xml:space="preserve"><value>No Preview</value></data>
 
 </root>

@@ -443,6 +443,21 @@
                                 VerticalAlignment="Center"
                                 ImageOpened="OnImagePreviewImageOpened" />
                         </ScrollViewer>
+                        <StackPanel
+                            x:Name="SpNoPreview"
+                            Grid.Row="0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="8">
+                            <FontIcon
+                                FontSize="48"
+                                Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                Glyph="&#xE8B9;" />
+                            <TextBlock
+                                x:Uid="NoPreviewText"
+                                HorizontalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        </StackPanel>
                         <CommandBar
                             Grid.Row="1"
                             Background="Transparent"

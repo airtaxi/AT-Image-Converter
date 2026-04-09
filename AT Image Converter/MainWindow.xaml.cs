@@ -590,12 +590,11 @@ public sealed partial class MainWindow : Window
         // Update prefix format preview text box
         UpdatePrefixFormatPreviewTextBox();
 
-        // Update image preview
-        if (imageFileViewModel == null)
-        {
-            ImgPreview.Source = null;
-            return;
-        }
+        // Reset preview state
+        ImgPreview.Source = null;
+        SpNoPreview.Visibility = Visibility.Visible;
+
+        if (imageFileViewModel == null) return;
 
         var imageFilePath = imageFileViewModel.FilePath;
         var extension = Path.GetExtension(imageFilePath);
@@ -603,17 +602,14 @@ public sealed partial class MainWindow : Window
         // Native format: use BitmapImage directly
         if (!s_nonNativePreviewExtensions.Contains(extension))
         {
+            SpNoPreview.Visibility = Visibility.Collapsed;
             var bitmapImage = new BitmapImage() { UriSource = new Uri(imageFilePath) };
             ImgPreview.Source = bitmapImage;
             return;
         }
 
         // PDF requires Ghostscript
-        if (extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase) && !IsGhostscriptInstalled())
-        {
-            ImgPreview.Source = null;
-            return;
-        }
+        if (extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase) && !IsGhostscriptInstalled()) return;
 
         // Non-native format: generate preview with ImageMagick on background thread
         _previewCancellationTokenSource?.Cancel();
@@ -640,6 +636,7 @@ public sealed partial class MainWindow : Window
             var bitmapImage = new BitmapImage();
             await bitmapImage.SetSourceAsync(stream);
             ImgPreview.Source = bitmapImage;
+            SpNoPreview.Visibility = Visibility.Collapsed;
 
             // Manually call zoom factor reset here because ImageOpened event doesn't fire when setting BitmapImage source from stream
             ResetImagePreviewZoomFactor(bitmapImage.PixelWidth, bitmapImage.PixelHeight);

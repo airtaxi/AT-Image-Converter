@@ -107,5 +107,6 @@
 ダウンロード: https://www.ghostscript.com/releases/gsdnld.html</value></data>
   <data name="ConversionFileFailed" xml:space="preserve"><value>{0} 失敗: {1}</value></data>
   <data name="PreviewLoading" xml:space="preserve"><value>プレビューを読み込み中...</value></data>
+  <data name="NoPreviewText.Text" xml:space="preserve"><value>プレビューなし</value></data>
 
 </root>
