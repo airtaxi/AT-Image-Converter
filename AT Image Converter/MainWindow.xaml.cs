@@ -150,7 +150,7 @@ public sealed partial class MainWindow : Window
         TbxPrefixPreview.Text = GetSavedFileName(_selectedImageFileViewModel, prefix, format);
     }
 
-    private string GetSavedFileName(ImageFileViewModel viewModel, string prefix, string format)
+    private static string GetSavedFileName(ImageFileViewModel viewModel, string prefix, string format)
     {
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(viewModel.FileName);
         var fileName = prefix + fileNameWithoutExtension + format;
