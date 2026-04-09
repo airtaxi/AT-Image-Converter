@@ -72,6 +72,9 @@
   <data name="PreserveExifToggleSwitch.Header" xml:space="preserve"><value>保留EXIF信息</value></data>
   <data name="PreserveExifToggleSwitch.OnContent" xml:space="preserve"><value>开</value></data>
   <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve"><value>关</value></data>
+  <data name="PreserveAnimationToggleSwitch.Header" xml:space="preserve"><value>保留动画</value></data>
+  <data name="PreserveAnimationToggleSwitch.OnContent" xml:space="preserve"><value>开</value></data>
+  <data name="PreserveAnimationToggleSwitch.OffContent" xml:space="preserve"><value>关</value></data>
   <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve"><value>转换后删除原始文件</value></data>
   <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>转换后保留原始文件</value></data>
   <data name="SaveDefaultsButton.Content" xml:space="preserve"><value>保存为默认</value></data>

@@ -72,6 +72,9 @@
   <data name="PreserveExifToggleSwitch.Header" xml:space="preserve"><value>EXIF 설정 유지</value></data>
   <data name="PreserveExifToggleSwitch.OnContent" xml:space="preserve"><value>켜짐</value></data>
   <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve"><value>꺼짐</value></data>
+  <data name="PreserveAnimationToggleSwitch.Header" xml:space="preserve"><value>애니메이션 유지</value></data>
+  <data name="PreserveAnimationToggleSwitch.OnContent" xml:space="preserve"><value>켜짐</value></data>
+  <data name="PreserveAnimationToggleSwitch.OffContent" xml:space="preserve"><value>꺼짐</value></data>
   <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve"><value>변환 이후 원본 파일 제거</value></data>
   <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>변환 이후 원본 파일 제거 안함</value></data>
   <data name="SaveDefaultsButton.Content" xml:space="preserve"><value>기본값으로 저장</value></data>

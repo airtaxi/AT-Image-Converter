@@ -72,6 +72,9 @@
   <data name="PreserveExifToggleSwitch.Header" xml:space="preserve"><value>EXIF情報を保持</value></data>
   <data name="PreserveExifToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
   <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
+  <data name="PreserveAnimationToggleSwitch.Header" xml:space="preserve"><value>アニメーションを保持</value></data>
+  <data name="PreserveAnimationToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
+  <data name="PreserveAnimationToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
   <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve"><value>変換後に元のファイルを削除</value></data>
   <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>変換後に元のファイルを保持</value></data>
   <data name="SaveDefaultsButton.Content" xml:space="preserve"><value>デフォルトとして保存</value></data>

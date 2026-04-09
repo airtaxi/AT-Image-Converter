@@ -72,6 +72,9 @@
   <data name="PreserveExifToggleSwitch.Header" xml:space="preserve"><value>Preserve EXIF Data</value></data>
   <data name="PreserveExifToggleSwitch.OnContent" xml:space="preserve"><value>On</value></data>
   <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve"><value>Off</value></data>
+  <data name="PreserveAnimationToggleSwitch.Header" xml:space="preserve"><value>Preserve Animation</value></data>
+  <data name="PreserveAnimationToggleSwitch.OnContent" xml:space="preserve"><value>On</value></data>
+  <data name="PreserveAnimationToggleSwitch.OffContent" xml:space="preserve"><value>Off</value></data>
   <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve"><value>Delete original file after conversion</value></data>
   <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>Keep original file after conversion</value></data>
   <data name="SaveDefaultsButton.Content" xml:space="preserve"><value>Save as Default</value></data>

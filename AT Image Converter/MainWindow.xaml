@@ -386,6 +386,10 @@
                                     x:Name="TsPreserveExif"
                                     x:Uid="PreserveExifToggleSwitch"
                                     IsOn="True" />
+                                <ToggleSwitch
+                                    x:Name="TsPreserveAnimation"
+                                    x:Uid="PreserveAnimationToggleSwitch"
+                                    IsOn="True" />
                                 <ToggleSwitch x:Name="TsDeleteOriginal" x:Uid="DeleteOriginalToggleSwitch" />
                                 <Grid ColumnSpacing="5">
                                     <Grid.ColumnDefinitions>

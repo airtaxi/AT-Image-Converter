@@ -202,6 +202,7 @@ public sealed partial class MainWindow : Window
         var preserveExif = TsPreserveExif.IsOn;
         var overwriteFile = TsOverwriteFile.IsOn;
         var deleteOriginal = TsDeleteOriginal.IsOn;
+        var preserveAnimation = TsPreserveAnimation.IsOn;
         var quality = (uint)NbQuality.Value;
         var outputFolderSetting = GetOutputFolderSetting();
         var customFolderPath = TbxCustomFolderPath.Text;
@@ -249,6 +250,55 @@ public sealed partial class MainWindow : Window
             // Preserve original file dates if needed
             var originalCreationTime = preserveFileDate ? File.GetCreationTime(viewModel.FilePath) : default;
             var originalLastWriteTime = preserveFileDate ? File.GetLastWriteTime(viewModel.FilePath) : default;
+
+            // Animated format handling: preserve animation when input has multiple frames
+            if (preserveAnimation && Constants.AnimatedOutputFormats.Contains(formatName) && Constants.AnimatedInputExtensions.Contains(Path.GetExtension(viewModel.FilePath)))
+            {
+                var isAnimated = await Task.Run(() =>
+                {
+                    using var collection = new MagickImageCollection(viewModel.FilePath);
+                    if (collection.Count <= 1) return false;
+
+                    foreach (var frame in collection)
+                    {
+                        var magickFrame = (MagickImage)frame;
+                        if (rotationSetting >= 0) RotateImage(magickFrame, rotationSetting);
+                        ResizeImage(magickFrame, sizeSetting, sizeUnit, width, height);
+                        if (!preserveExif) magickFrame.Strip();
+                        else if (rotationSetting > 0) magickFrame.SetAttribute("exif:Orientation", "1");
+                        magickFrame.Quality = quality;
+                    }
+
+                    collection.Write(filePath);
+                    return true;
+                });
+
+                if (isAnimated)
+                {
+                    if (preserveFileDate)
+                    {
+                        File.SetCreationTime(filePath, originalCreationTime);
+                        File.SetLastWriteTime(filePath, originalLastWriteTime);
+                    }
+
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        if (parallelExecution) LvImages.SelectedItem = viewModel;
+                        AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
+                    });
+
+                    if (deleteOriginal && filePath != viewModel.FilePath)
+                    {
+                        DispatcherQueue.TryEnqueue(() =>
+                        {
+                            _imageFileViewModels.Remove(viewModel);
+                            UpdateImageListDependentControls();
+                            File.Delete(viewModel.FilePath);
+                        });
+                    }
+                    return;
+                }
+            }
 
             using var image = viewModel.CreateMagickImage();
 
@@ -787,6 +837,7 @@ public sealed partial class MainWindow : Window
         _localSettings.Values["ParallelExecution"] = TsParallelExecution.IsOn;
         _localSettings.Values["PreserveFileDate"] = TsPreserveFileDate.IsOn;
         _localSettings.Values["PreserveExif"] = TsPreserveExif.IsOn;
+        _localSettings.Values["PreserveAnimation"] = TsPreserveAnimation.IsOn;
         _localSettings.Values["DeleteOriginal"] = TsDeleteOriginal.IsOn;
     }
 
@@ -818,6 +869,8 @@ public sealed partial class MainWindow : Window
         TsParallelExecution.IsOn = (bool)values["ParallelExecution"];
         TsPreserveFileDate.IsOn = (bool)values["PreserveFileDate"];
         TsPreserveExif.IsOn = (bool)values["PreserveExif"];
+        if (values.TryGetValue("PreserveAnimation", out var preserveAnimationValue))
+            TsPreserveAnimation.IsOn = (bool)preserveAnimationValue;
         TsDeleteOriginal.IsOn = (bool)values["DeleteOriginal"];
     }
 
@@ -845,6 +898,7 @@ public sealed partial class MainWindow : Window
         TsParallelExecution.IsOn = true;
         TsPreserveFileDate.IsOn = true;
         TsPreserveExif.IsOn = true;
+        TsPreserveAnimation.IsOn = true;
         TsDeleteOriginal.IsOn = false;
     }
 
