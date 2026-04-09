@@ -481,6 +481,30 @@
                     </ListView>
                 </Grid>
             </Grid>
+
+            <Grid
+                x:Name="GdLoading"
+                Grid.RowSpan="2"
+                Visibility="Collapsed">
+                <Grid.Background>
+                    <AcrylicBrush Opacity="0.5" TintColor="{ThemeResource LayerOnMicaBaseAltFillColorDefault}" />
+                </Grid.Background>
+
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="8">
+                    <ProgressRing
+                        Width="80"
+                        Height="80"
+                        IsIndeterminate="True" />
+                    <TextBlock
+                        x:Name="TbLoading"
+                        HorizontalAlignment="Center"
+                        FontWeight="Bold"
+                        Foreground="White" />
+                </StackPanel>
+            </Grid>
         </Grid>
     </Frame>
 </Window>

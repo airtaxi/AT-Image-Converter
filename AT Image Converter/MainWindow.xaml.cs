@@ -64,6 +64,30 @@ public sealed partial class MainWindow : Window
         UpdateImageListDependentControls();
     }
 
+    public void ShowLoading(string message)
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            GdLoading.Visibility = Visibility.Visible;
+            if (!string.IsNullOrEmpty(message))
+            {
+                TbLoading.Text = message;
+                TbLoading.Visibility = Visibility.Visible;
+            }
+            else TbLoading.Visibility = Visibility.Collapsed;
+        });
+    }
+
+    public void HideLoading()
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            GdLoading.Visibility = Visibility.Collapsed;
+            TbLoading.Visibility = Visibility.Collapsed;
+            TbLoading.Text = "";
+        });
+    }
+
     private void AddImageFiles(IEnumerable<string> paths)
     {
         // Get previous count to know if we need to select the first item after adding
