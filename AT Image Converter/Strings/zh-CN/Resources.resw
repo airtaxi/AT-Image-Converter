@@ -103,5 +103,6 @@
   <data name="GhostscriptRequiredDialogContent" xml:space="preserve"><value>转换PDF文件需要安装Ghostscript。请安装Ghostscript后重试。
 下载: https://www.ghostscript.com/releases/gsdnld.html</value></data>
   <data name="ConversionFileFailed" xml:space="preserve"><value>{0} 失败: {1}</value></data>
+  <data name="PreviewLoading" xml:space="preserve"><value>正在加载预览...</value></data>
 
 </root>

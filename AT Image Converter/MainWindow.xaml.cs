@@ -11,19 +11,28 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Windows.Storage.Streams;
 namespace ImageConverterAT;
 
 public sealed partial class MainWindow : Window
 {
+    private static readonly HashSet<string> s_nonNativePreviewExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".psd", ".xcf", ".raw", ".pdf"
+    };
+
     private readonly bool _isInitialized = false;
     private readonly ObservableCollection<ImageFileViewModel> _imageFileViewModels = [];
     private readonly ObservableCollection<string> _progressLog = [];
     private readonly ResourceLoader _resourceLoader = new();
     private readonly ApplicationDataContainer _localSettings = ApplicationData.Current.LocalSettings;
+    private CancellationTokenSource _previewCancellationTokenSource;
 
     public MainWindow()
     {
@@ -150,9 +159,9 @@ public sealed partial class MainWindow : Window
 
     private string GetCurrentOutputFormat() => "." + (CbxFormat.SelectedItem as string).ToLower();
 
-    private void ResetImagePreviewZoomFactor()
+    private void ResetImagePreviewZoomFactor(double? width = null, double? height = null)
     {
-        var zoomFactor = Math.Min(SvPreview.ActualWidth / ImgPreview.ActualWidth, SvPreview.ActualHeight / ImgPreview.ActualHeight);
+        var zoomFactor = Math.Min(SvPreview.ActualWidth / (width ?? ImgPreview.ActualWidth), SvPreview.ActualHeight / (height ?? ImgPreview.ActualHeight));
         if (double.IsNaN(zoomFactor)) return;
         if (double.IsInfinity(zoomFactor)) return;
 
@@ -517,7 +526,7 @@ public sealed partial class MainWindow : Window
     }
 
     private ImageFileViewModel _selectedImageFileViewModel;
-    private void OnImageListViewSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void OnImageListViewSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // Get selected item
         var imageFileViewModel = LvImages.SelectedItem as ImageFileViewModel;
@@ -539,8 +548,55 @@ public sealed partial class MainWindow : Window
         }
 
         var imageFilePath = imageFileViewModel.FilePath;
-        var bitmapImage = new BitmapImage() { UriSource = new Uri(imageFilePath) };
-        ImgPreview.Source = bitmapImage;
+        var extension = Path.GetExtension(imageFilePath);
+
+        // Native format: use BitmapImage directly
+        if (!s_nonNativePreviewExtensions.Contains(extension))
+        {
+            var bitmapImage = new BitmapImage() { UriSource = new Uri(imageFilePath) };
+            ImgPreview.Source = bitmapImage;
+            return;
+        }
+
+        // PDF requires Ghostscript
+        if (extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase) && !IsGhostscriptInstalled())
+        {
+            ImgPreview.Source = null;
+            return;
+        }
+
+        // Non-native format: generate preview with ImageMagick on background thread
+        _previewCancellationTokenSource?.Cancel();
+        _previewCancellationTokenSource?.Dispose();
+        _previewCancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = _previewCancellationTokenSource.Token;
+
+        ShowLoading(_resourceLoader.GetString("PreviewLoading"));
+        try
+        {
+            var imageBytes = await Task.Run(() =>
+            {
+                using var image = imageFileViewModel.CreateMagickImage();
+                cancellationToken.ThrowIfCancellationRequested();
+                return image.ToByteArray(MagickFormat.Png);
+            }, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using var stream = new InMemoryRandomAccessStream();
+            await stream.WriteAsync(imageBytes.AsBuffer());
+            stream.Seek(0);
+
+            var bitmapImage = new BitmapImage();
+            await bitmapImage.SetSourceAsync(stream);
+            ImgPreview.Source = bitmapImage;
+
+            // Manually call zoom factor reset here because ImageOpened event doesn't fire when setting BitmapImage source from stream
+            ResetImagePreviewZoomFactor(bitmapImage.PixelWidth, bitmapImage.PixelHeight);
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception) { ImgPreview.Source = null; }
+        finally { HideLoading(); }
     }
 
     // Reset image preview zoom factor when new image is selected

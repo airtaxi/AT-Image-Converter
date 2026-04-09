@@ -103,5 +103,6 @@
   <data name="GhostscriptRequiredDialogContent" xml:space="preserve"><value>PDF files require Ghostscript to be installed. Please install Ghostscript and try again.
 Download: https://www.ghostscript.com/releases/gsdnld.html</value></data>
   <data name="ConversionFileFailed" xml:space="preserve"><value>{0} failed: {1}</value></data>
+  <data name="PreviewLoading" xml:space="preserve"><value>Loading preview...</value></data>
 
 </root>
