@@ -10,7 +10,6 @@
 		<UseWinUI>true</UseWinUI>
 		<UseRidGraph>true</UseRidGraph>
 		<EnableMsixTooling>true</EnableMsixTooling>
-		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 		<PackageCertificateKeyFile>AT Image Converter_TemporaryKey.pfx</PackageCertificateKeyFile>
