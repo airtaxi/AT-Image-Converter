@@ -59,8 +59,18 @@
   <data name="ResizeToFillItem.Content" xml:space="preserve"><value>채우기로 크기 변경</value></data>
   <data name="ResizeToWidthItem.Content" xml:space="preserve"><value>너비에 맞춰 비율 유지</value></data>
   <data name="ResizeToHeightItem.Content" xml:space="preserve"><value>높이에 맞춰 비율 유지</value></data>
+  <data name="ResizeToCropItem.Content" xml:space="preserve"><value>크기에 맞춰 자르기</value></data>
   <data name="PixelItem.Content" xml:space="preserve"><value>픽셀</value></data>
   <data name="PercentItem.Content" xml:space="preserve"><value>퍼센트</value></data>
+  <data name="CropHorizontalAnchorComboBox.Header" xml:space="preserve"><value>가로 자르기 기준</value></data>
+  <data name="CropVerticalAnchorComboBox.Header" xml:space="preserve"><value>세로 자르기 기준</value></data>
+  <data name="CropHorizontalLeftItem.Content" xml:space="preserve"><value>왼쪽</value></data>
+  <data name="CropHorizontalCenterItem.Content" xml:space="preserve"><value>가운데</value></data>
+  <data name="CropHorizontalRightItem.Content" xml:space="preserve"><value>오른쪽</value></data>
+  <data name="CropVerticalTopItem.Content" xml:space="preserve"><value>위</value></data>
+  <data name="CropVerticalCenterItem.Content" xml:space="preserve"><value>가운데</value></data>
+  <data name="CropVerticalBottomItem.Content" xml:space="preserve"><value>아래</value></data>
+  <data name="CropBackgroundColorTextBlock.Text" xml:space="preserve"><value>빈 영역 색상</value></data>
 
   <!-- Save Options -->
   <data name="PrefixTextBox.Header" xml:space="preserve"><value>파일명 접두사</value></data>

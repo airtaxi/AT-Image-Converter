@@ -273,6 +273,7 @@
                                         <ComboBoxItem x:Uid="ResizeToFillItem" />
                                         <ComboBoxItem x:Uid="ResizeToWidthItem" />
                                         <ComboBoxItem x:Uid="ResizeToHeightItem" />
+                                        <ComboBoxItem x:Uid="ResizeToCropItem" />
                                     </ComboBox.Items>
                                 </ComboBox>
                                 <ComboBox
@@ -303,6 +304,71 @@
                                         Header="Height"
                                         Minimum="0" />
                                 </Grid>
+                                <StackPanel
+                                    x:Name="CropSettingsPanel"
+                                    Spacing="5"
+                                    Visibility="Collapsed">
+                                    <Grid ColumnSpacing="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox
+                                            x:Name="CropHorizontalAnchorComboBox"
+                                            x:Uid="CropHorizontalAnchorComboBox"
+                                            HorizontalAlignment="Stretch"
+                                            SelectedIndex="1">
+                                            <ComboBox.Items>
+                                                <ComboBoxItem x:Uid="CropHorizontalLeftItem" />
+                                                <ComboBoxItem x:Uid="CropHorizontalCenterItem" />
+                                                <ComboBoxItem x:Uid="CropHorizontalRightItem" />
+                                            </ComboBox.Items>
+                                        </ComboBox>
+                                        <ComboBox
+                                            x:Name="CropVerticalAnchorComboBox"
+                                            x:Uid="CropVerticalAnchorComboBox"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Stretch"
+                                            SelectedIndex="1">
+                                            <ComboBox.Items>
+                                                <ComboBoxItem x:Uid="CropVerticalTopItem" />
+                                                <ComboBoxItem x:Uid="CropVerticalCenterItem" />
+                                                <ComboBoxItem x:Uid="CropVerticalBottomItem" />
+                                            </ComboBox.Items>
+                                        </ComboBox>
+                                    </Grid>
+                                    <SplitButton
+                                        x:Name="CropBackgroundColorSplitButton"
+                                        HorizontalAlignment="Stretch">
+                                        <StackPanel
+                                            HorizontalAlignment="Left"
+                                            Orientation="Horizontal"
+                                            Spacing="10">
+                                            <Border
+                                                x:Name="CropBackgroundColorPreviewBorder"
+                                                Width="20"
+                                                Height="20"
+                                                Background="Transparent"
+                                                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="4" />
+                                            <StackPanel Spacing="2">
+                                                <TextBlock x:Uid="CropBackgroundColorTextBlock" />
+                                                <TextBlock
+                                                    x:Name="CropBackgroundColorValueTextBlock"
+                                                    Style="{ThemeResource CaptionTextBlockStyle}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <SplitButton.Flyout>
+                                            <Flyout Placement="BottomEdgeAlignedLeft">
+                                                <ColorPicker
+                                                    ColorChanged="OnCropBackgroundColorPickerColorChanged"
+                                                    IsAlphaEnabled="False"
+                                                    MinWidth="320" />
+                                            </Flyout>
+                                        </SplitButton.Flyout>
+                                    </SplitButton>
+                                </StackPanel>
                             </StackPanel>
                             <StackPanel
                                 Padding="10,3.5,10,10"

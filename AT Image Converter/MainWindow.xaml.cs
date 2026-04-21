@@ -5,12 +5,14 @@ using ImageMagick;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -22,6 +24,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.System;
+using Windows.UI;
 namespace ImageConverterAT;
 
 public sealed partial class MainWindow : Window
@@ -31,17 +34,20 @@ public sealed partial class MainWindow : Window
         ".psd", ".xcf", ".raw", ".pdf", ".svg"
     };
     private static readonly Uri s_gitHubRepositoryPageAddress = new("https://github.com/airtaxi/AT-Image-Converter");
+    private static Color CreateDefaultCropBackgroundColor() => Color.FromArgb(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
     private readonly bool _isInitialized = false;
     private readonly ObservableCollection<ImageFileViewModel> _imageFileViewModels = [];
     private readonly ObservableCollection<string> _progressLog = [];
     private readonly ResourceLoader _resourceLoader = new();
     private readonly ApplicationDataContainer _localSettings = ApplicationData.Current.LocalSettings;
+    private Color _cropBackgroundColor = CreateDefaultCropBackgroundColor();
     private CancellationTokenSource _previewCancellationTokenSource;
 
     public MainWindow()
     {
         InitializeComponent();
+        ApplyCropBackgroundColor(_cropBackgroundColor);
         _isInitialized = true;
 
         // Setup window
@@ -172,10 +178,132 @@ public sealed partial class MainWindow : Window
         return (uint)Math.Ceiling(originalDimension * percent / 100d);
     }
 
+    private static bool DoesOutputFormatSupportAlpha(string outputFormat) => outputFormat is ".png" or ".jxl" or ".webp" or ".avif" or ".ico" or ".tiff";
+
+    private static Color CreateOpaqueColor(Color color) => Color.FromArgb(byte.MaxValue, color.R, color.G, color.B);
+
+    private static string ConvertColorToSettingValue(Color color) => $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}";
+
+    private static string GetDisplayedColorValue(Color color, bool includeAlpha) => includeAlpha ? $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}" : $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+
+    private static bool TryParseHexadecimalByte(string value, out byte component) => byte.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out component);
+
+    private static Color ConvertSettingValueToColor(string colorValue)
+    {
+        if (string.IsNullOrWhiteSpace(colorValue)) return CreateDefaultCropBackgroundColor();
+
+        var normalizedColorValue = colorValue.Trim().TrimStart('#');
+        if (normalizedColorValue.Length == 6 &&
+            TryParseHexadecimalByte(normalizedColorValue[0..2], out var redComponent) &&
+            TryParseHexadecimalByte(normalizedColorValue[2..4], out var greenComponent) &&
+            TryParseHexadecimalByte(normalizedColorValue[4..6], out var blueComponent))
+            return Color.FromArgb(byte.MaxValue, redComponent, greenComponent, blueComponent);
+
+        if (normalizedColorValue.Length == 8 &&
+            TryParseHexadecimalByte(normalizedColorValue[0..2], out var alphaComponent) &&
+            TryParseHexadecimalByte(normalizedColorValue[2..4], out var redComponentWithAlpha) &&
+            TryParseHexadecimalByte(normalizedColorValue[4..6], out var greenComponentWithAlpha) &&
+            TryParseHexadecimalByte(normalizedColorValue[6..8], out var blueComponentWithAlpha))
+            return Color.FromArgb(alphaComponent, redComponentWithAlpha, greenComponentWithAlpha, blueComponentWithAlpha);
+
+        return CreateDefaultCropBackgroundColor();
+    }
+
+    private static MagickColor CreateMagickColor(Color color) => new(color.R, color.G, color.B, color.A);
+
+    private static Gravity GetCropGravity(HorizontalCropAnchor horizontalCropAnchor, VerticalCropAnchor verticalCropAnchor)
+    {
+        if (verticalCropAnchor == VerticalCropAnchor.Top && horizontalCropAnchor == HorizontalCropAnchor.Left) return Gravity.Northwest;
+        if (verticalCropAnchor == VerticalCropAnchor.Top && horizontalCropAnchor == HorizontalCropAnchor.Center) return Gravity.North;
+        if (verticalCropAnchor == VerticalCropAnchor.Top) return Gravity.Northeast;
+        if (verticalCropAnchor == VerticalCropAnchor.Center && horizontalCropAnchor == HorizontalCropAnchor.Left) return Gravity.West;
+        if (verticalCropAnchor == VerticalCropAnchor.Center && horizontalCropAnchor == HorizontalCropAnchor.Center) return Gravity.Center;
+        if (verticalCropAnchor == VerticalCropAnchor.Center) return Gravity.East;
+        if (horizontalCropAnchor == HorizontalCropAnchor.Left) return Gravity.Southwest;
+        if (horizontalCropAnchor == HorizontalCropAnchor.Center) return Gravity.South;
+        return Gravity.Southeast;
+    }
+
+    private static int GetHorizontalCropOffset(uint imageWidth, uint cropWidth, HorizontalCropAnchor horizontalCropAnchor)
+    {
+        if (horizontalCropAnchor == HorizontalCropAnchor.Right) return (int)(imageWidth - cropWidth);
+        if (horizontalCropAnchor == HorizontalCropAnchor.Center) return (int)((imageWidth - cropWidth) / 2);
+        return 0;
+    }
+
+    private static int GetVerticalCropOffset(uint imageHeight, uint cropHeight, VerticalCropAnchor verticalCropAnchor)
+    {
+        if (verticalCropAnchor == VerticalCropAnchor.Bottom) return (int)(imageHeight - cropHeight);
+        if (verticalCropAnchor == VerticalCropAnchor.Center) return (int)((imageHeight - cropHeight) / 2);
+        return 0;
+    }
+
+    private static (uint Width, uint Height) GetTargetDimensions(MagickImage image, SizeUnit sizeUnit, uint width, uint height)
+    {
+        if (sizeUnit == SizeUnit.Pixel) return (width, height);
+
+        var targetWidth = ScaleDimensionByPercent((uint)image.Width, width);
+        var targetHeight = ScaleDimensionByPercent((uint)image.Height, height);
+        return (targetWidth, targetHeight);
+    }
+
+    private static void CropImageToTargetSize(MagickImage image, uint targetWidth, uint targetHeight, HorizontalCropAnchor horizontalCropAnchor, VerticalCropAnchor verticalCropAnchor, MagickColor cropBackgroundColor)
+    {
+        var cropWidth = Math.Min((uint)image.Width, targetWidth);
+        var cropHeight = Math.Min((uint)image.Height, targetHeight);
+        if (cropWidth != (uint)image.Width || cropHeight != (uint)image.Height)
+        {
+            var horizontalCropOffset = GetHorizontalCropOffset((uint)image.Width, cropWidth, horizontalCropAnchor);
+            var verticalCropOffset = GetVerticalCropOffset((uint)image.Height, cropHeight, verticalCropAnchor);
+            image.Crop(new MagickGeometry(horizontalCropOffset, verticalCropOffset, cropWidth, cropHeight));
+            image.ResetPage();
+        }
+
+        if ((uint)image.Width == targetWidth && (uint)image.Height == targetHeight) return;
+        image.Extent(targetWidth, targetHeight, GetCropGravity(horizontalCropAnchor, verticalCropAnchor), cropBackgroundColor);
+    }
+
+    private void UpdateCropBackgroundColorDisplay()
+    {
+        var outputFormatSupportsAlpha = DoesOutputFormatSupportAlpha(GetCurrentOutputFormat());
+        if (!outputFormatSupportsAlpha && _cropBackgroundColor.A < byte.MaxValue) _cropBackgroundColor = CreateOpaqueColor(_cropBackgroundColor);
+
+        CropBackgroundColorPreviewBorder.Background = new SolidColorBrush(_cropBackgroundColor);
+        CropBackgroundColorValueTextBlock.Text = GetDisplayedColorValue(_cropBackgroundColor, outputFormatSupportsAlpha);
+        UpdateCropBackgroundColorPicker();
+    }
+
+    private void ApplyCropBackgroundColor(Color cropBackgroundColor)
+    {
+        _cropBackgroundColor = cropBackgroundColor;
+        UpdateCropBackgroundColorDisplay();
+    }
+
+    private void UpdateCropBackgroundColorPicker()
+    {
+        if (CropBackgroundColorSplitButton.Flyout is not Flyout { Content: ColorPicker cropBackgroundColorPicker }) return;
+
+        var outputFormatSupportsAlpha = DoesOutputFormatSupportAlpha(GetCurrentOutputFormat());
+        cropBackgroundColorPicker.IsAlphaEnabled = outputFormatSupportsAlpha;
+        if (!cropBackgroundColorPicker.Color.Equals(_cropBackgroundColor)) cropBackgroundColorPicker.Color = _cropBackgroundColor;
+    }
+
+    private void UpdateCropSettingsControls(SizeSetting sizeSetting)
+    {
+        var isCropToSize = sizeSetting == SizeSetting.CropToSize;
+        CropSettingsPanel.Visibility = isCropToSize ? Visibility.Visible : Visibility.Collapsed;
+        NbxWidth.Minimum = isCropToSize ? 1 : 0;
+        NbxHeight.Minimum = isCropToSize ? 1 : 0;
+        if (!isCropToSize) return;
+        if (NbxWidth.Value < 1) NbxWidth.Value = 1;
+        if (NbxHeight.Value < 1) NbxHeight.Value = 1;
+    }
+
     private (uint? RasterizedWidth, uint? RasterizedHeight) GetSvgRasterizedDimensions(ImageFileViewModel imageFileViewModel, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
     {
         if (!imageFileViewModel.IsSvgFile) return (null, null);
         if (sizeSetting == SizeSetting.NoResize) return (null, null);
+        if (sizeSetting == SizeSetting.CropToSize) return (null, null);
 
         if (sizeUnit == SizeUnit.Pixel)
         {
@@ -243,6 +371,10 @@ public sealed partial class MainWindow : Window
         var height = (uint)NbxHeight.Value;
         var prefix = TbxPrefix.Text;
         var format = GetCurrentOutputFormat();
+        var outputFormatSupportsAlpha = DoesOutputFormatSupportAlpha(format);
+        var horizontalCropAnchor = (HorizontalCropAnchor)CropHorizontalAnchorComboBox.SelectedIndex;
+        var verticalCropAnchor = (VerticalCropAnchor)CropVerticalAnchorComboBox.SelectedIndex;
+        var cropBackgroundColor = CreateMagickColor(outputFormatSupportsAlpha ? _cropBackgroundColor : CreateOpaqueColor(_cropBackgroundColor));
         var parallelExecution = TsParallelExecution.IsOn;
         var preserveFileDate = TsPreserveFileDate.IsOn;
         var preserveExif = TsPreserveExif.IsOn;
@@ -309,7 +441,7 @@ public sealed partial class MainWindow : Window
                     {
                         var magickFrame = (MagickImage)frame;
                         if (rotationSetting >= 0) RotateImage(magickFrame, rotationSetting);
-                        ResizeImage(magickFrame, sizeSetting, sizeUnit, width, height);
+                        ResizeImage(magickFrame, sizeSetting, sizeUnit, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
                         if (!preserveExif) magickFrame.Strip();
                         else if (rotationSetting > 0) magickFrame.SetAttribute("exif:Orientation", "1");
                         magickFrame.Quality = quality;
@@ -351,7 +483,7 @@ public sealed partial class MainWindow : Window
             if (formatName != "ICO") await Task.Run(() =>
             {
                 if (rotationSetting >= 0) RotateImage(image, rotationSetting);
-                ResizeImage(image, sizeSetting, sizeUnit, width, height);
+                ResizeImage(image, sizeSetting, sizeUnit, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
             });
             // Convert to ico format if selected
             else
@@ -580,25 +712,21 @@ public sealed partial class MainWindow : Window
         return false;
     }
 
-    private static void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
+    private static void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height, HorizontalCropAnchor horizontalCropAnchor, VerticalCropAnchor verticalCropAnchor, MagickColor cropBackgroundColor)
     {
         if (sizeSetting == SizeSetting.NoResize) return;
 
-        if (sizeUnit == SizeUnit.Percent)
-        {
-            // Add 0.05 to round up to the nearest integer when converting from percent to pixel
-            width = (uint)((image.Width * width / 100.0) + 0.05);
-            height = (uint)((image.Height * height / 100.0) + 0.05);
-        }
+        var (targetWidth, targetHeight) = GetTargetDimensions(image, sizeUnit, width, height);
 
         if (sizeSetting == SizeSetting.ResizeToFill)
         {
-            var size = new MagickGeometry(width, height);
+            var size = new MagickGeometry(targetWidth, targetHeight);
             size.IgnoreAspectRatio = true;
             image.Resize(size);
         }
-        else if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) image.Resize(width, 0);
-        else if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) image.Resize(0, height);
+        else if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) image.Resize(targetWidth, 0);
+        else if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) image.Resize(0, targetHeight);
+        else if (sizeSetting == SizeSetting.CropToSize) CropImageToTargetSize(image, targetWidth, targetHeight, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
     }
     private async void OnAddImageAppBarButtonClicked(object sender, RoutedEventArgs e)
     {
@@ -851,6 +979,7 @@ public sealed partial class MainWindow : Window
         // Show or hide size settings depending on the selected format
         var isSizeAvailable = format != ".ico";
         SpSizeSettings.Visibility = isSizeAvailable ? Visibility.Visible : Visibility.Collapsed;
+        UpdateCropBackgroundColorDisplay();
 
         // Update prefix format preview text box
         UpdatePrefixFormatPreviewTextBox();
@@ -889,7 +1018,7 @@ public sealed partial class MainWindow : Window
         }
 
         // Enable width and height text boxes
-        if (sizeSetting == SizeSetting.ResizeToFill)
+        if (sizeSetting == SizeSetting.ResizeToFill || sizeSetting == SizeSetting.CropToSize)
         {
             NbxWidth.IsEnabled = true;
             NbxHeight.IsEnabled = true;
@@ -906,6 +1035,8 @@ public sealed partial class MainWindow : Window
             NbxWidth.IsEnabled = false;
             NbxHeight.IsEnabled = true;
         }
+
+        UpdateCropSettingsControls(sizeSetting);
     }
 
     private void OnSizeUnitComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -931,8 +1062,10 @@ public sealed partial class MainWindow : Window
             NbxWidth.Value = 0;
             NbxHeight.Value = 0;
         }
-
+        UpdateCropSettingsControls((SizeSetting)CbxSizeSettings.SelectedIndex);
     }
+
+    private void OnCropBackgroundColorPickerColorChanged(ColorPicker sender, ColorChangedEventArgs args) => ApplyCropBackgroundColor(args.NewColor);
 
     private void OnZoomInAppBarButtonClicked(object sender, RoutedEventArgs e)
     {
@@ -1012,6 +1145,9 @@ public sealed partial class MainWindow : Window
         _localSettings.Values["SizeUnitIndex"] = CbxSizeUnit.SelectedIndex;
         _localSettings.Values["Width"] = NbxWidth.Value;
         _localSettings.Values["Height"] = NbxHeight.Value;
+        _localSettings.Values["CropHorizontalAnchorIndex"] = CropHorizontalAnchorComboBox.SelectedIndex;
+        _localSettings.Values["CropVerticalAnchorIndex"] = CropVerticalAnchorComboBox.SelectedIndex;
+        _localSettings.Values["CropBackgroundColor"] = ConvertColorToSettingValue(_cropBackgroundColor);
         _localSettings.Values["Prefix"] = TbxPrefix.Text;
         _localSettings.Values["OverwriteFile"] = TsOverwriteFile.IsOn;
         _localSettings.Values["OutputFolderSetting"] = (int)GetOutputFolderSetting();
@@ -1037,6 +1173,10 @@ public sealed partial class MainWindow : Window
         CbxSizeUnit.SelectedIndex = (int)values["SizeUnitIndex"];
         NbxWidth.Value = (double)values["Width"];
         NbxHeight.Value = (double)values["Height"];
+        if (values.TryGetValue("CropHorizontalAnchorIndex", out var cropHorizontalAnchorIndex)) CropHorizontalAnchorComboBox.SelectedIndex = (int)cropHorizontalAnchorIndex;
+        if (values.TryGetValue("CropVerticalAnchorIndex", out var cropVerticalAnchorIndex)) CropVerticalAnchorComboBox.SelectedIndex = (int)cropVerticalAnchorIndex;
+        if (values.TryGetValue("CropBackgroundColor", out var cropBackgroundColorSettingValue) && cropBackgroundColorSettingValue is string cropBackgroundColorText)
+            ApplyCropBackgroundColor(ConvertSettingValueToColor(cropBackgroundColorText));
         TbxPrefix.Text = (string)values["Prefix"];
         TsOverwriteFile.IsOn = (bool)values["OverwriteFile"];
 
@@ -1055,6 +1195,7 @@ public sealed partial class MainWindow : Window
         if (values.TryGetValue("PreserveAnimation", out var preserveAnimationValue))
             TsPreserveAnimation.IsOn = (bool)preserveAnimationValue;
         TsDeleteOriginal.IsOn = (bool)values["DeleteOriginal"];
+        UpdateCropSettingsControls((SizeSetting)CbxSizeSettings.SelectedIndex);
         UpdatePrefixFormatPreviewTextBox();
     }
 
@@ -1070,6 +1211,9 @@ public sealed partial class MainWindow : Window
         CbxSizeUnit.SelectedIndex = 0;
         NbxWidth.Value = 0;
         NbxHeight.Value = 0;
+        CropHorizontalAnchorComboBox.SelectedIndex = 1;
+        CropVerticalAnchorComboBox.SelectedIndex = 1;
+        ApplyCropBackgroundColor(CreateDefaultCropBackgroundColor());
         TbxPrefix.Text = "ATIC_";
         TsOverwriteFile.IsOn = true;
         RbSameFolder.IsChecked = true;

@@ -59,8 +59,18 @@
   <data name="ResizeToFillItem.Content" xml:space="preserve"><value>フィルにリサイズ</value></data>
   <data name="ResizeToWidthItem.Content" xml:space="preserve"><value>幅に合わせてアスペクト比を維持</value></data>
   <data name="ResizeToHeightItem.Content" xml:space="preserve"><value>高さに合わせてアスペクト比を維持</value></data>
+  <data name="ResizeToCropItem.Content" xml:space="preserve"><value>サイズに合わせて切り抜き</value></data>
   <data name="PixelItem.Content" xml:space="preserve"><value>ピクセル</value></data>
   <data name="PercentItem.Content" xml:space="preserve"><value>パーセント</value></data>
+  <data name="CropHorizontalAnchorComboBox.Header" xml:space="preserve"><value>横方向の切り抜き基準</value></data>
+  <data name="CropVerticalAnchorComboBox.Header" xml:space="preserve"><value>縦方向の切り抜き基準</value></data>
+  <data name="CropHorizontalLeftItem.Content" xml:space="preserve"><value>左</value></data>
+  <data name="CropHorizontalCenterItem.Content" xml:space="preserve"><value>中央</value></data>
+  <data name="CropHorizontalRightItem.Content" xml:space="preserve"><value>右</value></data>
+  <data name="CropVerticalTopItem.Content" xml:space="preserve"><value>上</value></data>
+  <data name="CropVerticalCenterItem.Content" xml:space="preserve"><value>中央</value></data>
+  <data name="CropVerticalBottomItem.Content" xml:space="preserve"><value>下</value></data>
+  <data name="CropBackgroundColorTextBlock.Text" xml:space="preserve"><value>余白の色</value></data>
 
   <!-- Save Options -->
   <data name="PrefixTextBox.Header" xml:space="preserve"><value>ファイル名接頭辞</value></data>

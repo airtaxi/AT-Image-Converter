@@ -59,8 +59,18 @@
   <data name="ResizeToFillItem.Content" xml:space="preserve"><value>Resize to fill</value></data>
   <data name="ResizeToWidthItem.Content" xml:space="preserve"><value>Resize to width and keep aspect ratio</value></data>
   <data name="ResizeToHeightItem.Content" xml:space="preserve"><value>Resize to height and keep aspect ratio</value></data>
+  <data name="ResizeToCropItem.Content" xml:space="preserve"><value>Crop to size</value></data>
   <data name="PixelItem.Content" xml:space="preserve"><value>Pixel</value></data>
   <data name="PercentItem.Content" xml:space="preserve"><value>Percent</value></data>
+  <data name="CropHorizontalAnchorComboBox.Header" xml:space="preserve"><value>Horizontal crop anchor</value></data>
+  <data name="CropVerticalAnchorComboBox.Header" xml:space="preserve"><value>Vertical crop anchor</value></data>
+  <data name="CropHorizontalLeftItem.Content" xml:space="preserve"><value>Left</value></data>
+  <data name="CropHorizontalCenterItem.Content" xml:space="preserve"><value>Center</value></data>
+  <data name="CropHorizontalRightItem.Content" xml:space="preserve"><value>Right</value></data>
+  <data name="CropVerticalTopItem.Content" xml:space="preserve"><value>Top</value></data>
+  <data name="CropVerticalCenterItem.Content" xml:space="preserve"><value>Center</value></data>
+  <data name="CropVerticalBottomItem.Content" xml:space="preserve"><value>Bottom</value></data>
+  <data name="CropBackgroundColorTextBlock.Text" xml:space="preserve"><value>Fill color</value></data>
 
   <!-- Save Options -->
   <data name="PrefixTextBox.Header" xml:space="preserve"><value>File Name Prefix</value></data>

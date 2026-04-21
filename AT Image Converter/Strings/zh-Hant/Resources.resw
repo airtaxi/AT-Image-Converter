@@ -59,8 +59,18 @@
   <data name="ResizeToFillItem.Content" xml:space="preserve"><value>調整為填滿</value></data>
   <data name="ResizeToWidthItem.Content" xml:space="preserve"><value>按寬度調整並保持長寬比</value></data>
   <data name="ResizeToHeightItem.Content" xml:space="preserve"><value>按高度調整並保持長寬比</value></data>
+  <data name="ResizeToCropItem.Content" xml:space="preserve"><value>按尺寸裁切</value></data>
   <data name="PixelItem.Content" xml:space="preserve"><value>像素</value></data>
   <data name="PercentItem.Content" xml:space="preserve"><value>百分比</value></data>
+  <data name="CropHorizontalAnchorComboBox.Header" xml:space="preserve"><value>橫向裁切基準</value></data>
+  <data name="CropVerticalAnchorComboBox.Header" xml:space="preserve"><value>縱向裁切基準</value></data>
+  <data name="CropHorizontalLeftItem.Content" xml:space="preserve"><value>左側</value></data>
+  <data name="CropHorizontalCenterItem.Content" xml:space="preserve"><value>置中</value></data>
+  <data name="CropHorizontalRightItem.Content" xml:space="preserve"><value>右側</value></data>
+  <data name="CropVerticalTopItem.Content" xml:space="preserve"><value>上方</value></data>
+  <data name="CropVerticalCenterItem.Content" xml:space="preserve"><value>置中</value></data>
+  <data name="CropVerticalBottomItem.Content" xml:space="preserve"><value>下方</value></data>
+  <data name="CropBackgroundColorTextBlock.Text" xml:space="preserve"><value>空白區域顏色</value></data>
 
   <!-- Save Options -->
   <data name="PrefixTextBox.Header" xml:space="preserve"><value>檔名前綴</value></data>
