@@ -6,4 +6,5 @@ public enum SizeSetting
     ResizeToFill,
     ResizeToWidthAndKeepAspectRatio,
     ResizeToHeightAndKeepAspectRatio,
+    CropToSize
 }
