@@ -16,6 +16,7 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="32" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -35,8 +36,54 @@
                     Text="AT Image Converter" />
             </StackPanel>
 
+            <MenuBar Grid.Row="1" Background="Transparent">
+                <MenuBarItem x:Uid="FileMenu" AccessKey="F">
+                    <MenuFlyoutItem
+                        x:Uid="FileAddMenuFlyoutItem"
+                        AccessKey="O"
+                        Click="OnFileAddMenuFlyoutItemClicked" />
+                    <MenuFlyoutItem
+                        x:Name="FileStartConversionMenuFlyoutItem"
+                        x:Uid="FileStartConversionMenuFlyoutItem"
+                        AccessKey="C"
+                        Click="OnFileStartConversionMenuFlyoutItemClicked"
+                        IsEnabled="False" />
+                    <MenuFlyoutSeparator />
+                    <MenuFlyoutItem
+                        x:Uid="FileCloseMenuFlyoutItem"
+                        AccessKey="X"
+                        Click="OnFileCloseMenuFlyoutItemClicked" />
+                </MenuBarItem>
+                <MenuBarItem x:Uid="LanguageMenu" AccessKey="L">
+                    <RadioMenuFlyoutItem
+                        x:Name="EnglishLanguageMenuFlyoutItem"
+                        x:Uid="EnglishLanguageMenuFlyoutItem"
+                        Click="OnLanguageRadioMenuFlyoutItemClicked"
+                        GroupName="ApplicationLanguage"
+                        Tag="en-US" />
+                    <RadioMenuFlyoutItem
+                        x:Name="KoreanLanguageMenuFlyoutItem"
+                        x:Uid="KoreanLanguageMenuFlyoutItem"
+                        Click="OnLanguageRadioMenuFlyoutItemClicked"
+                        GroupName="ApplicationLanguage"
+                        Tag="ko-KR" />
+                    <RadioMenuFlyoutItem
+                        x:Name="JapaneseLanguageMenuFlyoutItem"
+                        x:Uid="JapaneseLanguageMenuFlyoutItem"
+                        Click="OnLanguageRadioMenuFlyoutItemClicked"
+                        GroupName="ApplicationLanguage"
+                        Tag="ja-JP" />
+                    <RadioMenuFlyoutItem
+                        x:Name="SimplifiedChineseLanguageMenuFlyoutItem"
+                        x:Uid="SimplifiedChineseLanguageMenuFlyoutItem"
+                        Click="OnLanguageRadioMenuFlyoutItemClicked"
+                        GroupName="ApplicationLanguage"
+                        Tag="zh-CN" />
+                </MenuBarItem>
+            </MenuBar>
+
             <Grid
-                Grid.Row="1"
+                Grid.Row="2"
                 Background="{ThemeResource LayerOnMicaBaseAltFillColorSecondaryBrush}"
                 BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                 BorderThickness="0,1,0,0">

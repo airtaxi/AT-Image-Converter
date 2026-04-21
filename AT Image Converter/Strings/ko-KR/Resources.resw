@@ -16,6 +16,17 @@
   <data name="SizeOptionsTitle.Text" xml:space="preserve"><value>크기 옵션</value></data>
   <data name="SaveOptionsTitle.Text" xml:space="preserve"><value>저장 옵션</value></data>
 
+  <!-- Menu Bar -->
+  <data name="FileMenu.Title" xml:space="preserve"><value>파일</value></data>
+  <data name="FileAddMenuFlyoutItem.Text" xml:space="preserve"><value>파일 추가</value></data>
+  <data name="FileStartConversionMenuFlyoutItem.Text" xml:space="preserve"><value>변환 시작</value></data>
+  <data name="FileCloseMenuFlyoutItem.Text" xml:space="preserve"><value>닫기</value></data>
+  <data name="LanguageMenu.Title" xml:space="preserve"><value>언어</value></data>
+  <data name="EnglishLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>English</value></data>
+  <data name="KoreanLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>한국어</value></data>
+  <data name="JapaneseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>日本語</value></data>
+  <data name="SimplifiedChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>简体中文</value></data>
+
   <!-- Image List Buttons -->
   <data name="AddButton.Label" xml:space="preserve"><value>추가</value></data>
   <data name="DeleteButton.Label" xml:space="preserve"><value>삭제</value></data>
@@ -108,5 +119,7 @@
   <data name="ConversionFileFailed" xml:space="preserve"><value>{0} 실패: {1}</value></data>
   <data name="PreviewLoading" xml:space="preserve"><value>미리보기 불러오는 중...</value></data>
   <data name="NoPreviewText.Text" xml:space="preserve"><value>미리보기 없음</value></data>
+  <data name="LanguageChangeDialogTitle" xml:space="preserve"><value>언어 변경</value></data>
+  <data name="LanguageChangeDialogContent" xml:space="preserve"><value>언어 변경은 앱을 다시 시작한 뒤 적용됩니다.</value></data>
 
 </root>

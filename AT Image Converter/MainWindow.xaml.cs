@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Windows.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -70,6 +71,7 @@ public sealed partial class MainWindow : Window
         CbxSizeUnit.SelectedIndex = 0;
 
         LoadSettings();
+        UpdateLanguageMenuFlyoutItems();
         UpdateImageListDependentControls();
     }
 
@@ -185,7 +187,7 @@ public sealed partial class MainWindow : Window
         // TODO: Convert images
         FrPreview.IsEnabled = false;
         SvSettings.IsEnabled = false;
-        BtConvert.IsEnabled = false;
+        SetConversionActionEnabled(false);
         GdProgress.Visibility = Visibility.Visible;
         AddProgressLog(_resourceLoader.GetString("ConversionStarted"));
 
@@ -423,7 +425,7 @@ public sealed partial class MainWindow : Window
 
         FrPreview.IsEnabled = true;
         SvSettings.IsEnabled = true;
-        BtConvert.IsEnabled = true;
+        UpdateImageListDependentControls();
         GdProgress.Visibility = Visibility.Collapsed;
         _progressLog.Clear();
     }
@@ -438,10 +440,41 @@ public sealed partial class MainWindow : Window
     {
         var hasImages = _imageFileViewModels.Count > 0;
         BtDropPlaceholder.Visibility = hasImages ? Visibility.Collapsed : Visibility.Visible;
-        BtConvert.IsEnabled = hasImages;
+        SetConversionActionEnabled(hasImages);
         BtConvert.Content = hasImages
             ? _resourceLoader.GetString("ConvertButtonContent")
             : _resourceLoader.GetString("ConvertButtonNoImagesContent");
+    }
+
+    private void SetConversionActionEnabled(bool isEnabled)
+    {
+        BtConvert.IsEnabled = isEnabled;
+        FileStartConversionMenuFlyoutItem.IsEnabled = isEnabled;
+    }
+
+    private void UpdateLanguageMenuFlyoutItems()
+    {
+        var currentLanguageTag = GetCurrentLanguageTag();
+        EnglishLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "en-US");
+        KoreanLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "ko-KR");
+        JapaneseLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "ja-JP");
+        SimplifiedChineseLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "zh-CN");
+    }
+
+    private static string GetCurrentLanguageTag()
+    {
+        var primaryLanguageOverride = ApplicationLanguages.PrimaryLanguageOverride;
+        if (!string.IsNullOrWhiteSpace(primaryLanguageOverride)) return primaryLanguageOverride;
+        return ApplicationLanguages.Languages.FirstOrDefault() ?? "en-US";
+    }
+
+    private static bool LanguageTagsMatch(string currentLanguageTag, string supportedLanguageTag)
+    {
+        if (string.Equals(currentLanguageTag, supportedLanguageTag, StringComparison.OrdinalIgnoreCase)) return true;
+
+        var currentLanguagePrefix = currentLanguageTag.Split('-')[0];
+        var supportedLanguagePrefix = supportedLanguageTag.Split('-')[0];
+        return string.Equals(currentLanguagePrefix, supportedLanguagePrefix, StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsGhostscriptInstalled()
@@ -521,6 +554,27 @@ public sealed partial class MainWindow : Window
         e.Handled = true;
 
         OnAddImageAppBarButtonClicked(sender, null);
+    }
+
+    private void OnFileAddMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => OnAddImageAppBarButtonClicked(sender, null);
+
+    private async void OnFileStartConversionMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => await ConvertImagesAsync();
+
+    private void OnFileCloseMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => Close();
+
+    private async void OnLanguageRadioMenuFlyoutItemClicked(object sender, RoutedEventArgs e)
+    {
+        if (sender is not RadioMenuFlyoutItem selectedLanguageMenuFlyoutItem) return;
+        if (selectedLanguageMenuFlyoutItem.Tag is not string selectedLanguageTag) return;
+        if (LanguageTagsMatch(GetCurrentLanguageTag(), selectedLanguageTag)) return;
+
+        ApplicationLanguages.PrimaryLanguageOverride = selectedLanguageTag;
+        UpdateLanguageMenuFlyoutItems();
+
+        var resourceLoader = new ResourceLoader();
+        await FrMain.ShowMessageDialogAsync(
+            resourceLoader.GetString("LanguageChangeDialogContent"),
+            resourceLoader.GetString("LanguageChangeDialogTitle"));
     }
 
     private void OnDropPlaceholderButtonClicked(object sender, RoutedEventArgs e) => OnAddImageAppBarButtonClicked(sender, null);

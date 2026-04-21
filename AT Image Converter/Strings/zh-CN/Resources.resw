@@ -16,6 +16,17 @@
   <data name="SizeOptionsTitle.Text" xml:space="preserve"><value>尺寸选项</value></data>
   <data name="SaveOptionsTitle.Text" xml:space="preserve"><value>保存选项</value></data>
 
+  <!-- Menu Bar -->
+  <data name="FileMenu.Title" xml:space="preserve"><value>文件</value></data>
+  <data name="FileAddMenuFlyoutItem.Text" xml:space="preserve"><value>添加文件</value></data>
+  <data name="FileStartConversionMenuFlyoutItem.Text" xml:space="preserve"><value>开始转换</value></data>
+  <data name="FileCloseMenuFlyoutItem.Text" xml:space="preserve"><value>关闭</value></data>
+  <data name="LanguageMenu.Title" xml:space="preserve"><value>语言</value></data>
+  <data name="EnglishLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>English</value></data>
+  <data name="KoreanLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>한국어</value></data>
+  <data name="JapaneseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>日本語</value></data>
+  <data name="SimplifiedChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>简体中文</value></data>
+
   <!-- Image List Buttons -->
   <data name="AddButton.Label" xml:space="preserve"><value>添加</value></data>
   <data name="DeleteButton.Label" xml:space="preserve"><value>删除</value></data>
@@ -108,5 +119,7 @@
   <data name="ConversionFileFailed" xml:space="preserve"><value>{0} 失败: {1}</value></data>
   <data name="PreviewLoading" xml:space="preserve"><value>正在加载预览...</value></data>
   <data name="NoPreviewText.Text" xml:space="preserve"><value>无预览</value></data>
+  <data name="LanguageChangeDialogTitle" xml:space="preserve"><value>语言更改</value></data>
+  <data name="LanguageChangeDialogContent" xml:space="preserve"><value>重新启动应用后，语言更改才会生效。</value></data>
 
 </root>
