@@ -4,6 +4,8 @@
 using namespace Microsoft::WRL;
 
 static constexpr wchar_t exe_filename[] = L"AT Image Converter.exe";
+static constexpr wchar_t simplified_chinese_menu_title[] = L"\x4F7F\x7528AT Image Converter\x8F6C\x6362";
+static constexpr wchar_t traditional_chinese_menu_title[] = L"\x4F7F\x7528AT Image Converter\x8F49\x63DB";
 
 // {AB4DC84E-A904-401F-9A3D-3F55D3770D25}
 static constexpr CLSID CLSID_ATICContextMenu =
@@ -82,6 +84,62 @@ std::wstring QuoteForCommandLineArgument(const std::wstring& argument)
     return quoted;
 }
 
+bool StartsWithCaseInsensitive(const std::wstring& text, const wchar_t* prefix)
+{
+    return StrCmpNIW(text.c_str(), prefix, static_cast<int>(wcslen(prefix))) == 0;
+}
+
+bool ContainsCaseInsensitive(const std::wstring& text, const wchar_t* value)
+{
+    return StrStrIW(text.c_str(), value) != nullptr;
+}
+
+std::wstring GetThreadPreferredLanguageNameBuffer()
+{
+    ULONG preferredLanguageCount = 0;
+    ULONG preferredLanguageNameBufferLength = 0;
+    if (!GetThreadPreferredUILanguages(MUI_LANGUAGE_NAME, &preferredLanguageCount, nullptr, &preferredLanguageNameBufferLength)
+        && GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+        return {};
+
+    std::wstring preferredLanguageNameBuffer(preferredLanguageNameBufferLength, L'\0');
+    if (!GetThreadPreferredUILanguages(MUI_LANGUAGE_NAME, &preferredLanguageCount, preferredLanguageNameBuffer.data(), &preferredLanguageNameBufferLength))
+        return {};
+    return preferredLanguageNameBuffer;
+}
+
+bool IsTraditionalChineseLanguageTag(const std::wstring& languageTag)
+{
+    if (!StartsWithCaseInsensitive(languageTag, L"zh")) return false;
+    return ContainsCaseInsensitive(languageTag, L"zh-Hant")
+        || ContainsCaseInsensitive(languageTag, L"zh-TW")
+        || ContainsCaseInsensitive(languageTag, L"zh-HK")
+        || ContainsCaseInsensitive(languageTag, L"zh-MO");
+}
+
+bool IsSimplifiedChineseLanguageTag(const std::wstring& languageTag)
+{
+    if (!StartsWithCaseInsensitive(languageTag, L"zh")) return false;
+    return ContainsCaseInsensitive(languageTag, L"zh-Hans")
+        || ContainsCaseInsensitive(languageTag, L"zh-CN")
+        || ContainsCaseInsensitive(languageTag, L"zh-SG");
+}
+
+const wchar_t* GetChineseMenuTitleForPreferredLanguage()
+{
+    auto preferredLanguageNameBuffer = GetThreadPreferredLanguageNameBuffer();
+    if (preferredLanguageNameBuffer.empty()) return nullptr;
+
+    for (const wchar_t* preferredLanguageName = preferredLanguageNameBuffer.c_str(); *preferredLanguageName != L'\0'; preferredLanguageName += wcslen(preferredLanguageName) + 1)
+    {
+        std::wstring languageTag(preferredLanguageName);
+        if (IsTraditionalChineseLanguageTag(languageTag)) return traditional_chinese_menu_title;
+        if (IsSimplifiedChineseLanguageTag(languageTag)) return simplified_chinese_menu_title;
+    }
+
+    return nullptr;
+}
+
 class __declspec(uuid("AB4DC84E-A904-401F-9A3D-3F55D3770D25"))
 ATICContextMenuCommand : public RuntimeClass<
     RuntimeClassFlags<ClassicCom>,
@@ -92,6 +150,9 @@ public:
     IFACEMETHODIMP GetTitle(_In_opt_ IShellItemArray* /*items*/, _Outptr_result_nullonfailure_ PWSTR* name)
     {
         *name = nullptr;
+        if (const auto chineseMenuTitle = GetChineseMenuTitleForPreferredLanguage(); chineseMenuTitle != nullptr)
+            return SHStrDupW(chineseMenuTitle, name);
+
         wchar_t buffer[256] = {};
         if (LoadStringW(wil::GetModuleInstanceHandle(), IDS_MENU_TITLE, buffer, ARRAYSIZE(buffer)) > 0)
             return SHStrDupW(buffer, name);
