@@ -1,4 +1,5 @@
 using ImageConverterAT.Enums;
+using ImageConverterAT.Services;
 using ImageConverterAT.ViewModels;
 using ImageMagick;
 using Microsoft.UI.Xaml;
@@ -12,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +21,7 @@ using Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using Windows.System;
 namespace ImageConverterAT;
 
 public sealed partial class MainWindow : Window
@@ -27,6 +30,7 @@ public sealed partial class MainWindow : Window
     {
         ".psd", ".xcf", ".raw", ".pdf", ".svg"
     };
+    private static readonly Uri s_gitHubRepositoryPageAddress = new("https://github.com/airtaxi/AT-Image-Converter");
 
     private readonly bool _isInitialized = false;
     private readonly ObservableCollection<ImageFileViewModel> _imageFileViewModels = [];
@@ -625,6 +629,10 @@ public sealed partial class MainWindow : Window
 
     private void OnFileCloseMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => Close();
 
+    private async void OnCheckForUpdatesMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => await CheckForUpdatesAsync();
+
+    private async void OnOpenGitHubRepositoryMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => await OpenGitHubRepositoryPageAsync();
+
     private async void OnLanguageRadioMenuFlyoutItemClicked(object sender, RoutedEventArgs e)
     {
         if (sender is not RadioMenuFlyoutItem selectedLanguageMenuFlyoutItem) return;
@@ -638,6 +646,67 @@ public sealed partial class MainWindow : Window
         await FrMain.ShowMessageDialogAsync(
             resourceLoader.GetString("LanguageChangeDialogContent"),
             resourceLoader.GetString("LanguageChangeDialogTitle"));
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        ShowLoading(_resourceLoader.GetString("UpdateCheckLoading"));
+        try
+        {
+            var availableUpdateCount = await StoreUpdateService.GetAvailableUpdateCountAsync();
+            HideLoading();
+            if (availableUpdateCount <= 0)
+            {
+                await FrMain.ShowMessageDialogAsync(
+                    _resourceLoader.GetString("NoUpdatesDialogContent"),
+                    _resourceLoader.GetString("NoUpdatesDialogTitle"));
+                return;
+            }
+
+            var dialogResult = await FrMain.ShowMessageDialogAsync(
+                string.Format(_resourceLoader.GetString("UpdateAvailableDialogContent"), availableUpdateCount),
+                _resourceLoader.GetString("UpdateAvailableDialogTitle"),
+                showCancel: true);
+            if (dialogResult != ContentDialogResult.Primary) return;
+
+            var openedStoreProductPage = await StoreUpdateService.OpenStoreProductPageAsync();
+            if (openedStoreProductPage) return;
+
+            await FrMain.ShowMessageDialogAsync(
+                _resourceLoader.GetString("OpenStoreFailedDialogContent"),
+                _resourceLoader.GetString("OpenStoreFailedDialogTitle"));
+        }
+        catch (COMException)
+        {
+            HideLoading();
+            await FrMain.ShowMessageDialogAsync(
+                _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
+                _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
+        }
+        catch (InvalidOperationException)
+        {
+            HideLoading();
+            await FrMain.ShowMessageDialogAsync(
+                _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
+                _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            HideLoading();
+            await FrMain.ShowMessageDialogAsync(
+                _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
+                _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
+        }
+    }
+
+    private async Task OpenGitHubRepositoryPageAsync()
+    {
+        var openedGitHubRepositoryPage = await Launcher.LaunchUriAsync(s_gitHubRepositoryPageAddress);
+        if (openedGitHubRepositoryPage) return;
+
+        await FrMain.ShowMessageDialogAsync(
+            _resourceLoader.GetString("OpenGitHubFailedDialogContent"),
+            _resourceLoader.GetString("OpenGitHubFailedDialogTitle"));
     }
 
     private void OnDropPlaceholderButtonClicked(object sender, RoutedEventArgs e) => OnAddImageAppBarButtonClicked(sender, null);

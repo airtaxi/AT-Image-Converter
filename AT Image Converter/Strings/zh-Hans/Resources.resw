@@ -27,6 +27,9 @@
   <data name="JapaneseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>日本語</value></data>
   <data name="SimplifiedChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>简体中文</value></data>
   <data name="TraditionalChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>繁體中文</value></data>
+  <data name="HelpMenu.Title" xml:space="preserve"><value>帮助</value></data>
+  <data name="CheckForUpdatesMenuFlyoutItem.Text" xml:space="preserve"><value>检查更新</value></data>
+  <data name="OpenGitHubRepositoryMenuFlyoutItem.Text" xml:space="preserve"><value>作者 GitHub</value></data>
 
   <!-- Image List Buttons -->
   <data name="AddButton.Label" xml:space="preserve"><value>添加</value></data>
@@ -119,8 +122,19 @@
 下载: https://www.ghostscript.com/releases/gsdnld.html</value></data>
   <data name="ConversionFileFailed" xml:space="preserve"><value>{0} 失败: {1}</value></data>
   <data name="PreviewLoading" xml:space="preserve"><value>正在加载预览...</value></data>
+  <data name="UpdateCheckLoading" xml:space="preserve"><value>正在检查更新...</value></data>
   <data name="NoPreviewText.Text" xml:space="preserve"><value>无预览</value></data>
   <data name="LanguageChangeDialogTitle" xml:space="preserve"><value>语言更改</value></data>
   <data name="LanguageChangeDialogContent" xml:space="preserve"><value>重新启动应用后，语言更改才会生效。</value></data>
+  <data name="NoUpdatesDialogTitle" xml:space="preserve"><value>检查更新</value></data>
+  <data name="NoUpdatesDialogContent" xml:space="preserve"><value>当前已是最新版本。</value></data>
+  <data name="UpdateAvailableDialogTitle" xml:space="preserve"><value>有可用更新</value></data>
+  <data name="UpdateAvailableDialogContent" xml:space="preserve"><value>有 {0} 个可用更新。点击确定后将打开 Microsoft Store。</value></data>
+  <data name="OpenStoreFailedDialogTitle" xml:space="preserve"><value>无法打开商店</value></data>
+  <data name="OpenStoreFailedDialogContent" xml:space="preserve"><value>无法打开 Microsoft Store 页面。</value></data>
+  <data name="OpenGitHubFailedDialogTitle" xml:space="preserve"><value>无法打开 GitHub</value></data>
+  <data name="OpenGitHubFailedDialogContent" xml:space="preserve"><value>无法打开 GitHub 页面。</value></data>
+  <data name="UpdateCheckFailedDialogTitle" xml:space="preserve"><value>检查更新失败</value></data>
+  <data name="UpdateCheckFailedDialogContent" xml:space="preserve"><value>无法检查更新，请稍后重试。</value></data>
 
 </root>

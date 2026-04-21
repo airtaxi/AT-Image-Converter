@@ -27,6 +27,9 @@
   <data name="JapaneseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>日本語</value></data>
   <data name="SimplifiedChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>简体中文</value></data>
   <data name="TraditionalChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>繁體中文</value></data>
+  <data name="HelpMenu.Title" xml:space="preserve"><value>도움말</value></data>
+  <data name="CheckForUpdatesMenuFlyoutItem.Text" xml:space="preserve"><value>업데이트 확인</value></data>
+  <data name="OpenGitHubRepositoryMenuFlyoutItem.Text" xml:space="preserve"><value>제작자 GitHub</value></data>
 
   <!-- Image List Buttons -->
   <data name="AddButton.Label" xml:space="preserve"><value>추가</value></data>
@@ -119,8 +122,19 @@
 다운로드: https://www.ghostscript.com/releases/gsdnld.html</value></data>
   <data name="ConversionFileFailed" xml:space="preserve"><value>{0} 실패: {1}</value></data>
   <data name="PreviewLoading" xml:space="preserve"><value>미리보기 불러오는 중...</value></data>
+  <data name="UpdateCheckLoading" xml:space="preserve"><value>업데이트 확인 중...</value></data>
   <data name="NoPreviewText.Text" xml:space="preserve"><value>미리보기 없음</value></data>
   <data name="LanguageChangeDialogTitle" xml:space="preserve"><value>언어 변경</value></data>
   <data name="LanguageChangeDialogContent" xml:space="preserve"><value>언어 변경은 앱을 다시 시작한 뒤 적용됩니다.</value></data>
+  <data name="NoUpdatesDialogTitle" xml:space="preserve"><value>업데이트 확인</value></data>
+  <data name="NoUpdatesDialogContent" xml:space="preserve"><value>현재 최신 버전을 사용 중입니다.</value></data>
+  <data name="UpdateAvailableDialogTitle" xml:space="preserve"><value>업데이트 사용 가능</value></data>
+  <data name="UpdateAvailableDialogContent" xml:space="preserve"><value>사용 가능한 업데이트가 {0}개 있습니다. 확인을 누르면 Microsoft Store를 엽니다.</value></data>
+  <data name="OpenStoreFailedDialogTitle" xml:space="preserve"><value>스토어 열기 실패</value></data>
+  <data name="OpenStoreFailedDialogContent" xml:space="preserve"><value>Microsoft Store 페이지를 열지 못했습니다.</value></data>
+  <data name="OpenGitHubFailedDialogTitle" xml:space="preserve"><value>GitHub 열기 실패</value></data>
+  <data name="OpenGitHubFailedDialogContent" xml:space="preserve"><value>GitHub 페이지를 열지 못했습니다.</value></data>
+  <data name="UpdateCheckFailedDialogTitle" xml:space="preserve"><value>업데이트 확인 실패</value></data>
+  <data name="UpdateCheckFailedDialogContent" xml:space="preserve"><value>업데이트를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.</value></data>
 
 </root>

@@ -85,6 +85,17 @@
                         GroupName="ApplicationLanguage"
                         Tag="zh-Hant" />
                 </MenuBarItem>
+                <MenuBarItem x:Uid="HelpMenu" AccessKey="H">
+                    <MenuFlyoutItem
+                        x:Uid="CheckForUpdatesMenuFlyoutItem"
+                        AccessKey="U"
+                        Click="OnCheckForUpdatesMenuFlyoutItemClicked" />
+                    <MenuFlyoutSeparator />
+                    <MenuFlyoutItem
+                        x:Uid="OpenGitHubRepositoryMenuFlyoutItem"
+                        AccessKey="G"
+                        Click="OnOpenGitHubRepositoryMenuFlyoutItemClicked" />
+                </MenuBarItem>
             </MenuBar>
 
             <Grid
@@ -555,7 +566,7 @@
 
             <Grid
                 x:Name="GdLoading"
-                Grid.RowSpan="2"
+                Grid.RowSpan="3"
                 Visibility="Collapsed">
                 <Grid.Background>
                     <AcrylicBrush Opacity="0.5" TintColor="{ThemeResource LayerOnMicaBaseAltFillColorDefault}" />

@@ -27,6 +27,9 @@
   <data name="JapaneseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>日本語</value></data>
   <data name="SimplifiedChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>简体中文</value></data>
   <data name="TraditionalChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>繁體中文</value></data>
+  <data name="HelpMenu.Title" xml:space="preserve"><value>Help</value></data>
+  <data name="CheckForUpdatesMenuFlyoutItem.Text" xml:space="preserve"><value>Check for Updates</value></data>
+  <data name="OpenGitHubRepositoryMenuFlyoutItem.Text" xml:space="preserve"><value>Creator GitHub</value></data>
 
   <!-- Image List Buttons -->
   <data name="AddButton.Label" xml:space="preserve"><value>Add</value></data>
@@ -119,8 +122,19 @@
 Download: https://www.ghostscript.com/releases/gsdnld.html</value></data>
   <data name="ConversionFileFailed" xml:space="preserve"><value>{0} failed: {1}</value></data>
   <data name="PreviewLoading" xml:space="preserve"><value>Loading preview...</value></data>
+  <data name="UpdateCheckLoading" xml:space="preserve"><value>Checking for updates...</value></data>
   <data name="NoPreviewText.Text" xml:space="preserve"><value>No Preview</value></data>
   <data name="LanguageChangeDialogTitle" xml:space="preserve"><value>Language Change</value></data>
   <data name="LanguageChangeDialogContent" xml:space="preserve"><value>Restart the app to apply the language change.</value></data>
+  <data name="NoUpdatesDialogTitle" xml:space="preserve"><value>Check for Updates</value></data>
+  <data name="NoUpdatesDialogContent" xml:space="preserve"><value>You are already using the latest version.</value></data>
+  <data name="UpdateAvailableDialogTitle" xml:space="preserve"><value>Update Available</value></data>
+  <data name="UpdateAvailableDialogContent" xml:space="preserve"><value>{0} update(s) are available. Press OK to open Microsoft Store.</value></data>
+  <data name="OpenStoreFailedDialogTitle" xml:space="preserve"><value>Failed to Open Store</value></data>
+  <data name="OpenStoreFailedDialogContent" xml:space="preserve"><value>Could not open the Microsoft Store page.</value></data>
+  <data name="OpenGitHubFailedDialogTitle" xml:space="preserve"><value>Failed to Open GitHub</value></data>
+  <data name="OpenGitHubFailedDialogContent" xml:space="preserve"><value>Could not open the GitHub page.</value></data>
+  <data name="UpdateCheckFailedDialogTitle" xml:space="preserve"><value>Update Check Failed</value></data>
+  <data name="UpdateCheckFailedDialogContent" xml:space="preserve"><value>Could not check for updates. Please try again later.</value></data>
 
 </root>
