@@ -160,6 +160,45 @@ public sealed partial class MainWindow : Window
         return fileName;
     }
 
+    private static uint? GetPositiveDimensionOrNull(uint dimension) => dimension > 0 ? dimension : null;
+
+    private static uint ScaleDimensionByPercent(uint originalDimension, uint percent)
+    {
+        if (originalDimension == 0 || percent == 0) return 0;
+        return (uint)Math.Ceiling(originalDimension * percent / 100d);
+    }
+
+    private (uint? RasterizedWidth, uint? RasterizedHeight) GetSvgRasterizedDimensions(ImageFileViewModel imageFileViewModel, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
+    {
+        if (!imageFileViewModel.IsSvgFile) return (null, null);
+        if (sizeSetting == SizeSetting.NoResize) return (null, null);
+
+        if (sizeUnit == SizeUnit.Pixel)
+        {
+            if (sizeSetting == SizeSetting.ResizeToFill) return (GetPositiveDimensionOrNull(width), GetPositiveDimensionOrNull(height));
+            if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) return (GetPositiveDimensionOrNull(width), null);
+            if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) return (null, GetPositiveDimensionOrNull(height));
+            return (null, null);
+        }
+
+        using var originalSvgImage = imageFileViewModel.CreateMagickImage();
+        var originalWidth = (uint)originalSvgImage.Width;
+        var originalHeight = (uint)originalSvgImage.Height;
+        if (sizeSetting == SizeSetting.ResizeToFill)
+            return (GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalWidth, width)), GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalHeight, height)));
+        if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio)
+            return (GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalWidth, width)), null);
+        if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio)
+            return (null, GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalHeight, height)));
+        return (null, null);
+    }
+
+    private MagickImage CreateConversionMagickImage(ImageFileViewModel imageFileViewModel, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
+    {
+        var (rasterizedWidth, rasterizedHeight) = GetSvgRasterizedDimensions(imageFileViewModel, sizeSetting, sizeUnit, width, height);
+        return imageFileViewModel.CreateMagickImage(rasterizedWidth, rasterizedHeight);
+    }
+
     private string GetCurrentOutputFormat() => "." + (CbxFormat.SelectedItem as string).ToLower();
 
     private void ResetImagePreviewZoomFactor(double? width = null, double? height = null)
@@ -303,7 +342,7 @@ public sealed partial class MainWindow : Window
                 }
             }
 
-            using var image = viewModel.CreateMagickImage();
+            using var image = CreateConversionMagickImage(viewModel, sizeSetting, sizeUnit, width, height);
 
             if (formatName != "ICO") await Task.Run(() =>
             {
@@ -321,12 +360,7 @@ public sealed partial class MainWindow : Window
                 // Generate icon images with different sizes
                 foreach (var size in sizes)
                 {
-                    var iconImage = new MagickImage();
-
-                    if (Path.GetExtension(viewModel.FilePath).Equals(".svg", StringComparison.OrdinalIgnoreCase))
-                        iconImage.BackgroundColor = MagickColors.Transparent;
-
-                    iconImage.Read(viewModel.FilePath);
+                    var iconImage = viewModel.CreateMagickImage(size, size);
                     if (rotationSetting >= 0) RotateImage(iconImage, rotationSetting);
                     iconImage.Resize(size, size);
                     collection.Add(iconImage);
