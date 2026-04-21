@@ -139,7 +139,8 @@ public sealed partial class MainWindow : Window
 
     private void UpdatePrefixFormatPreviewTextBox()
     {
-        var currentFileName = _selectedImageFileViewModel?.FileName;
+        var selectedImageFileViewModel = LvImages.SelectedItem as ImageFileViewModel ?? _selectedImageFileViewModel;
+        var currentFileName = selectedImageFileViewModel?.FileName;
 
         if (currentFileName == null)
         {
@@ -149,7 +150,7 @@ public sealed partial class MainWindow : Window
 
         var prefix = TbxPrefix.Text;
         var format = GetCurrentOutputFormat();
-        TbxPrefixPreview.Text = GetSavedFileName(_selectedImageFileViewModel, prefix, format);
+        TbxPrefixPreview.Text = GetSavedFileName(selectedImageFileViewModel, prefix, format);
     }
 
     private static string GetSavedFileName(ImageFileViewModel viewModel, string prefix, string format)
@@ -465,7 +466,7 @@ public sealed partial class MainWindow : Window
     {
         var primaryLanguageOverride = ApplicationLanguages.PrimaryLanguageOverride;
         if (!string.IsNullOrWhiteSpace(primaryLanguageOverride)) return primaryLanguageOverride;
-        return ApplicationLanguages.Languages.FirstOrDefault() ?? "en-US";
+        return ApplicationLanguages.Languages[0] ?? "en-US";
     }
 
     private static bool LanguageTagsMatch(string currentLanguageTag, string supportedLanguageTag)
@@ -923,6 +924,7 @@ public sealed partial class MainWindow : Window
         if (values.TryGetValue("PreserveAnimation", out var preserveAnimationValue))
             TsPreserveAnimation.IsOn = (bool)preserveAnimationValue;
         TsDeleteOriginal.IsOn = (bool)values["DeleteOriginal"];
+        UpdatePrefixFormatPreviewTextBox();
     }
 
     private void ResetSettings()
@@ -951,6 +953,7 @@ public sealed partial class MainWindow : Window
         TsPreserveExif.IsOn = true;
         TsPreserveAnimation.IsOn = true;
         TsDeleteOriginal.IsOn = false;
+        UpdatePrefixFormatPreviewTextBox();
     }
 
     private void OnSaveDefaultsButtonClicked(object sender, RoutedEventArgs e) => SaveSettings();
