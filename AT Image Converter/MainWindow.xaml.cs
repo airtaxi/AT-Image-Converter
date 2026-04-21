@@ -24,7 +24,7 @@ public sealed partial class MainWindow : Window
 {
     private static readonly HashSet<string> s_nonNativePreviewExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
-        ".psd", ".xcf", ".raw", ".pdf"
+        ".psd", ".xcf", ".raw", ".pdf", ".svg"
     };
 
     private readonly bool _isInitialized = false;
