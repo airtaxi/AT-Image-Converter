@@ -11,7 +11,11 @@
     <Deploy />
   </Project>
   <Project Path="ATICContextMenu/ATICContextMenu.vcxproj" Id="7d4326f3-06ae-4750-8313-597ebe7bfb88">
-    <Platform Solution="*|x86" Project="x64" />
-    <Build Solution="*|x86" Project="false" />
+    <Platform Solution="*|ARM64" Project="ARM64" />
+    <Build Solution="*|ARM64" Project="true" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Build Solution="*|x64" Project="true" />
+    <Platform Solution="*|x86" Project="Win32" />
+    <Build Solution="*|x86" Project="true" />
   </Project>
 </Solution>
