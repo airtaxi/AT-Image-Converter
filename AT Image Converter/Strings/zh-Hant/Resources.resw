@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Window Title -->
+  <data name="AppTitle" xml:space="preserve"><value>AT Image Converter</value></data>
+  <data name="AppDisplayName" xml:space="preserve"><value>AT Image Converter</value></data>
+  <data name="AppDescription" xml:space="preserve"><value>支援 JPG、PNG、WEBP、AVIF、HEIF、ICO 等多種格式的簡單快速圖片轉換工具。</value></data>
+
+  <!-- Section Titles -->
+  <data name="ImagesTitle.Text" xml:space="preserve"><value>圖片</value></data>
+  <data name="FormatOptionsTitle.Text" xml:space="preserve"><value>格式選項</value></data>
+  <data name="SizeOptionsTitle.Text" xml:space="preserve"><value>尺寸選項</value></data>
+  <data name="SaveOptionsTitle.Text" xml:space="preserve"><value>儲存選項</value></data>
+
+  <!-- Menu Bar -->
+  <data name="FileMenu.Title" xml:space="preserve"><value>文件</value></data>
+  <data name="FileAddMenuFlyoutItem.Text" xml:space="preserve"><value>新增檔案</value></data>
+  <data name="FileStartConversionMenuFlyoutItem.Text" xml:space="preserve"><value>開始轉換</value></data>
+  <data name="FileCloseMenuFlyoutItem.Text" xml:space="preserve"><value>關閉</value></data>
+  <data name="LanguageMenu.Title" xml:space="preserve"><value>語言</value></data>
+  <data name="EnglishLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>English</value></data>
+  <data name="KoreanLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>한국어</value></data>
+  <data name="JapaneseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>日本語</value></data>
+  <data name="SimplifiedChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>简体中文</value></data>
+  <data name="TraditionalChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>繁體中文</value></data>
+
+  <!-- Image List Buttons -->
+  <data name="AddButton.Label" xml:space="preserve"><value>新增</value></data>
+  <data name="DeleteButton.Label" xml:space="preserve"><value>刪除</value></data>
+  <data name="ClearButton.Label" xml:space="preserve"><value>清除</value></data>
+  <data name="DropPlaceholder.Text" xml:space="preserve"><value>將圖片檔案拖放到此處</value></data>
+
+  <!-- Format Options -->
+  <data name="OutputFormatComboBox.Header" xml:space="preserve"><value>輸出格式</value></data>
+  <data name="QualityNumberBox.Header" xml:space="preserve"><value>品質</value></data>
+
+  <!-- Rotation Options -->
+  <data name="RotationOptionsTitle.Text" xml:space="preserve"><value>旋轉選項</value></data>
+  <data name="RotationToggleSwitch.Header" xml:space="preserve"><value>旋轉</value></data>
+  <data name="RotationToggleSwitch.OnContent" xml:space="preserve"><value>開</value></data>
+  <data name="RotationToggleSwitch.OffContent" xml:space="preserve"><value>關</value></data>
+  <data name="RotationSettingsComboBox.Header" xml:space="preserve"><value>旋轉設定</value></data>
+  <data name="AutoRotateByExifItem.Content" xml:space="preserve"><value>根據EXIF資訊自動旋轉</value></data>
+  <data name="RotateClockwise90Item.Content" xml:space="preserve"><value>順時針旋轉90度</value></data>
+  <data name="RotateCounterClockwise90Item.Content" xml:space="preserve"><value>逆時針旋轉90度</value></data>
+  <data name="Rotate180Item.Content" xml:space="preserve"><value>旋轉180度</value></data>
+
+  <!-- Size Options -->
+  <data name="SizeSettingsComboBox.Header" xml:space="preserve"><value>尺寸設定</value></data>
+  <data name="SizeUnitComboBox.Header" xml:space="preserve"><value>尺寸單位</value></data>
+  <data name="NoResizeItem.Content" xml:space="preserve"><value>不調整大小</value></data>
+  <data name="ResizeToFillItem.Content" xml:space="preserve"><value>調整為填滿</value></data>
+  <data name="ResizeToWidthItem.Content" xml:space="preserve"><value>按寬度調整並保持長寬比</value></data>
+  <data name="ResizeToHeightItem.Content" xml:space="preserve"><value>按高度調整並保持長寬比</value></data>
+  <data name="PixelItem.Content" xml:space="preserve"><value>像素</value></data>
+  <data name="PercentItem.Content" xml:space="preserve"><value>百分比</value></data>
+
+  <!-- Save Options -->
+  <data name="PrefixTextBox.Header" xml:space="preserve"><value>檔名前綴</value></data>
+  <data name="PrefixPreviewTextBox.Header" xml:space="preserve"><value>檔名前綴（預覽）</value></data>
+  <data name="PrefixPreviewTextBox.PlaceholderText" xml:space="preserve"><value>未選擇圖片</value></data>
+  <data name="OverwriteFileToggleSwitch.OnContent" xml:space="preserve"><value>檔名重複時覆蓋</value></data>
+  <data name="OverwriteFileToggleSwitch.OffContent" xml:space="preserve"><value>檔名重複時重新命名</value></data>
+
+  <!-- Output Folder -->
+  <data name="OutputFolderTitle.Text" xml:space="preserve"><value>輸出資料夾</value></data>
+  <data name="SameFolderRadioButton.Content" xml:space="preserve"><value>儲存到同一資料夾</value></data>
+  <data name="PhotoFolderRadioButton.Content" xml:space="preserve"><value>儲存到圖片資料夾</value></data>
+  <data name="CustomFolderRadioButton.Content" xml:space="preserve"><value>儲存到指定資料夾:</value></data>
+  <data name="SubfolderRadioButton.Content" xml:space="preserve"><value>儲存到子資料夾:</value></data>
+
+  <!-- Conversion Options -->
+  <data name="ConversionOptionsTitle.Text" xml:space="preserve"><value>轉換選項</value></data>
+  <data name="ParallelExecutionToggleSwitch.Header" xml:space="preserve"><value>並行執行</value></data>
+  <data name="ParallelExecutionToggleSwitch.OnContent" xml:space="preserve"><value>開</value></data>
+  <data name="ParallelExecutionToggleSwitch.OffContent" xml:space="preserve"><value>關</value></data>
+  <data name="PreserveFileDateToggleSwitch.Header" xml:space="preserve"><value>保留檔案日期</value></data>
+  <data name="PreserveFileDateToggleSwitch.OnContent" xml:space="preserve"><value>開</value></data>
+  <data name="PreserveFileDateToggleSwitch.OffContent" xml:space="preserve"><value>關</value></data>
+  <data name="PreserveExifToggleSwitch.Header" xml:space="preserve"><value>保留EXIF資訊</value></data>
+  <data name="PreserveExifToggleSwitch.OnContent" xml:space="preserve"><value>開</value></data>
+  <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve"><value>關</value></data>
+  <data name="PreserveAnimationToggleSwitch.Header" xml:space="preserve"><value>保留動畫</value></data>
+  <data name="PreserveAnimationToggleSwitch.OnContent" xml:space="preserve"><value>開</value></data>
+  <data name="PreserveAnimationToggleSwitch.OffContent" xml:space="preserve"><value>關</value></data>
+  <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve"><value>轉換後刪除原始檔案</value></data>
+  <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>轉換後保留原始檔案</value></data>
+  <data name="SaveDefaultsButton.Content" xml:space="preserve"><value>儲存為預設</value></data>
+  <data name="ResetDefaultsButton.Content" xml:space="preserve"><value>還原預設</value></data>
+
+  <!-- Convert Button -->
+  <data name="ConvertButtonContent" xml:space="preserve"><value>轉換</value></data>
+  <data name="ConvertButtonNoImagesContent" xml:space="preserve"><value>請新增圖片</value></data>
+
+  <!-- Preview Buttons -->
+  <data name="ZoomInButton.Label" xml:space="preserve"><value>放大</value></data>
+  <data name="ZoomOutButton.Label" xml:space="preserve"><value>縮小</value></data>
+  <data name="ResetZoomButton.Label" xml:space="preserve"><value>重設縮放</value></data>
+
+  <!-- Code-behind Strings -->
+  <data name="WidthPixel" xml:space="preserve"><value>寬度 (px)</value></data>
+  <data name="HeightPixel" xml:space="preserve"><value>高度 (px)</value></data>
+  <data name="WidthPercent" xml:space="preserve"><value>寬度 (%)</value></data>
+  <data name="HeightPercent" xml:space="preserve"><value>高度 (%)</value></data>
+  <data name="ConversionStarted" xml:space="preserve"><value>開始轉換</value></data>
+  <data name="ConvertingFile" xml:space="preserve"><value>正在轉換 {0}</value></data>
+  <data name="ConversionFileComplete" xml:space="preserve"><value>{0} → {1} 完成！</value></data>
+  <data name="ConversionComplete" xml:space="preserve"><value>轉換完成！</value></data>
+  <data name="ConversionCompleteDialogTitle" xml:space="preserve"><value>轉換完成</value></data>
+  <data name="ConversionCompleteDialogContent" xml:space="preserve"><value>已成功轉換 {0} 個檔案。</value></data>
+  <data name="DialogOkButton" xml:space="preserve"><value>確定</value></data>
+  <data name="DialogCancelButton" xml:space="preserve"><value>取消</value></data>
+  <data name="GhostscriptRequiredDialogTitle" xml:space="preserve"><value>需要Ghostscript</value></data>
+  <data name="GhostscriptRequiredDialogContent" xml:space="preserve"><value>轉換PDF檔案需要安裝Ghostscript。請安裝Ghostscript後再試一次。
+下載: https://www.ghostscript.com/releases/gsdnld.html</value></data>
+  <data name="ConversionFileFailed" xml:space="preserve"><value>{0} 失敗: {1}</value></data>
+  <data name="PreviewLoading" xml:space="preserve"><value>正在載入預覽...</value></data>
+  <data name="NoPreviewText.Text" xml:space="preserve"><value>無預覽</value></data>
+  <data name="LanguageChangeDialogTitle" xml:space="preserve"><value>語言變更</value></data>
+  <data name="LanguageChangeDialogContent" xml:space="preserve"><value>重新啟動應用程式後，語言變更才會生效。</value></data>
+
+</root>

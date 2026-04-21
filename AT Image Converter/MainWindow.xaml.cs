@@ -493,7 +493,8 @@ public sealed partial class MainWindow : Window
         EnglishLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "en-US");
         KoreanLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "ko-KR");
         JapaneseLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "ja-JP");
-        SimplifiedChineseLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "zh-CN");
+        SimplifiedChineseLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "zh-Hans");
+        TraditionalChineseLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "zh-Hant");
     }
 
     private static string GetCurrentLanguageTag()
@@ -505,11 +506,38 @@ public sealed partial class MainWindow : Window
 
     private static bool LanguageTagsMatch(string currentLanguageTag, string supportedLanguageTag)
     {
-        if (string.Equals(currentLanguageTag, supportedLanguageTag, StringComparison.OrdinalIgnoreCase)) return true;
+        var normalizedCurrentLanguageTag = NormalizeLanguageTagForMenu(currentLanguageTag);
+        var normalizedSupportedLanguageTag = NormalizeLanguageTagForMenu(supportedLanguageTag);
+        if (string.Equals(normalizedCurrentLanguageTag, normalizedSupportedLanguageTag, StringComparison.OrdinalIgnoreCase)) return true;
+        if (normalizedSupportedLanguageTag.StartsWith("zh-", StringComparison.OrdinalIgnoreCase)) return false;
 
-        var currentLanguagePrefix = currentLanguageTag.Split('-')[0];
-        var supportedLanguagePrefix = supportedLanguageTag.Split('-')[0];
+        var currentLanguagePrefix = normalizedCurrentLanguageTag.Split('-')[0];
+        var supportedLanguagePrefix = normalizedSupportedLanguageTag.Split('-')[0];
         return string.Equals(currentLanguagePrefix, supportedLanguagePrefix, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeLanguageTagForMenu(string languageTag)
+    {
+        if (string.IsNullOrWhiteSpace(languageTag)) return "en-US";
+
+        var languageTagSegments = languageTag.Split('-', StringSplitOptions.RemoveEmptyEntries);
+        if (languageTagSegments.Length == 0) return "en-US";
+        if (!string.Equals(languageTagSegments[0], "zh", StringComparison.OrdinalIgnoreCase)) return languageTag;
+
+        var isTraditionalChinese = languageTagSegments.Any(segment =>
+            string.Equals(segment, "Hant", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(segment, "TW", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(segment, "HK", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(segment, "MO", StringComparison.OrdinalIgnoreCase));
+        if (isTraditionalChinese) return "zh-Hant";
+
+        var isSimplifiedChinese = languageTagSegments.Any(segment =>
+            string.Equals(segment, "Hans", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(segment, "CN", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(segment, "SG", StringComparison.OrdinalIgnoreCase));
+        if (isSimplifiedChinese) return "zh-Hans";
+
+        return "zh-Hans";
     }
 
     private static bool IsGhostscriptInstalled()

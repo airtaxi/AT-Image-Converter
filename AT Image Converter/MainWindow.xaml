@@ -77,7 +77,13 @@
                         x:Uid="SimplifiedChineseLanguageMenuFlyoutItem"
                         Click="OnLanguageRadioMenuFlyoutItemClicked"
                         GroupName="ApplicationLanguage"
-                        Tag="zh-CN" />
+                        Tag="zh-Hans" />
+                    <RadioMenuFlyoutItem
+                        x:Name="TraditionalChineseLanguageMenuFlyoutItem"
+                        x:Uid="TraditionalChineseLanguageMenuFlyoutItem"
+                        Click="OnLanguageRadioMenuFlyoutItemClicked"
+                        GroupName="ApplicationLanguage"
+                        Tag="zh-Hant" />
                 </MenuBarItem>
             </MenuBar>
 
