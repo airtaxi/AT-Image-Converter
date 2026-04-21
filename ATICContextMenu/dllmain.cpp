@@ -4,8 +4,8 @@
 using namespace Microsoft::WRL;
 
 static constexpr wchar_t exe_filename[] = L"AT Image Converter.exe";
-static constexpr wchar_t simplified_chinese_menu_title[] = L"\x4F7F\x7528AT Image Converter\x8F6C\x6362";
-static constexpr wchar_t traditional_chinese_menu_title[] = L"\x4F7F\x7528AT Image Converter\x8F49\x63DB";
+static constexpr wchar_t simplified_chinese_menu_title[] = L"\x4F7F\x7528" L"AT Image Converter\x8F6C\x6362";
+static constexpr wchar_t traditional_chinese_menu_title[] = L"\x4F7F\x7528" L"AT Image Converter\x8F49\x63DB";
 
 // {AB4DC84E-A904-401F-9A3D-3F55D3770D25}
 static constexpr CLSID CLSID_ATICContextMenu =
