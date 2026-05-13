@@ -79,6 +79,7 @@ public sealed partial class MainWindow : Window
         // Select first item programmatically to trigger selection changed event after initialization
         CbxSizeSettings.SelectedIndex = 0;
         CbxSizeUnit.SelectedIndex = 0;
+        ResizeInterpolationComboBox.SelectedIndex = 0;
 
         LoadSettings();
         UpdateLanguageMenuFlyoutItems();
@@ -367,6 +368,7 @@ public sealed partial class MainWindow : Window
         var rotationSetting = TsRotation.IsOn ? (RotationSetting)CbxRotationSettings.SelectedIndex : (RotationSetting)(-1);
         var sizeSetting = (SizeSetting)CbxSizeSettings.SelectedIndex;
         var sizeUnit = (SizeUnit)CbxSizeUnit.SelectedIndex;
+        var resizeInterpolationSetting = (ResizeInterpolationSetting)ResizeInterpolationComboBox.SelectedIndex;
         var width = (uint)NbxWidth.Value;
         var height = (uint)NbxHeight.Value;
         var prefix = TbxPrefix.Text;
@@ -441,7 +443,7 @@ public sealed partial class MainWindow : Window
                     {
                         var magickFrame = (MagickImage)frame;
                         if (rotationSetting >= 0) RotateImage(magickFrame, rotationSetting);
-                        ResizeImage(magickFrame, sizeSetting, sizeUnit, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
+                        ResizeImage(magickFrame, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
                         if (!preserveExif) magickFrame.Strip();
                         else if (rotationSetting > 0) magickFrame.SetAttribute("exif:Orientation", "1");
                         magickFrame.Quality = quality;
@@ -483,7 +485,7 @@ public sealed partial class MainWindow : Window
             if (formatName != "ICO") await Task.Run(() =>
             {
                 if (rotationSetting >= 0) RotateImage(image, rotationSetting);
-                ResizeImage(image, sizeSetting, sizeUnit, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
+                ResizeImage(image, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
             });
             // Convert to ico format if selected
             else
@@ -712,7 +714,31 @@ public sealed partial class MainWindow : Window
         return false;
     }
 
-    private static void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height, HorizontalCropAnchor horizontalCropAnchor, VerticalCropAnchor verticalCropAnchor, MagickColor cropBackgroundColor)
+    private static FilterType? GetResizeFilterType(ResizeInterpolationSetting resizeInterpolationSetting)
+    {
+        if (resizeInterpolationSetting == ResizeInterpolationSetting.NoInterpolation) return FilterType.Point;
+        if (resizeInterpolationSetting == ResizeInterpolationSetting.Box) return FilterType.Box;
+        if (resizeInterpolationSetting == ResizeInterpolationSetting.Triangle) return FilterType.Triangle;
+        if (resizeInterpolationSetting == ResizeInterpolationSetting.Cubic) return FilterType.Cubic;
+        if (resizeInterpolationSetting == ResizeInterpolationSetting.Lanczos) return FilterType.Lanczos;
+        return null;
+    }
+
+    private static void ApplyResize(MagickImage image, MagickGeometry geometry, ResizeInterpolationSetting resizeInterpolationSetting)
+    {
+        var filterType = GetResizeFilterType(resizeInterpolationSetting);
+        if (filterType.HasValue) image.Resize(geometry, filterType.Value);
+        else image.Resize(geometry);
+    }
+
+    private static void ApplyResize(MagickImage image, uint width, uint height, ResizeInterpolationSetting resizeInterpolationSetting)
+    {
+        var filterType = GetResizeFilterType(resizeInterpolationSetting);
+        if (filterType.HasValue) image.Resize(width, height, filterType.Value);
+        else image.Resize(width, height);
+    }
+
+    private static void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, ResizeInterpolationSetting resizeInterpolationSetting, uint width, uint height, HorizontalCropAnchor horizontalCropAnchor, VerticalCropAnchor verticalCropAnchor, MagickColor cropBackgroundColor)
     {
         if (sizeSetting == SizeSetting.NoResize) return;
 
@@ -722,12 +748,13 @@ public sealed partial class MainWindow : Window
         {
             var size = new MagickGeometry(targetWidth, targetHeight);
             size.IgnoreAspectRatio = true;
-            image.Resize(size);
+            ApplyResize(image, size, resizeInterpolationSetting);
         }
-        else if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) image.Resize(targetWidth, 0);
-        else if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) image.Resize(0, targetHeight);
+        else if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) ApplyResize(image, targetWidth, 0, resizeInterpolationSetting);
+        else if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) ApplyResize(image, 0, targetHeight, resizeInterpolationSetting);
         else if (sizeSetting == SizeSetting.CropToSize) CropImageToTargetSize(image, targetWidth, targetHeight, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
     }
+
     private async void OnAddImageAppBarButtonClicked(object sender, RoutedEventArgs e)
     {
         var filePicker = new FileOpenPicker();
@@ -1005,16 +1032,18 @@ public sealed partial class MainWindow : Window
     {
         var sizeSetting = (SizeSetting)CbxSizeSettings.SelectedIndex;
 
-        // Show or hide size grid and size unit combo box depending on the selected size setting
+        // Show or hide resize controls depending on the selected size setting
         if (sizeSetting == SizeSetting.NoResize)
         {
             GdSize.Visibility = Visibility.Collapsed;
             CbxSizeUnit.Visibility = Visibility.Collapsed;
+            ResizeInterpolationComboBox.Visibility = Visibility.Collapsed;
         }
         else
         {
             GdSize.Visibility = Visibility.Visible;
             CbxSizeUnit.Visibility = Visibility.Visible;
+            ResizeInterpolationComboBox.Visibility = sizeSetting == SizeSetting.CropToSize ? Visibility.Collapsed : Visibility.Visible;
         }
 
         // Enable width and height text boxes
@@ -1143,6 +1172,7 @@ public sealed partial class MainWindow : Window
         _localSettings.Values["RotationIndex"] = CbxRotationSettings.SelectedIndex;
         _localSettings.Values["SizeSettingIndex"] = CbxSizeSettings.SelectedIndex;
         _localSettings.Values["SizeUnitIndex"] = CbxSizeUnit.SelectedIndex;
+        _localSettings.Values["ResizeInterpolationSettingIndex"] = ResizeInterpolationComboBox.SelectedIndex;
         _localSettings.Values["Width"] = NbxWidth.Value;
         _localSettings.Values["Height"] = NbxHeight.Value;
         _localSettings.Values["CropHorizontalAnchorIndex"] = CropHorizontalAnchorComboBox.SelectedIndex;
@@ -1171,6 +1201,7 @@ public sealed partial class MainWindow : Window
         CbxRotationSettings.SelectedIndex = (int)values["RotationIndex"];
         CbxSizeSettings.SelectedIndex = (int)values["SizeSettingIndex"];
         CbxSizeUnit.SelectedIndex = (int)values["SizeUnitIndex"];
+        if (values.TryGetValue("ResizeInterpolationSettingIndex", out var resizeInterpolationSettingIndex)) ResizeInterpolationComboBox.SelectedIndex = (int)resizeInterpolationSettingIndex;
         NbxWidth.Value = (double)values["Width"];
         NbxHeight.Value = (double)values["Height"];
         if (values.TryGetValue("CropHorizontalAnchorIndex", out var cropHorizontalAnchorIndex)) CropHorizontalAnchorComboBox.SelectedIndex = (int)cropHorizontalAnchorIndex;
@@ -1209,6 +1240,7 @@ public sealed partial class MainWindow : Window
         CbxRotationSettings.SelectedIndex = 0;
         CbxSizeSettings.SelectedIndex = 0;
         CbxSizeUnit.SelectedIndex = 0;
+        ResizeInterpolationComboBox.SelectedIndex = 0;
         NbxWidth.Value = 0;
         NbxHeight.Value = 0;
         CropHorizontalAnchorComboBox.SelectedIndex = 1;

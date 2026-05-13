@@ -286,6 +286,20 @@
                                         <ComboBoxItem x:Uid="PercentItem" />
                                     </ComboBox.Items>
                                 </ComboBox>
+                                <ComboBox
+                                    x:Name="ResizeInterpolationComboBox"
+                                    x:Uid="ResizeInterpolationComboBox"
+                                    HorizontalAlignment="Stretch"
+                                    SelectedIndex="0">
+                                    <ComboBox.Items>
+                                        <ComboBoxItem x:Uid="ResizeInterpolationDefaultItem" />
+                                        <ComboBoxItem x:Uid="ResizeInterpolationNoneItem" />
+                                        <ComboBoxItem x:Uid="ResizeInterpolationBoxItem" />
+                                        <ComboBoxItem x:Uid="ResizeInterpolationTriangleItem" />
+                                        <ComboBoxItem x:Uid="ResizeInterpolationCubicItem" />
+                                        <ComboBoxItem x:Uid="ResizeInterpolationLanczosItem" />
+                                    </ComboBox.Items>
+                                </ComboBox>
                                 <Grid x:Name="GdSize" ColumnSpacing="5">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -337,9 +351,7 @@
                                             </ComboBox.Items>
                                         </ComboBox>
                                     </Grid>
-                                    <SplitButton
-                                        x:Name="CropBackgroundColorSplitButton"
-                                        HorizontalAlignment="Stretch">
+                                    <SplitButton x:Name="CropBackgroundColorSplitButton" HorizontalAlignment="Stretch">
                                         <StackPanel
                                             HorizontalAlignment="Left"
                                             Orientation="Horizontal"
@@ -354,17 +366,15 @@
                                                 CornerRadius="4" />
                                             <StackPanel Spacing="2">
                                                 <TextBlock x:Uid="CropBackgroundColorTextBlock" />
-                                                <TextBlock
-                                                    x:Name="CropBackgroundColorValueTextBlock"
-                                                    Style="{ThemeResource CaptionTextBlockStyle}" />
+                                                <TextBlock x:Name="CropBackgroundColorValueTextBlock" Style="{ThemeResource CaptionTextBlockStyle}" />
                                             </StackPanel>
                                         </StackPanel>
                                         <SplitButton.Flyout>
                                             <Flyout Placement="BottomEdgeAlignedLeft">
                                                 <ColorPicker
+                                                    MinWidth="320"
                                                     ColorChanged="OnCropBackgroundColorPickerColorChanged"
-                                                    IsAlphaEnabled="False"
-                                                    MinWidth="320" />
+                                                    IsAlphaEnabled="False" />
                                             </Flyout>
                                         </SplitButton.Flyout>
                                     </SplitButton>

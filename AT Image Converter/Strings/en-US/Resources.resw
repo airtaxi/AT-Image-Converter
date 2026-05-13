@@ -62,6 +62,13 @@
   <data name="ResizeToCropItem.Content" xml:space="preserve"><value>Crop to size</value></data>
   <data name="PixelItem.Content" xml:space="preserve"><value>Pixel</value></data>
   <data name="PercentItem.Content" xml:space="preserve"><value>Percent</value></data>
+  <data name="ResizeInterpolationComboBox.Header" xml:space="preserve"><value>Resize Interpolation</value></data>
+  <data name="ResizeInterpolationDefaultItem.Content" xml:space="preserve"><value>Default</value></data>
+  <data name="ResizeInterpolationNoneItem.Content" xml:space="preserve"><value>No interpolation (Nearest neighbor)</value></data>
+  <data name="ResizeInterpolationBoxItem.Content" xml:space="preserve"><value>Box</value></data>
+  <data name="ResizeInterpolationTriangleItem.Content" xml:space="preserve"><value>Triangle</value></data>
+  <data name="ResizeInterpolationCubicItem.Content" xml:space="preserve"><value>Cubic</value></data>
+  <data name="ResizeInterpolationLanczosItem.Content" xml:space="preserve"><value>Lanczos</value></data>
   <data name="CropHorizontalAnchorComboBox.Header" xml:space="preserve"><value>Horizontal crop anchor</value></data>
   <data name="CropVerticalAnchorComboBox.Header" xml:space="preserve"><value>Vertical crop anchor</value></data>
   <data name="CropHorizontalLeftItem.Content" xml:space="preserve"><value>Left</value></data>
