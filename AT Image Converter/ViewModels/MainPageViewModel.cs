@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using ImageConverterAT.Enums;
@@ -343,7 +343,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         return CreateDefaultCropBackgroundColor();
     }
 
-    private static MagickColor CreateMagickColor(Color color) => new(color.R, color.G, color.B, color.A);
+    private static MagickColor CreateMagickColor(Color color) => MagickColor.FromRgba(color.R, color.G, color.B, color.A);
 
     private static Gravity GetCropGravity(HorizontalCropAnchor horizontalCropAnchor, VerticalCropAnchor verticalCropAnchor)
     {
@@ -376,25 +376,35 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
     {
         if (sizeUnit == SizeUnit.Pixel) return (width, height);
 
-        var targetWidth = ScaleDimensionByPercent((uint)image.Width, width);
-        var targetHeight = ScaleDimensionByPercent((uint)image.Height, height);
+        var targetWidth = ScaleDimensionByPercent(image.Width, width);
+        var targetHeight = ScaleDimensionByPercent(image.Height, height);
         return (targetWidth, targetHeight);
     }
 
     private static void CropImageToTargetSize(MagickImage image, uint targetWidth, uint targetHeight, HorizontalCropAnchor horizontalCropAnchor, VerticalCropAnchor verticalCropAnchor, MagickColor cropBackgroundColor)
     {
-        var cropWidth = Math.Min((uint)image.Width, targetWidth);
-        var cropHeight = Math.Min((uint)image.Height, targetHeight);
-        if (cropWidth != (uint)image.Width || cropHeight != (uint)image.Height)
+        var cropWidth = Math.Min(image.Width, targetWidth);
+        var cropHeight = Math.Min(image.Height, targetHeight);
+        if (cropWidth != image.Width || cropHeight != image.Height)
         {
-            var horizontalCropOffset = GetHorizontalCropOffset((uint)image.Width, cropWidth, horizontalCropAnchor);
-            var verticalCropOffset = GetVerticalCropOffset((uint)image.Height, cropHeight, verticalCropAnchor);
+            var horizontalCropOffset = GetHorizontalCropOffset(image.Width, cropWidth, horizontalCropAnchor);
+            var verticalCropOffset = GetVerticalCropOffset(image.Height, cropHeight, verticalCropAnchor);
             image.Crop(new MagickGeometry(horizontalCropOffset, verticalCropOffset, cropWidth, cropHeight));
             image.ResetPage();
         }
 
-        if ((uint)image.Width == targetWidth && (uint)image.Height == targetHeight) return;
+        if (image.Width == targetWidth && image.Height == targetHeight) return;
         image.Extent(targetWidth, targetHeight, GetCropGravity(horizontalCropAnchor, verticalCropAnchor), cropBackgroundColor);
+    }
+
+    private static void CleanTransparentPixels(MagickImage image, MagickColor backgroundColor, bool preserveAlpha)
+    {
+        if (!image.HasAlpha) return;
+        using var background = new MagickImage(backgroundColor, image.Width, image.Height);
+        background.Composite(image, CompositeOperator.Over);
+        if (preserveAlpha) background.Composite(image, CompositeOperator.CopyAlpha);
+        else background.Alpha(AlphaOption.Off);
+        image.CopyPixels(background);
     }
 
     private static (uint? RasterizedWidth, uint? RasterizedHeight) GetSvgRasterizedDimensions(ImageFileViewModel imageFileViewModel, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
@@ -412,8 +422,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         }
 
         using var originalSvgImage = imageFileViewModel.CreateMagickImage();
-        var originalWidth = (uint)originalSvgImage.Width;
-        var originalHeight = (uint)originalSvgImage.Height;
+        var originalWidth = originalSvgImage.Width;
+        var originalHeight = originalSvgImage.Height;
         if (sizeSetting == SizeSetting.ResizeToFill) return (GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalWidth, width)), GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalHeight, height)));
         if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) return (GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalWidth, width)), null);
         if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) return (null, GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalHeight, height)));
@@ -810,6 +820,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
                         var magickFrame = (MagickImage)frame;
                         if (rotationSetting >= 0) RotateImage(magickFrame, rotationSetting);
                         ResizeImage(magickFrame, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
+                        CleanTransparentPixels(magickFrame, cropBackgroundColor, outputFormatSupportsAlpha);
                         if (!preserveExif) magickFrame.Strip();
                         else if (rotationSetting > 0) magickFrame.SetAttribute("exif:Orientation", "1");
                         magickFrame.Quality = quality;
@@ -845,6 +856,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
             {
                 if (rotationSetting >= 0) RotateImage(image, rotationSetting);
                 ResizeImage(image, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
+                CleanTransparentPixels(image, cropBackgroundColor, outputFormatSupportsAlpha);
             });
             else
             {
