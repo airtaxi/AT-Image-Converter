@@ -14,26 +14,21 @@
     <Frame x:Name="FrMain">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="32" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackPanel
+            <TitleBar
+                x:Name="AppTitleBar"
+                Title="AT Image Converter"
                 Grid.Row="0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Orientation="Horizontal">
-                <Image
-                    Width="20"
-                    Height="20"
-                    Margin="5,0,0,0"
-                    Source="Assets/Icon.png" />
-                <TextBlock
-                    Margin="8,0,0,0"
-                    VerticalAlignment="Center"
-                    Text="AT Image Converter" />
-            </StackPanel>
+                IsBackButtonEnabled="False"
+                IsPaneToggleButtonVisible="False">
+                <TitleBar.IconSource>
+                    <ImageIconSource ImageSource="ms-appx:///Assets/Icon.png" />
+                </TitleBar.IconSource>
+            </TitleBar>
 
             <MenuBar Grid.Row="1" Background="Transparent">
                 <MenuBarItem x:Uid="FileMenu" AccessKey="F">

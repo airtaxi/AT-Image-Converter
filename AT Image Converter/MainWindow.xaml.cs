@@ -53,6 +53,7 @@ public sealed partial class MainWindow : Window
         // Setup window
         AppWindow.SetIcon("Assets/Icon.ico");
         ExtendsContentIntoTitleBar = true;
+        SetTitleBar(AppTitleBar);
 
         // Add files from command line arguments if any
         var args = Environment.GetCommandLineArgs();
