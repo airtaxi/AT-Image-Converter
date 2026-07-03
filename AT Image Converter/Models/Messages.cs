@@ -1,8 +1,7 @@
-using CommunityToolkit.Mvvm.Messaging.Messages;
-using ImageConverterAT.Models;
+﻿using CommunityToolkit.Mvvm.Messaging.Messages;
 using System.Collections.Generic;
 
-namespace ImageConverterAT.ViewModels;
+namespace ImageConverterAT.Models;
 
 public sealed class AddImageFilesMessage(IEnumerable<string> filePaths) : ValueChangedMessage<IEnumerable<string>>(filePaths)
 {

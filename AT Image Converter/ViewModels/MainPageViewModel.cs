@@ -1,10 +1,9 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using ImageConverterAT.Enums;
 using ImageConverterAT.Models;
 using ImageConverterAT.Services;
-using ImageConverterAT.ViewModels;
 using ImageMagick;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
