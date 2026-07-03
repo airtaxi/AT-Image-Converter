@@ -1,930 +1,135 @@
-using ImageConverterAT.Enums;
-using ImageConverterAT.Services;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using ImageConverterAT.ViewModels;
 using ImageMagick;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Windows.Globalization;
 using Microsoft.Windows.Storage.Pickers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.System;
-using Windows.UI;
 
 namespace ImageConverterAT.Pages;
 
-public sealed partial class MainPage : Page
+public sealed partial class MainPage : Page,
+    IRecipient<ShowFileOpenPickerMessage>,
+    IRecipient<ShowFolderPickerMessage>,
+    IRecipient<ResetImagePreviewZoomMessage>,
+    IRecipient<ZoomChangedMessage>
 {
     private static readonly HashSet<string> s_nonNativePreviewExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".psd", ".xcf", ".raw", ".pdf", ".svg"
     };
-    private static readonly Uri s_gitHubRepositoryPageAddress = new("https://github.com/airtaxi/AT-Image-Converter");
-    private static Color CreateDefaultCropBackgroundColor() => Color.FromArgb(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
     public static MainPage Instance { get; private set; }
 
-    private readonly bool _isInitialized = false;
-    private readonly ObservableCollection<ImageFileViewModel> _imageFileViewModels = [];
-    private readonly ObservableCollection<string> _progressLog = [];
+    public MainPageViewModel ViewModel { get; }
+
     private readonly ResourceLoader _resourceLoader = new();
-    private readonly ApplicationDataContainer _localSettings = ApplicationData.Current.LocalSettings;
-    private Color _cropBackgroundColor = CreateDefaultCropBackgroundColor();
     private CancellationTokenSource _previewCancellationTokenSource;
-    private ImageFileViewModel _selectedImageFileViewModel;
 
     public MainPage()
     {
         Instance = this;
 
+        ViewModel = new MainPageViewModel();
         InitializeComponent();
-        ApplyCropBackgroundColor(_cropBackgroundColor);
-        _isInitialized = true;
-
-        // Assign data source to list view
-        ImagesListView.ItemsSource = _imageFileViewModels;
-        ProgressLogListView.ItemsSource = _progressLog;
-
-        // Select first item programmatically to trigger selection changed event after initialization
-        SizeSettingsComboBox.SelectedIndex = 0;
-        SizeUnitComboBox.SelectedIndex = 0;
-        ResizeInterpolationComboBox.SelectedIndex = 0;
-
-        LoadSettings();
-        UpdateLanguageMenuFlyoutItems();
-        UpdateImageListDependentControls();
+        WeakReferenceMessenger.Default.Register<ShowFileOpenPickerMessage>(this);
+        WeakReferenceMessenger.Default.Register<ShowFolderPickerMessage>(this);
+        WeakReferenceMessenger.Default.Register<ResetImagePreviewZoomMessage>(this);
+        WeakReferenceMessenger.Default.Register<ZoomChangedMessage>(this);
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
 
-        if (e.Parameter is string[] launchFilePaths && launchFilePaths.Length > 0) AddImageFiles(launchFilePaths);
+        if (e.Parameter is string[] launchFilePaths && launchFilePaths.Length > 0)
+            WeakReferenceMessenger.Default.Send(new AddImageFilesMessage(launchFilePaths));
     }
 
-    private void AddImageFiles(IEnumerable<string> paths)
+    public async void Receive(ShowFileOpenPickerMessage _)
     {
-        // Get previous count to know if we need to select the first item after adding
-        var previousCount = _imageFileViewModels.Count;
+        var filePicker = new FileOpenPicker(MainWindow.Instance.AppWindow.Id);
+        foreach (var imageFileFormat in Constants.ImageFileFormats)
+            filePicker.FileTypeFilter.Add(imageFileFormat);
+        filePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
 
-        // Create view models, excluding duplicates
-        var existingPaths = new HashSet<string>(_imageFileViewModels.Select(viewModel => viewModel.FilePath));
-
-        var newViewModels = paths
-            .Where(existingPaths.Add)
-            .Select(path => new ImageFileViewModel(path))
-            .ToList();
-
-        if (newViewModels.Count == 0) return;
-
-        // Detach ItemsSource to prevent UI updates on each Add
-        ImagesListView.ItemsSource = null;
-
-        foreach (var viewModel in newViewModels) _imageFileViewModels.Add(viewModel);
-
-        // Sort in-place: rebuild the collection in sorted order
-        var sorted = _imageFileViewModels.OrderBy(viewModel => viewModel.FileName, StringComparer.Ordinal).ToList();
-        _imageFileViewModels.Clear();
-        foreach (var viewModel in sorted) _imageFileViewModels.Add(viewModel);
-
-        // Reattach ItemsSource so UI renders once
-        ImagesListView.ItemsSource = _imageFileViewModels;
-
-        // Select first item and update prefix format preview text box if there was no item before
-        if (previousCount == 0)
-        {
-            ImagesListView.SelectedIndex = 0;
-            UpdatePrefixFormatPreviewTextBox();
-        }
-
-        UpdateImageListDependentControls();
+        var files = await filePicker.PickMultipleFilesAsync();
+        var filePaths = files.Select(file => file.Path).ToList();
+        if (filePaths.Count > 0)
+            WeakReferenceMessenger.Default.Send(new AddImageFilesMessage(filePaths));
     }
 
-    private void UpdatePrefixFormatPreviewTextBox()
+    public async void Receive(ShowFolderPickerMessage _)
     {
-        var selectedImageFileViewModel = ImagesListView.SelectedItem as ImageFileViewModel ?? _selectedImageFileViewModel;
-        var currentFileName = selectedImageFileViewModel?.FileName;
+        var folderPicker = new FolderPicker(MainWindow.Instance.AppWindow.Id);
+        folderPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
 
-        if (currentFileName == null)
-        {
-            PrefixPreviewTextBox.Text = "";
-            return;
-        }
-
-        var prefix = PrefixTextBox.Text;
-        var format = GetCurrentOutputFormat();
-        PrefixPreviewTextBox.Text = GetSavedFileName(selectedImageFileViewModel, prefix, format);
+        var folder = await folderPicker.PickSingleFolderAsync();
+        WeakReferenceMessenger.Default.Send(new FolderSelectedMessage(folder?.Path ?? ""));
     }
 
-    private static string GetSavedFileName(ImageFileViewModel viewModel, string prefix, string format)
+    public void Receive(ResetImagePreviewZoomMessage message) => ResetImagePreviewZoomFactor(message.Dimensions.Width, message.Dimensions.Height);
+
+    public void Receive(ZoomChangedMessage message)
     {
-        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(viewModel.FileName);
-        var fileName = prefix + fileNameWithoutExtension + format;
-        return fileName;
+        var zoomFactor = PreviewScrollViewer.ZoomFactor;
+        var delta = message.IsZoomIn ? 0.1 : -0.1;
+        PreviewScrollViewer.ChangeView(null, null, (float)(zoomFactor + delta));
     }
-
-    private static uint? GetPositiveDimensionOrNull(uint dimension) => dimension > 0 ? dimension : null;
-
-    private static uint ScaleDimensionByPercent(uint originalDimension, uint percent)
-    {
-        if (originalDimension == 0 || percent == 0) return 0;
-        return (uint)Math.Ceiling(originalDimension * percent / 100d);
-    }
-
-    private static bool DoesOutputFormatSupportAlpha(string outputFormat) => outputFormat is ".png" or ".jxl" or ".webp" or ".avif" or ".ico" or ".tiff";
-
-    private static Color CreateOpaqueColor(Color color) => Color.FromArgb(byte.MaxValue, color.R, color.G, color.B);
-
-    private static string ConvertColorToSettingValue(Color color) => $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}";
-
-    private static string GetDisplayedColorValue(Color color, bool includeAlpha) => includeAlpha ? $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}" : $"#{color.R:X2}{color.G:X2}{color.B:X2}";
-
-    private static bool TryParseHexadecimalByte(string value, out byte component) => byte.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out component);
-
-    private static Color ConvertSettingValueToColor(string colorValue)
-    {
-        if (string.IsNullOrWhiteSpace(colorValue)) return CreateDefaultCropBackgroundColor();
-
-        var normalizedColorValue = colorValue.Trim().TrimStart('#');
-        if (normalizedColorValue.Length == 6 &&
-            TryParseHexadecimalByte(normalizedColorValue[0..2], out var redComponent) &&
-            TryParseHexadecimalByte(normalizedColorValue[2..4], out var greenComponent) &&
-            TryParseHexadecimalByte(normalizedColorValue[4..6], out var blueComponent))
-            return Color.FromArgb(byte.MaxValue, redComponent, greenComponent, blueComponent);
-
-        if (normalizedColorValue.Length == 8 &&
-            TryParseHexadecimalByte(normalizedColorValue[0..2], out var alphaComponent) &&
-            TryParseHexadecimalByte(normalizedColorValue[2..4], out var redComponentWithAlpha) &&
-            TryParseHexadecimalByte(normalizedColorValue[4..6], out var greenComponentWithAlpha) &&
-            TryParseHexadecimalByte(normalizedColorValue[6..8], out var blueComponentWithAlpha))
-            return Color.FromArgb(alphaComponent, redComponentWithAlpha, greenComponentWithAlpha, blueComponentWithAlpha);
-
-        return CreateDefaultCropBackgroundColor();
-    }
-
-    private static MagickColor CreateMagickColor(Color color) => new(color.R, color.G, color.B, color.A);
-
-    private static Gravity GetCropGravity(HorizontalCropAnchor horizontalCropAnchor, VerticalCropAnchor verticalCropAnchor)
-    {
-        if (verticalCropAnchor == VerticalCropAnchor.Top && horizontalCropAnchor == HorizontalCropAnchor.Left) return Gravity.Northwest;
-        if (verticalCropAnchor == VerticalCropAnchor.Top && horizontalCropAnchor == HorizontalCropAnchor.Center) return Gravity.North;
-        if (verticalCropAnchor == VerticalCropAnchor.Top) return Gravity.Northeast;
-        if (verticalCropAnchor == VerticalCropAnchor.Center && horizontalCropAnchor == HorizontalCropAnchor.Left) return Gravity.West;
-        if (verticalCropAnchor == VerticalCropAnchor.Center && horizontalCropAnchor == HorizontalCropAnchor.Center) return Gravity.Center;
-        if (verticalCropAnchor == VerticalCropAnchor.Center) return Gravity.East;
-        if (horizontalCropAnchor == HorizontalCropAnchor.Left) return Gravity.Southwest;
-        if (horizontalCropAnchor == HorizontalCropAnchor.Center) return Gravity.South;
-        return Gravity.Southeast;
-    }
-
-    private static int GetHorizontalCropOffset(uint imageWidth, uint cropWidth, HorizontalCropAnchor horizontalCropAnchor)
-    {
-        if (horizontalCropAnchor == HorizontalCropAnchor.Right) return (int)(imageWidth - cropWidth);
-        if (horizontalCropAnchor == HorizontalCropAnchor.Center) return (int)((imageWidth - cropWidth) / 2);
-        return 0;
-    }
-
-    private static int GetVerticalCropOffset(uint imageHeight, uint cropHeight, VerticalCropAnchor verticalCropAnchor)
-    {
-        if (verticalCropAnchor == VerticalCropAnchor.Bottom) return (int)(imageHeight - cropHeight);
-        if (verticalCropAnchor == VerticalCropAnchor.Center) return (int)((imageHeight - cropHeight) / 2);
-        return 0;
-    }
-
-    private static (uint Width, uint Height) GetTargetDimensions(MagickImage image, SizeUnit sizeUnit, uint width, uint height)
-    {
-        if (sizeUnit == SizeUnit.Pixel) return (width, height);
-
-        var targetWidth = ScaleDimensionByPercent((uint)image.Width, width);
-        var targetHeight = ScaleDimensionByPercent((uint)image.Height, height);
-        return (targetWidth, targetHeight);
-    }
-
-    private static void CropImageToTargetSize(MagickImage image, uint targetWidth, uint targetHeight, HorizontalCropAnchor horizontalCropAnchor, VerticalCropAnchor verticalCropAnchor, MagickColor cropBackgroundColor)
-    {
-        var cropWidth = Math.Min((uint)image.Width, targetWidth);
-        var cropHeight = Math.Min((uint)image.Height, targetHeight);
-        if (cropWidth != (uint)image.Width || cropHeight != (uint)image.Height)
-        {
-            var horizontalCropOffset = GetHorizontalCropOffset((uint)image.Width, cropWidth, horizontalCropAnchor);
-            var verticalCropOffset = GetVerticalCropOffset((uint)image.Height, cropHeight, verticalCropAnchor);
-            image.Crop(new MagickGeometry(horizontalCropOffset, verticalCropOffset, cropWidth, cropHeight));
-            image.ResetPage();
-        }
-
-        if ((uint)image.Width == targetWidth && (uint)image.Height == targetHeight) return;
-        image.Extent(targetWidth, targetHeight, GetCropGravity(horizontalCropAnchor, verticalCropAnchor), cropBackgroundColor);
-    }
-
-    private void UpdateCropBackgroundColorDisplay()
-    {
-        var outputFormatSupportsAlpha = DoesOutputFormatSupportAlpha(GetCurrentOutputFormat());
-        if (!outputFormatSupportsAlpha && _cropBackgroundColor.A < byte.MaxValue) _cropBackgroundColor = CreateOpaqueColor(_cropBackgroundColor);
-
-        CropBackgroundColorPreviewBorder.Background = new SolidColorBrush(_cropBackgroundColor);
-        CropBackgroundColorValueTextBlock.Text = GetDisplayedColorValue(_cropBackgroundColor, outputFormatSupportsAlpha);
-        UpdateCropBackgroundColorPicker();
-    }
-
-    private void ApplyCropBackgroundColor(Color cropBackgroundColor)
-    {
-        _cropBackgroundColor = cropBackgroundColor;
-        UpdateCropBackgroundColorDisplay();
-    }
-
-    private void UpdateCropBackgroundColorPicker()
-    {
-        if (CropBackgroundColorSplitButton.Flyout is not Flyout { Content: ColorPicker cropBackgroundColorPicker }) return;
-
-        var outputFormatSupportsAlpha = DoesOutputFormatSupportAlpha(GetCurrentOutputFormat());
-        cropBackgroundColorPicker.IsAlphaEnabled = outputFormatSupportsAlpha;
-        if (!cropBackgroundColorPicker.Color.Equals(_cropBackgroundColor)) cropBackgroundColorPicker.Color = _cropBackgroundColor;
-    }
-
-    private void UpdateCropSettingsControls(SizeSetting sizeSetting)
-    {
-        var isCropToSize = sizeSetting == SizeSetting.CropToSize;
-        CropSettingsPanel.Visibility = isCropToSize ? Visibility.Visible : Visibility.Collapsed;
-        WidthNumberBox.Minimum = isCropToSize ? 1 : 0;
-        HeightNumberBox.Minimum = isCropToSize ? 1 : 0;
-        if (!isCropToSize) return;
-        if (WidthNumberBox.Value < 1) WidthNumberBox.Value = 1;
-        if (HeightNumberBox.Value < 1) HeightNumberBox.Value = 1;
-    }
-
-    private (uint? RasterizedWidth, uint? RasterizedHeight) GetSvgRasterizedDimensions(ImageFileViewModel imageFileViewModel, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
-    {
-        if (!imageFileViewModel.IsSvgFile) return (null, null);
-        if (sizeSetting == SizeSetting.NoResize) return (null, null);
-        if (sizeSetting == SizeSetting.CropToSize) return (null, null);
-
-        if (sizeUnit == SizeUnit.Pixel)
-        {
-            if (sizeSetting == SizeSetting.ResizeToFill) return (GetPositiveDimensionOrNull(width), GetPositiveDimensionOrNull(height));
-            if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) return (GetPositiveDimensionOrNull(width), null);
-            if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) return (null, GetPositiveDimensionOrNull(height));
-            return (null, null);
-        }
-
-        using var originalSvgImage = imageFileViewModel.CreateMagickImage();
-        var originalWidth = (uint)originalSvgImage.Width;
-        var originalHeight = (uint)originalSvgImage.Height;
-        if (sizeSetting == SizeSetting.ResizeToFill)
-            return (GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalWidth, width)), GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalHeight, height)));
-        if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio)
-            return (GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalWidth, width)), null);
-        if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio)
-            return (null, GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalHeight, height)));
-        return (null, null);
-    }
-
-    private MagickImage CreateConversionMagickImage(ImageFileViewModel imageFileViewModel, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
-    {
-        var (rasterizedWidth, rasterizedHeight) = GetSvgRasterizedDimensions(imageFileViewModel, sizeSetting, sizeUnit, width, height);
-        return imageFileViewModel.CreateMagickImage(rasterizedWidth, rasterizedHeight);
-    }
-
-    private string GetCurrentOutputFormat() => "." + (FormatComboBox.SelectedItem as string).ToLower();
 
     private void ResetImagePreviewZoomFactor(double? width = null, double? height = null)
     {
-        var zoomFactor = Math.Min(PreviewScrollViewer.ActualWidth / (width ?? PreviewImage.ActualWidth), PreviewScrollViewer.ActualHeight / (height ?? PreviewImage.ActualHeight));
-        if (double.IsNaN(zoomFactor)) return;
-        if (double.IsInfinity(zoomFactor)) return;
+        if (width is 0 or null) width = PreviewImage.ActualWidth;
+        if (height is 0 or null) height = PreviewImage.ActualHeight;
+
+        var zoomFactor = Math.Min(PreviewScrollViewer.ActualWidth / width.Value, PreviewScrollViewer.ActualHeight / height.Value);
+        if (double.IsNaN(zoomFactor) || double.IsInfinity(zoomFactor)) return;
 
         PreviewScrollViewer.ChangeView(null, null, (float)zoomFactor);
     }
 
-    private async Task ConvertImagesAsync()
-    {
-        // Check if PDF files are included and Ghostscript is available
-        var hasPdfFiles = _imageFileViewModels.Any(viewModel =>
-            Path.GetExtension(viewModel.FilePath).Equals(".pdf", StringComparison.OrdinalIgnoreCase));
-
-        if (hasPdfFiles && !IsGhostscriptInstalled())
-        {
-            await this.ShowMessageDialogAsync(
-                _resourceLoader.GetString("GhostscriptRequiredDialogContent"),
-                _resourceLoader.GetString("GhostscriptRequiredDialogTitle"));
-            return;
-        }
-
-        // TODO: Convert images
-        PreviewFrame.IsEnabled = false;
-        SettingsScrollViewer.IsEnabled = false;
-        SetConversionActionEnabled(false);
-        ProgressGrid.Visibility = Visibility.Visible;
-        AddProgressLog(_resourceLoader.GetString("ConversionStarted"));
-
-        var formatName = FormatComboBox.SelectedItem as string;
-        var rotationSetting = RotationToggleSwitch.IsOn ? (RotationSetting)RotationSettingsComboBox.SelectedIndex : (RotationSetting)(-1);
-        var sizeSetting = (SizeSetting)SizeSettingsComboBox.SelectedIndex;
-        var sizeUnit = (SizeUnit)SizeUnitComboBox.SelectedIndex;
-        var resizeInterpolationSetting = (ResizeInterpolationSetting)ResizeInterpolationComboBox.SelectedIndex;
-        var width = (uint)WidthNumberBox.Value;
-        var height = (uint)HeightNumberBox.Value;
-        var prefix = PrefixTextBox.Text;
-        var format = GetCurrentOutputFormat();
-        var outputFormatSupportsAlpha = DoesOutputFormatSupportAlpha(format);
-        var horizontalCropAnchor = (HorizontalCropAnchor)CropHorizontalAnchorComboBox.SelectedIndex;
-        var verticalCropAnchor = (VerticalCropAnchor)CropVerticalAnchorComboBox.SelectedIndex;
-        var cropBackgroundColor = CreateMagickColor(outputFormatSupportsAlpha ? _cropBackgroundColor : CreateOpaqueColor(_cropBackgroundColor));
-        var parallelExecution = ParallelExecutionToggleSwitch.IsOn;
-        var preserveFileDate = PreserveFileDateToggleSwitch.IsOn;
-        var preserveExif = PreserveExifToggleSwitch.IsOn;
-        var overwriteFile = OverwriteFileToggleSwitch.IsOn;
-        var deleteOriginal = DeleteOriginalToggleSwitch.IsOn;
-        var preserveAnimation = PreserveAnimationToggleSwitch.IsOn;
-        var quality = (uint)QualityNumberBox.Value;
-        var outputFolderSetting = GetOutputFolderSetting();
-        var customFolderPath = CustomFolderPathTextBox.Text;
-        var subfolderName = SubfolderNameTextBox.Text;
-
-        string GetOutputDirectory(string sourceFilePath)
-        {
-            var sourceDirectory = Path.GetDirectoryName(sourceFilePath);
-            if (outputFolderSetting == OutputFolderSetting.SameFolder) return sourceDirectory;
-            if (outputFolderSetting == OutputFolderSetting.PhotoFolder)
-                return Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-            if (outputFolderSetting == OutputFolderSetting.CustomFolder && !string.IsNullOrEmpty(customFolderPath))
-                return customFolderPath;
-            if (outputFolderSetting == OutputFolderSetting.Subfolder && !string.IsNullOrEmpty(subfolderName))
-                return Path.Combine(sourceDirectory, subfolderName);
-            return sourceDirectory;
-        }
-
-        async Task ConvertSingleImageAsync(ImageFileViewModel viewModel)
-        {
-            var directoryPath = GetOutputDirectory(viewModel.FilePath);
-            Directory.CreateDirectory(directoryPath);
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                if (!parallelExecution) ImagesListView.SelectedItem = viewModel;
-                AddProgressLog(string.Format(_resourceLoader.GetString("ConvertingFile"), viewModel.FileName));
-            });
-
-            var fileName = GetSavedFileName(viewModel, prefix, format);
-            var filePath = Path.Combine(directoryPath, fileName);
-
-            if (!overwriteFile && File.Exists(filePath))
-            {
-                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-                var extension = Path.GetExtension(fileName);
-                var counter = 1;
-                do
-                {
-                    fileName = $"{fileNameWithoutExtension} ({counter}){extension}";
-                    filePath = Path.Combine(directoryPath, fileName);
-                    counter++;
-                } while (File.Exists(filePath));
-            }
-
-            // Preserve original file dates if needed
-            var originalCreationTime = preserveFileDate ? File.GetCreationTime(viewModel.FilePath) : default;
-            var originalLastWriteTime = preserveFileDate ? File.GetLastWriteTime(viewModel.FilePath) : default;
-
-            // Animated format handling: preserve animation when input has multiple frames
-            if (preserveAnimation && Constants.AnimatedOutputFormats.Contains(formatName) && Constants.AnimatedInputExtensions.Contains(Path.GetExtension(viewModel.FilePath)))
-            {
-                var isAnimated = await Task.Run(() =>
-                {
-                    using var collection = new MagickImageCollection(viewModel.FilePath);
-                    if (collection.Count <= 1) return false;
-
-                    foreach (var frame in collection)
-                    {
-                        var magickFrame = (MagickImage)frame;
-                        if (rotationSetting >= 0) RotateImage(magickFrame, rotationSetting);
-                        ResizeImage(magickFrame, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
-                        if (!preserveExif) magickFrame.Strip();
-                        else if (rotationSetting > 0) magickFrame.SetAttribute("exif:Orientation", "1");
-                        magickFrame.Quality = quality;
-                    }
-
-                    collection.Write(filePath);
-                    return true;
-                });
-
-                if (isAnimated)
-                {
-                    if (preserveFileDate)
-                    {
-                        File.SetCreationTime(filePath, originalCreationTime);
-                        File.SetLastWriteTime(filePath, originalLastWriteTime);
-                    }
-
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        if (parallelExecution) ImagesListView.SelectedItem = viewModel;
-                        AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
-                    });
-
-                    if (deleteOriginal && filePath != viewModel.FilePath)
-                    {
-                        DispatcherQueue.TryEnqueue(() =>
-                        {
-                            _imageFileViewModels.Remove(viewModel);
-                            UpdateImageListDependentControls();
-                            File.Delete(viewModel.FilePath);
-                        });
-                    }
-                    return;
-                }
-            }
-
-            using var image = CreateConversionMagickImage(viewModel, sizeSetting, sizeUnit, width, height);
-
-            if (formatName != "ICO") await Task.Run(() =>
-            {
-                if (rotationSetting >= 0) RotateImage(image, rotationSetting);
-                ResizeImage(image, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
-            });
-            // Convert to ico format if selected
-            else
-            {
-                using var collection = new MagickImageCollection();
-
-                // Define icon sizes (all available size for ico format)
-                uint[] sizes = [16, 32, 48, 64, 128, 256];
-
-                // Generate icon images with different sizes
-                foreach (var size in sizes)
-                {
-                    var iconImage = viewModel.CreateMagickImage(size, size);
-                    if (rotationSetting >= 0) RotateImage(iconImage, rotationSetting);
-                    iconImage.Resize(size, size);
-                    collection.Add(iconImage);
-                }
-
-                collection.Write(filePath, MagickFormat.Ico);
-
-                if (preserveFileDate)
-                {
-                    File.SetCreationTime(filePath, originalCreationTime);
-                    File.SetLastWriteTime(filePath, originalLastWriteTime);
-                }
-
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    if (parallelExecution) ImagesListView.SelectedItem = viewModel;
-                    AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
-                });
-
-                if (deleteOriginal && filePath != viewModel.FilePath)
-                {
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        _imageFileViewModels.Remove(viewModel);
-                        UpdateImageListDependentControls();
-                        File.Delete(viewModel.FilePath);
-                    });
-                }
-                return;
-            }
-
-            // Handle EXIF: strip orientation if manually rotated, strip all if not preserving
-            if (!preserveExif) image.Strip();
-            else if (rotationSetting > 0) image.SetAttribute("exif:Orientation", "1");
-
-            if (formatName == "JPG")
-            {
-                image.Format = MagickFormat.Jpeg;
-                image.Quality = quality;
-            }
-            else if (formatName == "JXL")
-            {
-                image.Format = MagickFormat.Jxl;
-                image.Quality = quality;
-            }
-            else if (formatName == "WEBP")
-            {
-                image.Format = MagickFormat.WebP;
-                image.Quality = quality;
-            }
-            else if (formatName == "AVIF")
-            {
-                image.Format = MagickFormat.Avif;
-                image.Quality = quality;
-            }
-            else if (formatName == "TIFF")
-            {
-                image.Format = MagickFormat.Tiff;
-                image.Quality = quality;
-            }
-            else if (formatName == "PNG") image.Format = MagickFormat.Png;
-            else if (formatName == "BMP") image.Format = MagickFormat.Bmp;
-
-            await Task.Run(() => image.Write(filePath));
-
-            if (preserveFileDate)
-            {
-                File.SetCreationTime(filePath, originalCreationTime);
-                File.SetLastWriteTime(filePath, originalLastWriteTime);
-            }
-
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                if (parallelExecution) ImagesListView.SelectedItem = viewModel;
-                AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
-            });
-
-            if (deleteOriginal && filePath != viewModel.FilePath)
-            {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    _imageFileViewModels.Remove(viewModel);
-                    UpdateImageListDependentControls();
-                    File.Delete(viewModel.FilePath);
-                });
-            }
-        }
-
-        if (parallelExecution) await Parallel.ForEachAsync(_imageFileViewModels.ToList(), async (viewModel, _) => await ConvertSingleImageAsync(viewModel));
-        else foreach (var viewModel in _imageFileViewModels.ToList()) await ConvertSingleImageAsync(viewModel);
-
-        AddProgressLog(_resourceLoader.GetString("ConversionComplete"));
-
-        await this.ShowMessageDialogAsync(
-            string.Format(_resourceLoader.GetString("ConversionCompleteDialogContent"), _imageFileViewModels.Count),
-            _resourceLoader.GetString("ConversionCompleteDialogTitle"));
-
-        PreviewFrame.IsEnabled = true;
-        SettingsScrollViewer.IsEnabled = true;
-        UpdateImageListDependentControls();
-        ProgressGrid.Visibility = Visibility.Collapsed;
-        _progressLog.Clear();
-    }
-
-    public void AddProgressLog(string message)
-    {
-        _progressLog.Add(message);
-        ProgressLogListView.UpdateLayout();
-    }
-
-    private void UpdateImageListDependentControls()
-    {
-        var hasImages = _imageFileViewModels.Count > 0;
-        DropPlaceholderButton.Visibility = hasImages ? Visibility.Collapsed : Visibility.Visible;
-        SetConversionActionEnabled(hasImages);
-        ConvertButton.Content = hasImages
-            ? _resourceLoader.GetString("ConvertButtonContent")
-            : _resourceLoader.GetString("ConvertButtonNoImagesContent");
-    }
-
-    private void SetConversionActionEnabled(bool isEnabled)
-    {
-        ConvertButton.IsEnabled = isEnabled;
-        FileStartConversionMenuFlyoutItem.IsEnabled = isEnabled;
-    }
-
-    private void UpdateLanguageMenuFlyoutItems()
-    {
-        var currentLanguageTag = GetCurrentLanguageTag();
-        EnglishLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "en-US");
-        KoreanLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "ko-KR");
-        JapaneseLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "ja-JP");
-        SimplifiedChineseLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "zh-Hans");
-        TraditionalChineseLanguageMenuFlyoutItem.IsChecked = LanguageTagsMatch(currentLanguageTag, "zh-Hant");
-    }
-
-    private static string GetCurrentLanguageTag()
-    {
-        var primaryLanguageOverride = ApplicationLanguages.PrimaryLanguageOverride;
-        if (!string.IsNullOrWhiteSpace(primaryLanguageOverride)) return primaryLanguageOverride;
-        return ApplicationLanguages.Languages[0] ?? "en-US";
-    }
-
-    private static bool LanguageTagsMatch(string currentLanguageTag, string supportedLanguageTag)
-    {
-        var normalizedCurrentLanguageTag = NormalizeLanguageTagForMenu(currentLanguageTag);
-        var normalizedSupportedLanguageTag = NormalizeLanguageTagForMenu(supportedLanguageTag);
-        if (string.Equals(normalizedCurrentLanguageTag, normalizedSupportedLanguageTag, StringComparison.OrdinalIgnoreCase)) return true;
-        if (normalizedSupportedLanguageTag.StartsWith("zh-", StringComparison.OrdinalIgnoreCase)) return false;
-
-        var currentLanguagePrefix = normalizedCurrentLanguageTag.Split('-')[0];
-        var supportedLanguagePrefix = normalizedSupportedLanguageTag.Split('-')[0];
-        return string.Equals(currentLanguagePrefix, supportedLanguagePrefix, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string NormalizeLanguageTagForMenu(string languageTag)
-    {
-        if (string.IsNullOrWhiteSpace(languageTag)) return "en-US";
-
-        var languageTagSegments = languageTag.Split('-', StringSplitOptions.RemoveEmptyEntries);
-        if (languageTagSegments.Length == 0) return "en-US";
-        if (!string.Equals(languageTagSegments[0], "zh", StringComparison.OrdinalIgnoreCase)) return languageTag;
-
-        var isTraditionalChinese = languageTagSegments.Any(segment =>
-            string.Equals(segment, "Hant", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(segment, "TW", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(segment, "HK", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(segment, "MO", StringComparison.OrdinalIgnoreCase));
-        if (isTraditionalChinese) return "zh-Hant";
-
-        var isSimplifiedChinese = languageTagSegments.Any(segment =>
-            string.Equals(segment, "Hans", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(segment, "CN", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(segment, "SG", StringComparison.OrdinalIgnoreCase));
-        if (isSimplifiedChinese) return "zh-Hans";
-
-        return "zh-Hans";
-    }
-
-    private static bool IsGhostscriptInstalled()
-    {
-        // Check common Ghostscript installation paths
-        var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-        var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-
-        foreach (var baseDir in new[] { programFiles, programFilesX86 })
-        {
-            var gsDir = Path.Combine(baseDir, "gs");
-            if (!Directory.Exists(gsDir)) continue;
-
-            // Look for gswin64c.exe or gswin32c.exe in any version subdirectory
-            try
-            {
-                var found = Directory.EnumerateFiles(gsDir, "gswin*c.exe", SearchOption.AllDirectories).Any();
-                if (found) return true;
-            }
-            catch { }
-        }
-
-        // Check if gswin64c.exe or gswin32c.exe is on PATH
-        var pathEnv = Environment.GetEnvironmentVariable("PATH") ?? "";
-        foreach (var dir in pathEnv.Split(';', StringSplitOptions.RemoveEmptyEntries))
-        {
-            try
-            {
-                if (File.Exists(Path.Combine(dir, "gswin64c.exe")) ||
-                    File.Exists(Path.Combine(dir, "gswin32c.exe")))
-                    return true;
-            }
-            catch { }
-        }
-
-        return false;
-    }
-
-    private static FilterType? GetResizeFilterType(ResizeInterpolationSetting resizeInterpolationSetting)
-    {
-        if (resizeInterpolationSetting == ResizeInterpolationSetting.NoInterpolation) return FilterType.Point;
-        if (resizeInterpolationSetting == ResizeInterpolationSetting.Box) return FilterType.Box;
-        if (resizeInterpolationSetting == ResizeInterpolationSetting.Triangle) return FilterType.Triangle;
-        if (resizeInterpolationSetting == ResizeInterpolationSetting.Cubic) return FilterType.Cubic;
-        if (resizeInterpolationSetting == ResizeInterpolationSetting.Lanczos) return FilterType.Lanczos;
-        return null;
-    }
-
-    private static void ApplyResize(MagickImage image, MagickGeometry geometry, ResizeInterpolationSetting resizeInterpolationSetting)
-    {
-        var filterType = GetResizeFilterType(resizeInterpolationSetting);
-        if (filterType.HasValue) image.Resize(geometry, filterType.Value);
-        else image.Resize(geometry);
-    }
-
-    private static void ApplyResize(MagickImage image, uint width, uint height, ResizeInterpolationSetting resizeInterpolationSetting)
-    {
-        var filterType = GetResizeFilterType(resizeInterpolationSetting);
-        if (filterType.HasValue) image.Resize(width, height, filterType.Value);
-        else image.Resize(width, height);
-    }
-
-    private static void ResizeImage(MagickImage image, SizeSetting sizeSetting, SizeUnit sizeUnit, ResizeInterpolationSetting resizeInterpolationSetting, uint width, uint height, HorizontalCropAnchor horizontalCropAnchor, VerticalCropAnchor verticalCropAnchor, MagickColor cropBackgroundColor)
-    {
-        if (sizeSetting == SizeSetting.NoResize) return;
-
-        var (targetWidth, targetHeight) = GetTargetDimensions(image, sizeUnit, width, height);
-
-        if (sizeSetting == SizeSetting.ResizeToFill)
-        {
-            var size = new MagickGeometry(targetWidth, targetHeight);
-            size.IgnoreAspectRatio = true;
-            ApplyResize(image, size, resizeInterpolationSetting);
-        }
-        else if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) ApplyResize(image, targetWidth, 0, resizeInterpolationSetting);
-        else if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) ApplyResize(image, 0, targetHeight, resizeInterpolationSetting);
-        else if (sizeSetting == SizeSetting.CropToSize) CropImageToTargetSize(image, targetWidth, targetHeight, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
-    }
-
-    private async void OnAddImageAppBarButtonClicked(object sender, RoutedEventArgs e)
-    {
-        var filePicker = new FileOpenPicker(MainWindow.Instance.AppWindow.Id);
-        foreach (var imageFileFormat in Constants.ImageFileFormats)
-        {
-            filePicker.FileTypeFilter.Add(imageFileFormat);
-        }
-        filePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-
-        var files = await filePicker.PickMultipleFilesAsync();
-        AddImageFiles([.. files.Select(file => file.Path)]);
-    }
-
-    private void OnAddImageAppBarButtonKeyboardAcceleratorInvoked(object sender, KeyboardAcceleratorInvokedEventArgs e)
-    {
-        e.Handled = true;
-
-        OnAddImageAppBarButtonClicked(sender, null);
-    }
-
-    private void OnFileAddMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => OnAddImageAppBarButtonClicked(sender, null);
-
-    private async void OnFileStartConversionMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => await ConvertImagesAsync();
-
-    private void OnFileCloseMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => MainWindow.Instance.Close();
-
-    private async void OnCheckForUpdatesMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => await CheckForUpdatesAsync();
-
-    private async void OnOpenGitHubRepositoryMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => await OpenGitHubRepositoryPageAsync();
-
-    private async void OnLanguageRadioMenuFlyoutItemClicked(object sender, RoutedEventArgs e)
-    {
-        if (sender is not RadioMenuFlyoutItem selectedLanguageMenuFlyoutItem) return;
-        if (selectedLanguageMenuFlyoutItem.Tag is not string selectedLanguageTag) return;
-        if (LanguageTagsMatch(GetCurrentLanguageTag(), selectedLanguageTag)) return;
-
-        ApplicationLanguages.PrimaryLanguageOverride = selectedLanguageTag;
-        UpdateLanguageMenuFlyoutItems();
-
-        var resourceLoader = new ResourceLoader();
-        await this.ShowMessageDialogAsync(
-            resourceLoader.GetString("LanguageChangeDialogContent"),
-            resourceLoader.GetString("LanguageChangeDialogTitle"));
-    }
-
-    private async Task CheckForUpdatesAsync()
-    {
-        MainWindow.Instance.ShowLoading(_resourceLoader.GetString("UpdateCheckLoading"));
-        try
-        {
-            var availableUpdateCount = await StoreUpdateService.GetAvailableUpdateCountAsync();
-            MainWindow.Instance.HideLoading();
-            if (availableUpdateCount <= 0)
-            {
-                await this.ShowMessageDialogAsync(
-                    _resourceLoader.GetString("NoUpdatesDialogContent"),
-                    _resourceLoader.GetString("NoUpdatesDialogTitle"));
-                return;
-            }
-
-            var dialogResult = await this.ShowMessageDialogAsync(
-                string.Format(_resourceLoader.GetString("UpdateAvailableDialogContent"), availableUpdateCount),
-                _resourceLoader.GetString("UpdateAvailableDialogTitle"),
-                showCancel: true);
-            if (dialogResult != ContentDialogResult.Primary) return;
-
-            var openedStoreProductPage = await StoreUpdateService.OpenStoreProductPageAsync();
-            if (openedStoreProductPage) return;
-
-            await this.ShowMessageDialogAsync(
-                _resourceLoader.GetString("OpenStoreFailedDialogContent"),
-                _resourceLoader.GetString("OpenStoreFailedDialogTitle"));
-        }
-        catch (COMException)
-        {
-            MainWindow.Instance.HideLoading();
-            await this.ShowMessageDialogAsync(
-                _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
-                _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
-        }
-        catch (InvalidOperationException)
-        {
-            MainWindow.Instance.HideLoading();
-            await this.ShowMessageDialogAsync(
-                _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
-                _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
-        }
-        catch (UnauthorizedAccessException)
-        {
-            MainWindow.Instance.HideLoading();
-            await this.ShowMessageDialogAsync(
-                _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
-                _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
-        }
-    }
-
-    private async Task OpenGitHubRepositoryPageAsync()
-    {
-        var openedGitHubRepositoryPage = await Launcher.LaunchUriAsync(s_gitHubRepositoryPageAddress);
-        if (openedGitHubRepositoryPage) return;
-
-        await this.ShowMessageDialogAsync(
-            _resourceLoader.GetString("OpenGitHubFailedDialogContent"),
-            _resourceLoader.GetString("OpenGitHubFailedDialogTitle"));
-    }
-
-    private void OnDropPlaceholderButtonClicked(object sender, RoutedEventArgs e) => OnAddImageAppBarButtonClicked(sender, null);
-
-    private void OnDropPlaceholderButtonDragOver(object sender, DragEventArgs e)
-    {
-        if (e.DataView.Contains(StandardDataFormats.StorageItems))
-        {
-            e.AcceptedOperation = DataPackageOperation.Copy;
-        }
-    }
-
-    private async void OnDropPlaceholderButtonDrop(object sender, DragEventArgs e)
-    {
-        if (!e.DataView.Contains(StandardDataFormats.StorageItems)) return;
-
-        var items = await e.DataView.GetStorageItemsAsync();
-        var supportedExtensions = new HashSet<string>(Constants.ImageFileFormats, StringComparer.OrdinalIgnoreCase);
-
-        var filePaths = items
-            .OfType<StorageFile>()
-            .Where(file => supportedExtensions.Contains(file.FileType))
-            .Select(file => file.Path)
-            .ToList();
-
-        if (filePaths.Count > 0) AddImageFiles(filePaths);
-    }
-
-    private void OnDeleteImageAppBarButtonClicked(object sender, RoutedEventArgs e)
-    {
-        // Get selected item
-        if (ImagesListView.SelectedItem is not ImageFileViewModel imageFileViewModel) return;
-
-        // Select next or previous item
-        var index = _imageFileViewModels.IndexOf(imageFileViewModel);
-        var nextIndex = index + 1;
-        var previousIndex = index - 1;
-        var nextItemExists = nextIndex < _imageFileViewModels.Count;
-        var previousItemExists = previousIndex >= 0;
-        if (nextItemExists) ImagesListView.SelectedIndex = nextIndex;
-        else if (previousItemExists) ImagesListView.SelectedIndex = previousIndex;
-
-        // Remove item
-        _imageFileViewModels.Remove(imageFileViewModel);
-        UpdateImageListDependentControls();
-    }
-
-    // Clear all items
-    private void OnClearImageAppBarButtonClicked(object sender, RoutedEventArgs e)
-    {
-        _imageFileViewModels.Clear();
-        UpdateImageListDependentControls();
-    }
-
     private async void OnImageListViewSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        // Get selected item
-        var imageFileViewModel = ImagesListView.SelectedItem as ImageFileViewModel;
-        _selectedImageFileViewModel = imageFileViewModel;
-
-        // Update app bar buttons state if item is selected
-        DeleteAppBarButton.IsEnabled = imageFileViewModel != null;
-        OpenSameFolderButton.IsEnabled = imageFileViewModel != null;
-        OpenSubfolderButton.IsEnabled = imageFileViewModel != null;
-
-        // Update prefix format preview text box
-        UpdatePrefixFormatPreviewTextBox();
-
-        // Reset preview state
-        PreviewImage.Source = null;
-        NoPreviewStackPanel.Visibility = Visibility.Visible;
-
+        var imageFileViewModel = ViewModel.SelectedImageFile;
         if (imageFileViewModel == null) return;
 
         var imageFilePath = imageFileViewModel.FilePath;
         var extension = Path.GetExtension(imageFilePath);
 
-        // Native format: use BitmapImage directly
+        PreviewImage.Source = null;
+
         if (!s_nonNativePreviewExtensions.Contains(extension))
         {
-            NoPreviewStackPanel.Visibility = Visibility.Collapsed;
-            var bitmapImage = new BitmapImage() { UriSource = new Uri(imageFilePath) };
+            var bitmapImage = new BitmapImage { UriSource = new Uri(imageFilePath) };
             PreviewImage.Source = bitmapImage;
             return;
         }
 
-        // PDF requires Ghostscript
         if (extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase) && !IsGhostscriptInstalled()) return;
 
-        // Non-native format: generate preview with ImageMagick on background thread
         _previewCancellationTokenSource?.Cancel();
         _previewCancellationTokenSource?.Dispose();
         _previewCancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = _previewCancellationTokenSource.Token;
 
         MainWindow.Instance.ShowLoading(_resourceLoader.GetString("PreviewLoading"));
+        await LoadNonNativePreviewAsync(imageFileViewModel, cancellationToken);
+    }
+
+    private async Task LoadNonNativePreviewAsync(ImageFileViewModel imageFileViewModel, CancellationToken cancellationToken)
+    {
         try
         {
             var imageBytes = await Task.Run(() =>
@@ -945,9 +150,7 @@ public sealed partial class MainPage : Page
             var bitmapImage = new BitmapImage();
             await bitmapImage.SetSourceAsync(stream);
             PreviewImage.Source = bitmapImage;
-            NoPreviewStackPanel.Visibility = Visibility.Collapsed;
 
-            // Manually call zoom factor reset here because ImageOpened event doesn't fire when setting BitmapImage source from stream
             ResetImagePreviewZoomFactor(bitmapImage.PixelWidth, bitmapImage.PixelHeight);
         }
         catch (OperationCanceledException) { }
@@ -955,283 +158,78 @@ public sealed partial class MainPage : Page
         finally { MainWindow.Instance.HideLoading(); }
     }
 
-    // Reset image preview zoom factor when new image is selected
-    private void OnImagePreviewImageOpened(object sender, RoutedEventArgs e) => ResetImagePreviewZoomFactor();
-
-    // Update prefix format preview text box when prefix text box text changes
-    private void OnPrefixTextBoxTextChanged(object sender, TextChangedEventArgs e) => UpdatePrefixFormatPreviewTextBox();
-
-    private void OnFormatComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private static bool IsGhostscriptInstalled()
     {
-        if (!_isInitialized) return;
+        var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+        var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
 
-        var format = GetCurrentOutputFormat();
+        foreach (var baseDir in new[] { programFiles, programFilesX86 })
+        {
+            var gsDir = Path.Combine(baseDir, "gs");
+            if (!Directory.Exists(gsDir)) continue;
 
-        // Show or hide quality NumberBox depending on the selected format
-        var isQualityAvailable = format == ".jpg" || format == ".jxl" || format == ".webp" || format == ".avif" || format == ".tiff";
-        QualityNumberBox.Visibility = isQualityAvailable ? Visibility.Visible : Visibility.Collapsed;
+            try
+            {
+                if (Directory.EnumerateFiles(gsDir, "gswin*c.exe", SearchOption.AllDirectories).Any()) return true;
+            }
+            catch { }
+        }
 
-        // Show or hide size settings depending on the selected format
-        var isSizeAvailable = format != ".ico";
-        SizeSettingsStackPanel.Visibility = isSizeAvailable ? Visibility.Visible : Visibility.Collapsed;
-        UpdateCropBackgroundColorDisplay();
+        var pathEnv = Environment.GetEnvironmentVariable("PATH") ?? "";
+        foreach (var dir in pathEnv.Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            try
+            {
+                if (File.Exists(Path.Combine(dir, "gswin64c.exe")) ||
+                    File.Exists(Path.Combine(dir, "gswin32c.exe")))
+                    return true;
+            }
+            catch { }
+        }
 
-        // Update prefix format preview text box
-        UpdatePrefixFormatPreviewTextBox();
+        return false;
     }
+
+    private void OnImagePreviewImageOpened(object sender, RoutedEventArgs e) => ResetImagePreviewZoomFactor();
 
     private void OnPreviewScrollViewerSizeChanged(object sender, SizeChangedEventArgs e) => ResetImagePreviewZoomFactor();
 
-    private void OnRotationToggleSwitchToggled(object sender, RoutedEventArgs e)
+    private void OnDropPlaceholderButtonClicked(object sender, RoutedEventArgs e) =>
+        WeakReferenceMessenger.Default.Send(ShowFileOpenPickerMessage.Instance);
+
+    private void OnDropPlaceholderButtonDragOver(object sender, DragEventArgs e)
     {
-        if (!_isInitialized) return;
-        RotationSettingsComboBox.Visibility = RotationToggleSwitch.IsOn ? Visibility.Visible : Visibility.Collapsed;
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            e.AcceptedOperation = DataPackageOperation.Copy;
     }
 
-    private static void RotateImage(MagickImage image, RotationSetting rotationSetting)
+    private async void OnDropPlaceholderButtonDrop(object sender, DragEventArgs e)
     {
-        if (rotationSetting == RotationSetting.AutoRotateByExif) image.AutoOrient();
-        else if (rotationSetting == RotationSetting.RotateClockwise90) image.Rotate(90);
-        else if (rotationSetting == RotationSetting.RotateCounterClockwise90) image.Rotate(270);
-        else if (rotationSetting == RotationSetting.Rotate180) image.Rotate(180);
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems)) return;
+
+        var items = await e.DataView.GetStorageItemsAsync();
+        var supportedExtensions = new HashSet<string>(Constants.ImageFileFormats, StringComparer.OrdinalIgnoreCase);
+
+        var filePaths = items
+            .OfType<StorageFile>()
+            .Where(file => supportedExtensions.Contains(file.FileType))
+            .Select(file => file.Path)
+            .ToList();
+
+        if (filePaths.Count > 0)
+            WeakReferenceMessenger.Default.Send(new AddImageFilesMessage(filePaths));
     }
 
-    private void OnSizeSettingsComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void OnAddImageAppBarButtonKeyboardAcceleratorInvoked(object sender, KeyboardAcceleratorInvokedEventArgs e)
     {
-        var sizeSetting = (SizeSetting)SizeSettingsComboBox.SelectedIndex;
-
-        // Show or hide resize controls depending on the selected size setting
-        if (sizeSetting == SizeSetting.NoResize)
-        {
-            SizeGrid.Visibility = Visibility.Collapsed;
-            SizeUnitComboBox.Visibility = Visibility.Collapsed;
-            ResizeInterpolationComboBox.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            SizeGrid.Visibility = Visibility.Visible;
-            SizeUnitComboBox.Visibility = Visibility.Visible;
-            ResizeInterpolationComboBox.Visibility = sizeSetting == SizeSetting.CropToSize ? Visibility.Collapsed : Visibility.Visible;
-        }
-
-        // Enable width and height text boxes
-        if (sizeSetting == SizeSetting.ResizeToFill || sizeSetting == SizeSetting.CropToSize)
-        {
-            WidthNumberBox.IsEnabled = true;
-            HeightNumberBox.IsEnabled = true;
-        }
-        // Enable width text box and disable height text box
-        else if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio)
-        {
-            WidthNumberBox.IsEnabled = true;
-            HeightNumberBox.IsEnabled = false;
-        }
-        // Enable height text box and disable width text box
-        else if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio)
-        {
-            WidthNumberBox.IsEnabled = false;
-            HeightNumberBox.IsEnabled = true;
-        }
-
-        UpdateCropSettingsControls(sizeSetting);
+        e.Handled = true;
+        WeakReferenceMessenger.Default.Send(ShowFileOpenPickerMessage.Instance);
     }
 
-    private void OnSizeUnitComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void OnLanguageRadioMenuFlyoutItemClicked(object sender, RoutedEventArgs e)
     {
-        var sizeUnit = (SizeUnit)SizeUnitComboBox.SelectedIndex;
-
-        // Update width and height text boxes headers and values depending on the selected size unit
-        if (sizeUnit == SizeUnit.Percent)
-        {
-            WidthNumberBox.Header = _resourceLoader.GetString("WidthPercent");
-            HeightNumberBox.Header = _resourceLoader.GetString("HeightPercent");
-
-            // Reset values
-            WidthNumberBox.Value = 100;
-            HeightNumberBox.Value = 100;
-        }
-        else if (sizeUnit == SizeUnit.Pixel)
-        {
-            WidthNumberBox.Header = _resourceLoader.GetString("WidthPixel");
-            HeightNumberBox.Header = _resourceLoader.GetString("HeightPixel");
-
-            // Reset values
-            WidthNumberBox.Value = 0;
-            HeightNumberBox.Value = 0;
-        }
-        UpdateCropSettingsControls((SizeSetting)SizeSettingsComboBox.SelectedIndex);
+        if (sender is not RadioMenuFlyoutItem selectedLanguageMenuFlyoutItem) return;
+        if (selectedLanguageMenuFlyoutItem.Tag is not string selectedLanguageTag) return;
+        await ViewModel.ChangeLanguageCommand.ExecuteAsync(selectedLanguageTag);
     }
-
-    private void OnCropBackgroundColorPickerColorChanged(ColorPicker sender, ColorChangedEventArgs args) => ApplyCropBackgroundColor(args.NewColor);
-
-    private void OnZoomInAppBarButtonClicked(object sender, RoutedEventArgs e)
-    {
-        var zoomFactor = PreviewScrollViewer.ZoomFactor;
-        PreviewScrollViewer.ChangeView(null, null, (float)(zoomFactor + 0.1));
-    }
-
-    private void OnZoomOutAppBarButtonClicked(object sender, RoutedEventArgs e)
-    {
-        var zoomFactor = PreviewScrollViewer.ZoomFactor;
-        PreviewScrollViewer.ChangeView(null, null, (float)(zoomFactor - 0.1));
-    }
-
-    private void OnResetZoomAppBarButtonClicked(object sender, RoutedEventArgs e) => ResetImagePreviewZoomFactor();
-
-    private OutputFolderSetting GetOutputFolderSetting()
-    {
-        if (PhotoFolderRadioButton.IsChecked == true) return OutputFolderSetting.PhotoFolder;
-        if (CustomFolderRadioButton.IsChecked == true) return OutputFolderSetting.CustomFolder;
-        if (SubfolderRadioButton.IsChecked == true) return OutputFolderSetting.Subfolder;
-        return OutputFolderSetting.SameFolder;
-    }
-
-    private void OnOpenSameFolderButtonClicked(object sender, RoutedEventArgs e)
-    {
-        if (_selectedImageFileViewModel == null) return;
-        var directoryPath = Path.GetDirectoryName(_selectedImageFileViewModel.FilePath);
-        Process.Start(new ProcessStartInfo(directoryPath) { UseShellExecute = true });
-    }
-
-    private void OnOpenPhotoFolderButtonClicked(object sender, RoutedEventArgs e)
-    {
-        var photoFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-        Process.Start(new ProcessStartInfo(photoFolder) { UseShellExecute = true });
-    }
-
-    private void OnOpenCustomFolderButtonClicked(object sender, RoutedEventArgs e)
-    {
-        var path = CustomFolderPathTextBox.Text;
-        if (string.IsNullOrEmpty(path) || !Directory.Exists(path)) return;
-        Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-    }
-
-    private void OnOpenSubfolderButtonClicked(object sender, RoutedEventArgs e)
-    {
-        if (_selectedImageFileViewModel == null) return;
-        var sourceDirectory = Path.GetDirectoryName(_selectedImageFileViewModel.FilePath);
-        var subfolderName = SubfolderNameTextBox.Text;
-        if (string.IsNullOrEmpty(subfolderName)) return;
-        var subfolderPath = Path.Combine(sourceDirectory, subfolderName);
-        if (!Directory.Exists(subfolderPath)) return;
-        Process.Start(new ProcessStartInfo(subfolderPath) { UseShellExecute = true });
-    }
-
-    private async void OnBrowseCustomFolderButtonClicked(object sender, RoutedEventArgs e)
-    {
-        var folderPicker = new FolderPicker(MainWindow.Instance.AppWindow.Id);
-        folderPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-
-        var folder = await folderPicker.PickSingleFolderAsync();
-        if (folder == null) return;
-
-        CustomFolderPathTextBox.Text = folder.Path;
-        OpenCustomFolderButton.IsEnabled = true;
-        CustomFolderRadioButton.IsChecked = true;
-    }
-
-    private void SaveSettings()
-    {
-        _localSettings.Values["FormatIndex"] = FormatComboBox.SelectedIndex;
-        _localSettings.Values["Quality"] = QualityNumberBox.Value;
-        _localSettings.Values["RotationEnabled"] = RotationToggleSwitch.IsOn;
-        _localSettings.Values["RotationIndex"] = RotationSettingsComboBox.SelectedIndex;
-        _localSettings.Values["SizeSettingIndex"] = SizeSettingsComboBox.SelectedIndex;
-        _localSettings.Values["SizeUnitIndex"] = SizeUnitComboBox.SelectedIndex;
-        _localSettings.Values["ResizeInterpolationSettingIndex"] = ResizeInterpolationComboBox.SelectedIndex;
-        _localSettings.Values["Width"] = WidthNumberBox.Value;
-        _localSettings.Values["Height"] = HeightNumberBox.Value;
-        _localSettings.Values["CropHorizontalAnchorIndex"] = CropHorizontalAnchorComboBox.SelectedIndex;
-        _localSettings.Values["CropVerticalAnchorIndex"] = CropVerticalAnchorComboBox.SelectedIndex;
-        _localSettings.Values["CropBackgroundColor"] = ConvertColorToSettingValue(_cropBackgroundColor);
-        _localSettings.Values["Prefix"] = PrefixTextBox.Text;
-        _localSettings.Values["OverwriteFile"] = OverwriteFileToggleSwitch.IsOn;
-        _localSettings.Values["OutputFolderSetting"] = (int)GetOutputFolderSetting();
-        _localSettings.Values["CustomFolderPath"] = CustomFolderPathTextBox.Text;
-        _localSettings.Values["SubfolderName"] = SubfolderNameTextBox.Text;
-        _localSettings.Values["ParallelExecution"] = ParallelExecutionToggleSwitch.IsOn;
-        _localSettings.Values["PreserveFileDate"] = PreserveFileDateToggleSwitch.IsOn;
-        _localSettings.Values["PreserveExif"] = PreserveExifToggleSwitch.IsOn;
-        _localSettings.Values["PreserveAnimation"] = PreserveAnimationToggleSwitch.IsOn;
-        _localSettings.Values["DeleteOriginal"] = DeleteOriginalToggleSwitch.IsOn;
-    }
-
-    private void LoadSettings()
-    {
-        var values = _localSettings.Values;
-        if (!values.TryGetValue("FormatIndex", out object value)) return;
-
-        FormatComboBox.SelectedIndex = (int)value;
-        QualityNumberBox.Value = (double)values["Quality"];
-        RotationToggleSwitch.IsOn = (bool)values["RotationEnabled"];
-        RotationSettingsComboBox.SelectedIndex = (int)values["RotationIndex"];
-        SizeSettingsComboBox.SelectedIndex = (int)values["SizeSettingIndex"];
-        SizeUnitComboBox.SelectedIndex = (int)values["SizeUnitIndex"];
-        if (values.TryGetValue("ResizeInterpolationSettingIndex", out var resizeInterpolationSettingIndex)) ResizeInterpolationComboBox.SelectedIndex = (int)resizeInterpolationSettingIndex;
-        WidthNumberBox.Value = (double)values["Width"];
-        HeightNumberBox.Value = (double)values["Height"];
-        if (values.TryGetValue("CropHorizontalAnchorIndex", out var cropHorizontalAnchorIndex)) CropHorizontalAnchorComboBox.SelectedIndex = (int)cropHorizontalAnchorIndex;
-        if (values.TryGetValue("CropVerticalAnchorIndex", out var cropVerticalAnchorIndex)) CropVerticalAnchorComboBox.SelectedIndex = (int)cropVerticalAnchorIndex;
-        if (values.TryGetValue("CropBackgroundColor", out var cropBackgroundColorSettingValue) && cropBackgroundColorSettingValue is string cropBackgroundColorText)
-            ApplyCropBackgroundColor(ConvertSettingValueToColor(cropBackgroundColorText));
-        PrefixTextBox.Text = (string)values["Prefix"];
-        OverwriteFileToggleSwitch.IsOn = (bool)values["OverwriteFile"];
-
-        var outputFolderSetting = (OutputFolderSetting)(int)values["OutputFolderSetting"];
-        SameFolderRadioButton.IsChecked = outputFolderSetting == OutputFolderSetting.SameFolder;
-        PhotoFolderRadioButton.IsChecked = outputFolderSetting == OutputFolderSetting.PhotoFolder;
-        CustomFolderRadioButton.IsChecked = outputFolderSetting == OutputFolderSetting.CustomFolder;
-        SubfolderRadioButton.IsChecked = outputFolderSetting == OutputFolderSetting.Subfolder;
-
-        CustomFolderPathTextBox.Text = (string)values["CustomFolderPath"];
-        OpenCustomFolderButton.IsEnabled = !string.IsNullOrEmpty(CustomFolderPathTextBox.Text);
-        SubfolderNameTextBox.Text = (string)values["SubfolderName"];
-        ParallelExecutionToggleSwitch.IsOn = (bool)values["ParallelExecution"];
-        PreserveFileDateToggleSwitch.IsOn = (bool)values["PreserveFileDate"];
-        PreserveExifToggleSwitch.IsOn = (bool)values["PreserveExif"];
-        if (values.TryGetValue("PreserveAnimation", out var preserveAnimationValue))
-            PreserveAnimationToggleSwitch.IsOn = (bool)preserveAnimationValue;
-        DeleteOriginalToggleSwitch.IsOn = (bool)values["DeleteOriginal"];
-        UpdateCropSettingsControls((SizeSetting)SizeSettingsComboBox.SelectedIndex);
-        UpdatePrefixFormatPreviewTextBox();
-    }
-
-    private void ResetSettings()
-    {
-        _localSettings.Values.Clear();
-
-        FormatComboBox.SelectedIndex = 0;
-        QualityNumberBox.Value = 80;
-        RotationToggleSwitch.IsOn = true;
-        RotationSettingsComboBox.SelectedIndex = 0;
-        SizeSettingsComboBox.SelectedIndex = 0;
-        SizeUnitComboBox.SelectedIndex = 0;
-        ResizeInterpolationComboBox.SelectedIndex = 0;
-        WidthNumberBox.Value = 0;
-        HeightNumberBox.Value = 0;
-        CropHorizontalAnchorComboBox.SelectedIndex = 1;
-        CropVerticalAnchorComboBox.SelectedIndex = 1;
-        ApplyCropBackgroundColor(CreateDefaultCropBackgroundColor());
-        PrefixTextBox.Text = "ATIC_";
-        OverwriteFileToggleSwitch.IsOn = true;
-        SameFolderRadioButton.IsChecked = true;
-        PhotoFolderRadioButton.IsChecked = false;
-        CustomFolderRadioButton.IsChecked = false;
-        SubfolderRadioButton.IsChecked = false;
-        CustomFolderPathTextBox.Text = "";
-        OpenCustomFolderButton.IsEnabled = false;
-        SubfolderNameTextBox.Text = "output";
-        ParallelExecutionToggleSwitch.IsOn = true;
-        PreserveFileDateToggleSwitch.IsOn = true;
-        PreserveExifToggleSwitch.IsOn = true;
-        PreserveAnimationToggleSwitch.IsOn = true;
-        DeleteOriginalToggleSwitch.IsOn = false;
-        UpdatePrefixFormatPreviewTextBox();
-    }
-
-    private void OnSaveDefaultsButtonClicked(object sender, RoutedEventArgs e) => SaveSettings();
-
-    private void OnResetDefaultsButtonClicked(object sender, RoutedEventArgs e) => ResetSettings();
-
-    private async void OnConvertButtonClicked(object sender, RoutedEventArgs e) => await ConvertImagesAsync();
 }

@@ -48,25 +48,28 @@ public sealed partial class MainWindow : Window
 
     public void ShowLoading(string message)
     {
-        DispatcherQueue.TryEnqueue(() =>
-        {
-            LoadingGrid.Visibility = Visibility.Visible;
-            if (!string.IsNullOrEmpty(message))
-            {
-                LoadingTextBlock.Text = message;
-                LoadingTextBlock.Visibility = Visibility.Visible;
-            }
-            else LoadingTextBlock.Visibility = Visibility.Collapsed;
-        });
+        if (DispatcherQueue.HasThreadAccess) SetLoadingState(Visibility.Visible, message);
+        else DispatcherQueue.TryEnqueue(() => SetLoadingState(Visibility.Visible, message));
     }
 
     public void HideLoading()
     {
-        DispatcherQueue.TryEnqueue(() =>
+        if (DispatcherQueue.HasThreadAccess) SetLoadingState(Visibility.Collapsed, null);
+        else DispatcherQueue.TryEnqueue(() => SetLoadingState(Visibility.Collapsed, null));
+    }
+
+    private void SetLoadingState(Visibility visibility, string message)
+    {
+        LoadingGrid.Visibility = visibility;
+        if (!string.IsNullOrEmpty(message) && visibility == Visibility.Visible)
         {
-            LoadingGrid.Visibility = Visibility.Collapsed;
+            LoadingTextBlock.Text = message;
+            LoadingTextBlock.Visibility = Visibility.Visible;
+        }
+        else
+        {
             LoadingTextBlock.Visibility = Visibility.Collapsed;
             LoadingTextBlock.Text = "";
-        });
+        }
     }
 }

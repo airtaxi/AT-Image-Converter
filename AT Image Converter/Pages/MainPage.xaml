@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Page
     x:Class="ImageConverterAT.Pages.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:ImageConverterAT.ViewModels"
@@ -19,61 +20,61 @@
                 <MenuFlyoutItem
                     x:Uid="FileAddMenuFlyoutItem"
                     AccessKey="O"
-                    Click="OnFileAddMenuFlyoutItemClicked" />
+                    Command="{x:Bind ViewModel.AddImagesCommand}" />
                 <MenuFlyoutItem
                     x:Name="FileStartConversionMenuFlyoutItem"
                     x:Uid="FileStartConversionMenuFlyoutItem"
                     AccessKey="C"
-                    Click="OnFileStartConversionMenuFlyoutItemClicked"
-                    IsEnabled="False" />
+                    Command="{x:Bind ViewModel.ConvertCommand}"
+                    IsEnabled="{x:Bind ViewModel.IsConvertEnabled, Mode=OneWay}" />
                 <MenuFlyoutSeparator />
                 <MenuFlyoutItem
                     x:Uid="FileCloseMenuFlyoutItem"
                     AccessKey="X"
-                    Click="OnFileCloseMenuFlyoutItemClicked" />
+                    Command="{x:Bind ViewModel.CloseCommand}" />
             </MenuBarItem>
             <MenuBarItem x:Uid="LanguageMenu" AccessKey="L">
                 <RadioMenuFlyoutItem
-                    x:Name="EnglishLanguageMenuFlyoutItem"
                     x:Uid="EnglishLanguageMenuFlyoutItem"
                     Click="OnLanguageRadioMenuFlyoutItemClicked"
                     GroupName="ApplicationLanguage"
+                    IsChecked="{x:Bind ViewModel.IsEnglishLanguageChecked, Mode=OneWay}"
                     Tag="en-US" />
                 <RadioMenuFlyoutItem
-                    x:Name="KoreanLanguageMenuFlyoutItem"
                     x:Uid="KoreanLanguageMenuFlyoutItem"
                     Click="OnLanguageRadioMenuFlyoutItemClicked"
                     GroupName="ApplicationLanguage"
+                    IsChecked="{x:Bind ViewModel.IsKoreanLanguageChecked, Mode=OneWay}"
                     Tag="ko-KR" />
                 <RadioMenuFlyoutItem
-                    x:Name="JapaneseLanguageMenuFlyoutItem"
                     x:Uid="JapaneseLanguageMenuFlyoutItem"
                     Click="OnLanguageRadioMenuFlyoutItemClicked"
                     GroupName="ApplicationLanguage"
+                    IsChecked="{x:Bind ViewModel.IsJapaneseLanguageChecked, Mode=OneWay}"
                     Tag="ja-JP" />
                 <RadioMenuFlyoutItem
-                    x:Name="SimplifiedChineseLanguageMenuFlyoutItem"
                     x:Uid="SimplifiedChineseLanguageMenuFlyoutItem"
                     Click="OnLanguageRadioMenuFlyoutItemClicked"
                     GroupName="ApplicationLanguage"
+                    IsChecked="{x:Bind ViewModel.IsSimplifiedChineseLanguageChecked, Mode=OneWay}"
                     Tag="zh-Hans" />
                 <RadioMenuFlyoutItem
-                    x:Name="TraditionalChineseLanguageMenuFlyoutItem"
                     x:Uid="TraditionalChineseLanguageMenuFlyoutItem"
                     Click="OnLanguageRadioMenuFlyoutItemClicked"
                     GroupName="ApplicationLanguage"
+                    IsChecked="{x:Bind ViewModel.IsTraditionalChineseLanguageChecked, Mode=OneWay}"
                     Tag="zh-Hant" />
             </MenuBarItem>
             <MenuBarItem x:Uid="HelpMenu" AccessKey="H">
                 <MenuFlyoutItem
                     x:Uid="CheckForUpdatesMenuFlyoutItem"
                     AccessKey="U"
-                    Click="OnCheckForUpdatesMenuFlyoutItemClicked" />
+                    Command="{x:Bind ViewModel.CheckForUpdatesCommand}" />
                 <MenuFlyoutSeparator />
                 <MenuFlyoutItem
                     x:Uid="OpenGitHubRepositoryMenuFlyoutItem"
                     AccessKey="G"
-                    Click="OnOpenGitHubRepositoryMenuFlyoutItemClicked" />
+                    Command="{x:Bind ViewModel.OpenGitHubRepositoryCommand}" />
             </MenuBarItem>
         </MenuBar>
 
@@ -99,6 +100,7 @@
                     x:Name="SettingsScrollViewer"
                     Grid.Row="0"
                     CornerRadius="5"
+                    IsEnabled="{x:Bind ViewModel.IsConverting, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
                     VerticalScrollBarVisibility="Hidden">
                     <StackPanel Spacing="10">
                         <StackPanel
@@ -112,7 +114,9 @@
                                     Height="121.5"
                                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                     CornerRadius="5"
+                                    ItemsSource="{x:Bind ViewModel.ImageFileViewModels, Mode=OneWay}"
                                     SelectedIndex="0"
+                                    SelectedItem="{x:Bind ViewModel.SelectedImageFile, Mode=TwoWay}"
                                     SelectionChanged="OnImageListViewSelectionChanged">
                                     <ListView.ItemTemplate>
                                         <DataTemplate x:DataType="viewmodels:ImageFileViewModel">
@@ -130,7 +134,8 @@
                                     Click="OnDropPlaceholderButtonClicked"
                                     CornerRadius="5"
                                     DragOver="OnDropPlaceholderButtonDragOver"
-                                    Drop="OnDropPlaceholderButtonDrop">
+                                    Drop="OnDropPlaceholderButtonDrop"
+                                    Visibility="{x:Bind ViewModel.IsDropPlaceholderVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                     <StackPanel
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
@@ -150,7 +155,7 @@
                             <CommandBar Background="Transparent" DefaultLabelPosition="Right">
                                 <AppBarButton
                                     x:Uid="AddButton"
-                                    Click="OnAddImageAppBarButtonClicked"
+                                    Command="{x:Bind ViewModel.AddImagesCommand}"
                                     Icon="Add">
                                     <AppBarButton.KeyboardAccelerators>
                                         <KeyboardAccelerator
@@ -162,14 +167,14 @@
                                 <AppBarButton
                                     x:Name="DeleteAppBarButton"
                                     x:Uid="DeleteButton"
-                                    Click="OnDeleteImageAppBarButtonClicked"
+                                    Command="{x:Bind ViewModel.DeleteImageCommand}"
                                     Icon="Delete"
-                                    IsEnabled="False" />
+                                    IsEnabled="{x:Bind ViewModel.IsDeleteEnabled, Mode=OneWay}" />
                                 <AppBarButton
                                     x:Uid="ClearButton"
-                                    Click="OnClearImageAppBarButtonClicked"
+                                    Command="{x:Bind ViewModel.ClearImagesCommand}"
                                     Icon="Clear"
-                                    IsEnabled="{Binding ElementName=DeleteAppBarButton, Path=IsEnabled}" />
+                                    IsEnabled="{x:Bind ViewModel.HasImages, Mode=OneWay}" />
                             </CommandBar>
                         </StackPanel>
                         <StackPanel
@@ -182,8 +187,7 @@
                                 x:Name="FormatComboBox"
                                 x:Uid="OutputFormatComboBox"
                                 HorizontalAlignment="Stretch"
-                                SelectedIndex="0"
-                                SelectionChanged="OnFormatComboBoxSelectionChanged">
+                                SelectedIndex="{x:Bind ViewModel.FormatIndex, Mode=TwoWay}">
                                 <ComboBox.Items>
                                     <x:String>JPG</x:String>
                                     <x:String>JXL</x:String>
@@ -204,25 +208,27 @@
                                 Minimum="0"
                                 SmallChange="10"
                                 SpinButtonPlacementMode="Inline"
-                                Value="80" />
+                                Visibility="{x:Bind ViewModel.IsQualityAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Value="{x:Bind ViewModel.Quality, Mode=TwoWay}" />
                         </StackPanel>
                         <StackPanel
                             x:Name="RotationSettingsStackPanel"
                             Padding="10,3.5,10,10"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                             CornerRadius="5"
-                            Spacing="5">
+                            Spacing="5"
+                            Visibility="{x:Bind ViewModel.IsSizeAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock x:Uid="RotationOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ToggleSwitch
                                 x:Name="RotationToggleSwitch"
                                 x:Uid="RotationToggleSwitch"
-                                IsOn="True"
-                                Toggled="OnRotationToggleSwitchToggled" />
+                                IsOn="{x:Bind ViewModel.RotationEnabled, Mode=TwoWay}" />
                             <ComboBox
                                 x:Name="RotationSettingsComboBox"
                                 x:Uid="RotationSettingsComboBox"
                                 HorizontalAlignment="Stretch"
-                                SelectedIndex="0">
+                                SelectedIndex="{x:Bind ViewModel.RotationIndex, Mode=TwoWay}"
+                                Visibility="{x:Bind ViewModel.IsRotationSettingsVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <ComboBox.Items>
                                     <ComboBoxItem x:Uid="AutoRotateByExifItem" />
                                     <ComboBoxItem x:Uid="RotateClockwise90Item" />
@@ -236,13 +242,14 @@
                             Padding="10,3.5,10,10"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                             CornerRadius="5"
-                            Spacing="5">
+                            Spacing="5"
+                            Visibility="{x:Bind ViewModel.IsSizeAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock x:Uid="SizeOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ComboBox
                                 x:Name="SizeSettingsComboBox"
                                 x:Uid="SizeSettingsComboBox"
                                 HorizontalAlignment="Stretch"
-                                SelectionChanged="OnSizeSettingsComboBoxSelectionChanged">
+                                SelectedIndex="{x:Bind ViewModel.SizeSettingIndex, Mode=TwoWay}">
                                 <ComboBox.Items>
                                     <ComboBoxItem x:Uid="NoResizeItem" />
                                     <ComboBoxItem x:Uid="ResizeToFillItem" />
@@ -255,7 +262,8 @@
                                 x:Name="SizeUnitComboBox"
                                 x:Uid="SizeUnitComboBox"
                                 HorizontalAlignment="Stretch"
-                                SelectionChanged="OnSizeUnitComboBoxSelectionChanged">
+                                SelectedIndex="{x:Bind ViewModel.SizeUnitIndex, Mode=TwoWay}"
+                                Visibility="{x:Bind ViewModel.IsSizeUnitVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <ComboBox.Items>
                                     <ComboBoxItem x:Uid="PixelItem" />
                                     <ComboBoxItem x:Uid="PercentItem" />
@@ -265,7 +273,8 @@
                                 x:Name="ResizeInterpolationComboBox"
                                 x:Uid="ResizeInterpolationComboBox"
                                 HorizontalAlignment="Stretch"
-                                SelectedIndex="0">
+                                SelectedIndex="{x:Bind ViewModel.ResizeInterpolationIndex, Mode=TwoWay}"
+                                Visibility="{x:Bind ViewModel.IsResizeInterpolationVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <ComboBox.Items>
                                     <ComboBoxItem x:Uid="ResizeInterpolationDefaultItem" />
                                     <ComboBoxItem x:Uid="ResizeInterpolationNoneItem" />
@@ -275,7 +284,10 @@
                                     <ComboBoxItem x:Uid="ResizeInterpolationLanczosItem" />
                                 </ComboBox.Items>
                             </ComboBox>
-                            <Grid x:Name="SizeGrid" ColumnSpacing="5">
+                            <Grid
+                                x:Name="SizeGrid"
+                                ColumnSpacing="5"
+                                Visibility="{x:Bind ViewModel.IsSizeGridVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
@@ -284,19 +296,23 @@
                                     x:Name="WidthNumberBox"
                                     Grid.Column="0"
                                     HorizontalAlignment="Stretch"
-                                    Header="Width"
-                                    Minimum="0" />
+                                    Header="{x:Bind ViewModel.WidthHeader, Mode=OneWay}"
+                                    IsEnabled="{x:Bind ViewModel.IsWidthEnabled, Mode=OneWay}"
+                                    Minimum="{x:Bind ViewModel.WidthMinimum, Mode=OneWay}"
+                                    Value="{x:Bind ViewModel.Width, Mode=TwoWay}" />
                                 <NumberBox
                                     x:Name="HeightNumberBox"
                                     Grid.Column="1"
                                     HorizontalAlignment="Stretch"
-                                    Header="Height"
-                                    Minimum="0" />
+                                    Header="{x:Bind ViewModel.HeightHeader, Mode=OneWay}"
+                                    IsEnabled="{x:Bind ViewModel.IsHeightEnabled, Mode=OneWay}"
+                                    Minimum="{x:Bind ViewModel.HeightMinimum, Mode=OneWay}"
+                                    Value="{x:Bind ViewModel.Height, Mode=TwoWay}" />
                             </Grid>
                             <StackPanel
                                 x:Name="CropSettingsPanel"
                                 Spacing="5"
-                                Visibility="Collapsed">
+                                Visibility="{x:Bind ViewModel.IsCropVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <Grid ColumnSpacing="5">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -306,7 +322,7 @@
                                         x:Name="CropHorizontalAnchorComboBox"
                                         x:Uid="CropHorizontalAnchorComboBox"
                                         HorizontalAlignment="Stretch"
-                                        SelectedIndex="1">
+                                        SelectedIndex="{x:Bind ViewModel.CropHorizontalAnchorIndex, Mode=TwoWay}">
                                         <ComboBox.Items>
                                             <ComboBoxItem x:Uid="CropHorizontalLeftItem" />
                                             <ComboBoxItem x:Uid="CropHorizontalCenterItem" />
@@ -318,7 +334,7 @@
                                         x:Uid="CropVerticalAnchorComboBox"
                                         Grid.Column="1"
                                         HorizontalAlignment="Stretch"
-                                        SelectedIndex="1">
+                                        SelectedIndex="{x:Bind ViewModel.CropVerticalAnchorIndex, Mode=TwoWay}">
                                         <ComboBox.Items>
                                             <ComboBoxItem x:Uid="CropVerticalTopItem" />
                                             <ComboBoxItem x:Uid="CropVerticalCenterItem" />
@@ -335,21 +351,22 @@
                                             x:Name="CropBackgroundColorPreviewBorder"
                                             Width="20"
                                             Height="20"
-                                            Background="Transparent"
+                                            Background="{x:Bind ViewModel.CropBackgroundColorBrush, Mode=OneWay}"
                                             BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                                             BorderThickness="1"
                                             CornerRadius="4" />
                                         <StackPanel Spacing="2">
                                             <TextBlock x:Uid="CropBackgroundColorTextBlock" />
-                                            <TextBlock x:Name="CropBackgroundColorValueTextBlock" Style="{ThemeResource CaptionTextBlockStyle}" />
+                                            <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="{x:Bind ViewModel.CropBackgroundColorDisplayValue, Mode=OneWay}" />
                                         </StackPanel>
                                     </StackPanel>
                                     <SplitButton.Flyout>
                                         <Flyout Placement="BottomEdgeAlignedLeft">
                                             <ColorPicker
+                                                x:Name="CropBackgroundColorPicker"
                                                 MinWidth="320"
-                                                ColorChanged="OnCropBackgroundColorPickerColorChanged"
-                                                IsAlphaEnabled="False" />
+                                                IsAlphaEnabled="{x:Bind ViewModel.OutputFormatSupportsAlpha, Mode=OneWay}"
+                                                Color="{x:Bind ViewModel.CropBackgroundColor, Mode=TwoWay}" />
                                         </Flyout>
                                     </SplitButton.Flyout>
                                 </SplitButton>
@@ -365,17 +382,18 @@
                                 x:Name="PrefixTextBox"
                                 x:Uid="PrefixTextBox"
                                 HorizontalAlignment="Stretch"
-                                Text="ATIC_"
-                                TextChanged="OnPrefixTextBoxTextChanged" />
+                                Text="{x:Bind ViewModel.Prefix, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox
                                 x:Name="PrefixPreviewTextBox"
                                 x:Uid="PrefixPreviewTextBox"
                                 HorizontalAlignment="Stretch"
-                                IsTabStop="False" />
+                                IsReadOnly="True"
+                                IsTabStop="False"
+                                Text="{x:Bind ViewModel.PrefixPreview, Mode=OneWay}" />
                             <ToggleSwitch
                                 x:Name="OverwriteFileToggleSwitch"
                                 x:Uid="OverwriteFileToggleSwitch"
-                                IsOn="True" />
+                                IsOn="{x:Bind ViewModel.OverwriteFile, Mode=TwoWay}" />
                         </StackPanel>
                         <StackPanel
                             Padding="10,3.5,10,10"
@@ -392,14 +410,16 @@
                                     x:Name="SameFolderRadioButton"
                                     x:Uid="SameFolderRadioButton"
                                     Grid.Column="0"
+                                    Command="{x:Bind ViewModel.SelectOutputFolderCommand}"
+                                    CommandParameter="SameFolder"
                                     GroupName="OutputFolder"
-                                    IsChecked="True" />
+                                    IsChecked="{x:Bind ViewModel.IsSameFolderChecked, Mode=OneWay}" />
                                 <Button
                                     x:Name="OpenSameFolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
-                                    Click="OnOpenSameFolderButtonClicked"
-                                    IsEnabled="False">
+                                    Command="{x:Bind ViewModel.OpenSameFolderCommand}"
+                                    IsEnabled="{x:Bind ViewModel.IsOpenSameFolderEnabled, Mode=OneWay}">
                                     <FontIcon FontSize="14" Glyph="&#xED25;" />
                                 </Button>
                             </Grid>
@@ -412,11 +432,14 @@
                                     x:Name="PhotoFolderRadioButton"
                                     x:Uid="PhotoFolderRadioButton"
                                     Grid.Column="0"
-                                    GroupName="OutputFolder" />
+                                    Command="{x:Bind ViewModel.SelectOutputFolderCommand}"
+                                    CommandParameter="PhotoFolder"
+                                    GroupName="OutputFolder"
+                                    IsChecked="{x:Bind ViewModel.IsPhotoFolderChecked, Mode=OneWay}" />
                                 <Button
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
-                                    Click="OnOpenPhotoFolderButtonClicked">
+                                    Command="{x:Bind ViewModel.OpenPhotoFolderCommand}">
                                     <FontIcon FontSize="14" Glyph="&#xED25;" />
                                 </Button>
                             </Grid>
@@ -429,13 +452,16 @@
                                     x:Name="CustomFolderRadioButton"
                                     x:Uid="CustomFolderRadioButton"
                                     Grid.Column="0"
-                                    GroupName="OutputFolder" />
+                                    Command="{x:Bind ViewModel.SelectOutputFolderCommand}"
+                                    CommandParameter="CustomFolder"
+                                    GroupName="OutputFolder"
+                                    IsChecked="{x:Bind ViewModel.IsCustomFolderChecked, Mode=OneWay}" />
                                 <Button
                                     x:Name="OpenCustomFolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
-                                    Click="OnOpenCustomFolderButtonClicked"
-                                    IsEnabled="False">
+                                    Command="{x:Bind ViewModel.OpenCustomFolderCommand}"
+                                    IsEnabled="{x:Bind ViewModel.IsOpenCustomFolderEnabled, Mode=OneWay}">
                                     <FontIcon FontSize="14" Glyph="&#xED25;" />
                                 </Button>
                             </Grid>
@@ -448,11 +474,12 @@
                                     x:Name="CustomFolderPathTextBox"
                                     Grid.Column="0"
                                     HorizontalAlignment="Stretch"
-                                    IsReadOnly="True" />
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CustomFolderPath, Mode=OneWay}" />
                                 <Button
                                     Grid.Column="1"
                                     VerticalAlignment="Bottom"
-                                    Click="OnBrowseCustomFolderButtonClicked">
+                                    Command="{x:Bind ViewModel.BrowseCustomFolderCommand}">
                                     <FontIcon FontSize="14" Glyph="&#xE712;" />
                                 </Button>
                             </Grid>
@@ -465,13 +492,16 @@
                                     x:Name="SubfolderRadioButton"
                                     x:Uid="SubfolderRadioButton"
                                     Grid.Column="0"
-                                    GroupName="OutputFolder" />
+                                    Command="{x:Bind ViewModel.SelectOutputFolderCommand}"
+                                    CommandParameter="Subfolder"
+                                    GroupName="OutputFolder"
+                                    IsChecked="{x:Bind ViewModel.IsSubfolderChecked, Mode=OneWay}" />
                                 <Button
                                     x:Name="OpenSubfolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
-                                    Click="OnOpenSubfolderButtonClicked"
-                                    IsEnabled="False">
+                                    Command="{x:Bind ViewModel.OpenSubfolderCommand}"
+                                    IsEnabled="{x:Bind ViewModel.IsOpenSubfolderEnabled, Mode=OneWay}">
                                     <FontIcon FontSize="14" Glyph="&#xED25;" />
                                 </Button>
                             </Grid>
@@ -480,7 +510,7 @@
                                 Margin="28,0,0,0"
                                 HorizontalAlignment="Stretch"
                                 PlaceholderText="output"
-                                Text="output" />
+                                Text="{x:Bind ViewModel.SubfolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                         <StackPanel
                             Padding="10,3.5,10,10"
@@ -491,20 +521,23 @@
                             <ToggleSwitch
                                 x:Name="ParallelExecutionToggleSwitch"
                                 x:Uid="ParallelExecutionToggleSwitch"
-                                IsOn="True" />
+                                IsOn="{x:Bind ViewModel.ParallelExecution, Mode=TwoWay}" />
                             <ToggleSwitch
                                 x:Name="PreserveFileDateToggleSwitch"
                                 x:Uid="PreserveFileDateToggleSwitch"
-                                IsOn="True" />
+                                IsOn="{x:Bind ViewModel.PreserveFileDate, Mode=TwoWay}" />
                             <ToggleSwitch
                                 x:Name="PreserveExifToggleSwitch"
                                 x:Uid="PreserveExifToggleSwitch"
-                                IsOn="True" />
+                                IsOn="{x:Bind ViewModel.PreserveExif, Mode=TwoWay}" />
                             <ToggleSwitch
                                 x:Name="PreserveAnimationToggleSwitch"
                                 x:Uid="PreserveAnimationToggleSwitch"
-                                IsOn="True" />
-                            <ToggleSwitch x:Name="DeleteOriginalToggleSwitch" x:Uid="DeleteOriginalToggleSwitch" />
+                                IsOn="{x:Bind ViewModel.PreserveAnimation, Mode=TwoWay}" />
+                            <ToggleSwitch
+                                x:Name="DeleteOriginalToggleSwitch"
+                                x:Uid="DeleteOriginalToggleSwitch"
+                                IsOn="{x:Bind ViewModel.DeleteOriginal, Mode=TwoWay}" />
                             <Grid ColumnSpacing="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -514,12 +547,12 @@
                                     x:Uid="SaveDefaultsButton"
                                     Grid.Column="0"
                                     HorizontalAlignment="Stretch"
-                                    Click="OnSaveDefaultsButtonClicked" />
+                                    Command="{x:Bind ViewModel.SaveDefaultsCommand}" />
                                 <Button
                                     x:Uid="ResetDefaultsButton"
                                     Grid.Column="1"
                                     HorizontalAlignment="Stretch"
-                                    Click="OnResetDefaultsButtonClicked" />
+                                    Command="{x:Bind ViewModel.ResetDefaultsCommand}" />
                             </Grid>
                         </StackPanel>
                     </StackPanel>
@@ -529,10 +562,14 @@
                     Grid.Row="1"
                     Margin="0,10,0,0"
                     HorizontalAlignment="Stretch"
-                    Click="OnConvertButtonClicked"
-                    IsEnabled="False" />
+                    Command="{x:Bind ViewModel.ConvertCommand}"
+                    Content="{x:Bind ViewModel.ConvertButtonContent, Mode=OneWay}"
+                    IsEnabled="{x:Bind ViewModel.IsConvertEnabled, Mode=OneWay}" />
             </Grid>
-            <Frame x:Name="PreviewFrame" Grid.Column="1">
+            <Frame
+                x:Name="PreviewFrame"
+                Grid.Column="1"
+                IsEnabled="{x:Bind ViewModel.IsConverting, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}">
                 <Grid
                     x:Name="PreviewGrid"
                     Margin="10"
@@ -562,7 +599,8 @@
                         Grid.Row="0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Spacing="8">
+                        Spacing="8"
+                        Visibility="{x:Bind ViewModel.IsNoPreviewVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                         <FontIcon
                             FontSize="48"
                             Foreground="{ThemeResource TextFillColorTertiaryBrush}"
@@ -578,15 +616,15 @@
                         DefaultLabelPosition="Right">
                         <AppBarButton
                             x:Uid="ZoomInButton"
-                            Click="OnZoomInAppBarButtonClicked"
+                            Command="{x:Bind ViewModel.ZoomInCommand}"
                             Icon="ZoomIn" />
                         <AppBarButton
                             x:Uid="ZoomOutButton"
-                            Click="OnZoomOutAppBarButtonClicked"
+                            Command="{x:Bind ViewModel.ZoomOutCommand}"
                             Icon="ZoomOut" />
                         <AppBarButton
                             x:Uid="ResetZoomButton"
-                            Click="OnResetZoomAppBarButtonClicked"
+                            Command="{x:Bind ViewModel.ResetZoomCommand}"
                             Icon="Zoom" />
                     </CommandBar>
                 </Grid>
@@ -598,8 +636,11 @@
                 Margin="10,0,10,10"
                 Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                 CornerRadius="5"
-                Visibility="Collapsed">
-                <ListView x:Name="ProgressLogListView" Height="150">
+                Visibility="{x:Bind ViewModel.IsProgressVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <ListView
+                    x:Name="ProgressLogListView"
+                    Height="150"
+                    ItemsSource="{x:Bind ViewModel.ProgressLog, Mode=OneWay}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" />
