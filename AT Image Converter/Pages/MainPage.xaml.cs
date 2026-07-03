@@ -1,4 +1,4 @@
-using ImageConverterAT.Enums;
+﻿using ImageConverterAT.Enums;
 using ImageConverterAT.Services;
 using ImageConverterAT.ViewModels;
 using ImageMagick;
@@ -7,7 +7,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.Globalization;
+using Microsoft.Windows.Storage.Pickers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,15 +21,17 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Resources;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI;
-namespace ImageConverterAT;
 
-public sealed partial class MainWindow : Window
+namespace ImageConverterAT.Pages;
+
+public sealed partial class MainPage : Page
 {
     private static readonly HashSet<string> s_nonNativePreviewExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -36,6 +40,8 @@ public sealed partial class MainWindow : Window
     private static readonly Uri s_gitHubRepositoryPageAddress = new("https://github.com/airtaxi/AT-Image-Converter");
     private static Color CreateDefaultCropBackgroundColor() => Color.FromArgb(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
+    public static MainPage Instance { get; private set; }
+
     private readonly bool _isInitialized = false;
     private readonly ObservableCollection<ImageFileViewModel> _imageFileViewModels = [];
     private readonly ObservableCollection<string> _progressLog = [];
@@ -43,38 +49,18 @@ public sealed partial class MainWindow : Window
     private readonly ApplicationDataContainer _localSettings = ApplicationData.Current.LocalSettings;
     private Color _cropBackgroundColor = CreateDefaultCropBackgroundColor();
     private CancellationTokenSource _previewCancellationTokenSource;
+    private ImageFileViewModel _selectedImageFileViewModel;
 
-    public MainWindow()
+    public MainPage()
     {
+        Instance = this;
+
         InitializeComponent();
         ApplyCropBackgroundColor(_cropBackgroundColor);
         _isInitialized = true;
 
-        // Setup window
-        AppWindow.SetIcon("Assets/Icon.ico");
-        ExtendsContentIntoTitleBar = true;
-        SetTitleBar(AppTitleBar);
-
-        // Add files from command line arguments if any
-        var args = Environment.GetCommandLineArgs();
-        if (args.Length > 2 && args[1] == "--file-list")
-        {
-            var fileListPath = args[2];
-            if (File.Exists(fileListPath))
-            {
-                var filePaths = File.ReadAllLines(fileListPath).Where(line => !string.IsNullOrWhiteSpace(line));
-                AddImageFiles(filePaths);
-                try { File.Delete(fileListPath); } catch { }
-            }
-        }
-        else if (args.Length > 1)
-        {
-            AddImageFiles(args[1..]); // Skip first argument, which is the executable path
-        }
-
         // Assign data source to list view
         LvImages.ItemsSource = _imageFileViewModels;
-
         LvProgressLog.ItemsSource = _progressLog;
 
         // Select first item programmatically to trigger selection changed event after initialization
@@ -87,28 +73,11 @@ public sealed partial class MainWindow : Window
         UpdateImageListDependentControls();
     }
 
-    public void ShowLoading(string message)
+    protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-        DispatcherQueue.TryEnqueue(() =>
-        {
-            GdLoading.Visibility = Visibility.Visible;
-            if (!string.IsNullOrEmpty(message))
-            {
-                TbLoading.Text = message;
-                TbLoading.Visibility = Visibility.Visible;
-            }
-            else TbLoading.Visibility = Visibility.Collapsed;
-        });
-    }
+        base.OnNavigatedTo(e);
 
-    public void HideLoading()
-    {
-        DispatcherQueue.TryEnqueue(() =>
-        {
-            GdLoading.Visibility = Visibility.Collapsed;
-            TbLoading.Visibility = Visibility.Collapsed;
-            TbLoading.Text = "";
-        });
+        if (e.Parameter is string[] launchFilePaths && launchFilePaths.Length > 0) AddImageFiles(launchFilePaths);
     }
 
     private void AddImageFiles(IEnumerable<string> paths)
@@ -352,7 +321,7 @@ public sealed partial class MainWindow : Window
 
         if (hasPdfFiles && !IsGhostscriptInstalled())
         {
-            await FrMain.ShowMessageDialogAsync(
+            await this.ShowMessageDialogAsync(
                 _resourceLoader.GetString("GhostscriptRequiredDialogContent"),
                 _resourceLoader.GetString("GhostscriptRequiredDialogTitle"));
             return;
@@ -593,7 +562,7 @@ public sealed partial class MainWindow : Window
 
         AddProgressLog(_resourceLoader.GetString("ConversionComplete"));
 
-        await FrMain.ShowMessageDialogAsync(
+        await this.ShowMessageDialogAsync(
             string.Format(_resourceLoader.GetString("ConversionCompleteDialogContent"), _imageFileViewModels.Count),
             _resourceLoader.GetString("ConversionCompleteDialogTitle"));
 
@@ -758,15 +727,12 @@ public sealed partial class MainWindow : Window
 
     private async void OnAddImageAppBarButtonClicked(object sender, RoutedEventArgs e)
     {
-        var filePicker = new FileOpenPicker();
-        WinRT.Interop.InitializeWithWindow.Initialize(filePicker, WinRT.Interop.WindowNative.GetWindowHandle(this));
-
-        filePicker.ViewMode = PickerViewMode.List;
-        filePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+        var filePicker = new FileOpenPicker(MainWindow.Instance.AppWindow.Id);
         foreach (var imageFileFormat in Constants.ImageFileFormats)
         {
             filePicker.FileTypeFilter.Add(imageFileFormat);
         }
+        filePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
 
         var files = await filePicker.PickMultipleFilesAsync();
         AddImageFiles([.. files.Select(file => file.Path)]);
@@ -783,7 +749,7 @@ public sealed partial class MainWindow : Window
 
     private async void OnFileStartConversionMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => await ConvertImagesAsync();
 
-    private void OnFileCloseMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => Close();
+    private void OnFileCloseMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => MainWindow.Instance.Close();
 
     private async void OnCheckForUpdatesMenuFlyoutItemClicked(object sender, RoutedEventArgs e) => await CheckForUpdatesAsync();
 
@@ -799,27 +765,27 @@ public sealed partial class MainWindow : Window
         UpdateLanguageMenuFlyoutItems();
 
         var resourceLoader = new ResourceLoader();
-        await FrMain.ShowMessageDialogAsync(
+        await this.ShowMessageDialogAsync(
             resourceLoader.GetString("LanguageChangeDialogContent"),
             resourceLoader.GetString("LanguageChangeDialogTitle"));
     }
 
     private async Task CheckForUpdatesAsync()
     {
-        ShowLoading(_resourceLoader.GetString("UpdateCheckLoading"));
+        MainWindow.Instance.ShowLoading(_resourceLoader.GetString("UpdateCheckLoading"));
         try
         {
             var availableUpdateCount = await StoreUpdateService.GetAvailableUpdateCountAsync();
-            HideLoading();
+            MainWindow.Instance.HideLoading();
             if (availableUpdateCount <= 0)
             {
-                await FrMain.ShowMessageDialogAsync(
+                await this.ShowMessageDialogAsync(
                     _resourceLoader.GetString("NoUpdatesDialogContent"),
                     _resourceLoader.GetString("NoUpdatesDialogTitle"));
                 return;
             }
 
-            var dialogResult = await FrMain.ShowMessageDialogAsync(
+            var dialogResult = await this.ShowMessageDialogAsync(
                 string.Format(_resourceLoader.GetString("UpdateAvailableDialogContent"), availableUpdateCount),
                 _resourceLoader.GetString("UpdateAvailableDialogTitle"),
                 showCancel: true);
@@ -828,28 +794,28 @@ public sealed partial class MainWindow : Window
             var openedStoreProductPage = await StoreUpdateService.OpenStoreProductPageAsync();
             if (openedStoreProductPage) return;
 
-            await FrMain.ShowMessageDialogAsync(
+            await this.ShowMessageDialogAsync(
                 _resourceLoader.GetString("OpenStoreFailedDialogContent"),
                 _resourceLoader.GetString("OpenStoreFailedDialogTitle"));
         }
         catch (COMException)
         {
-            HideLoading();
-            await FrMain.ShowMessageDialogAsync(
+            MainWindow.Instance.HideLoading();
+            await this.ShowMessageDialogAsync(
                 _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
                 _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
         }
         catch (InvalidOperationException)
         {
-            HideLoading();
-            await FrMain.ShowMessageDialogAsync(
+            MainWindow.Instance.HideLoading();
+            await this.ShowMessageDialogAsync(
                 _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
                 _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
         }
         catch (UnauthorizedAccessException)
         {
-            HideLoading();
-            await FrMain.ShowMessageDialogAsync(
+            MainWindow.Instance.HideLoading();
+            await this.ShowMessageDialogAsync(
                 _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
                 _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
         }
@@ -860,7 +826,7 @@ public sealed partial class MainWindow : Window
         var openedGitHubRepositoryPage = await Launcher.LaunchUriAsync(s_gitHubRepositoryPageAddress);
         if (openedGitHubRepositoryPage) return;
 
-        await FrMain.ShowMessageDialogAsync(
+        await this.ShowMessageDialogAsync(
             _resourceLoader.GetString("OpenGitHubFailedDialogContent"),
             _resourceLoader.GetString("OpenGitHubFailedDialogTitle"));
     }
@@ -869,21 +835,21 @@ public sealed partial class MainWindow : Window
 
     private void OnDropPlaceholderButtonDragOver(object sender, DragEventArgs e)
     {
-        if (e.DataView.Contains(Windows.ApplicationModel.DataTransfer.StandardDataFormats.StorageItems))
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
         {
-            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+            e.AcceptedOperation = DataPackageOperation.Copy;
         }
     }
 
     private async void OnDropPlaceholderButtonDrop(object sender, DragEventArgs e)
     {
-        if (!e.DataView.Contains(Windows.ApplicationModel.DataTransfer.StandardDataFormats.StorageItems)) return;
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems)) return;
 
         var items = await e.DataView.GetStorageItemsAsync();
         var supportedExtensions = new HashSet<string>(Constants.ImageFileFormats, StringComparer.OrdinalIgnoreCase);
 
         var filePaths = items
-            .OfType<Windows.Storage.StorageFile>()
+            .OfType<StorageFile>()
             .Where(file => supportedExtensions.Contains(file.FileType))
             .Select(file => file.Path)
             .ToList();
@@ -917,7 +883,6 @@ public sealed partial class MainWindow : Window
         UpdateImageListDependentControls();
     }
 
-    private ImageFileViewModel _selectedImageFileViewModel;
     private async void OnImageListViewSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // Get selected item
@@ -959,7 +924,7 @@ public sealed partial class MainWindow : Window
         _previewCancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = _previewCancellationTokenSource.Token;
 
-        ShowLoading(_resourceLoader.GetString("PreviewLoading"));
+        MainWindow.Instance.ShowLoading(_resourceLoader.GetString("PreviewLoading"));
         try
         {
             var imageBytes = await Task.Run(() =>
@@ -972,7 +937,9 @@ public sealed partial class MainWindow : Window
             cancellationToken.ThrowIfCancellationRequested();
 
             using var stream = new InMemoryRandomAccessStream();
-            await stream.WriteAsync(imageBytes.AsBuffer());
+            using var dataWriter = new DataWriter(stream.GetOutputStreamAt(0));
+            dataWriter.WriteBytes(imageBytes);
+            await dataWriter.StoreAsync();
             stream.Seek(0);
 
             var bitmapImage = new BitmapImage();
@@ -985,7 +952,7 @@ public sealed partial class MainWindow : Window
         }
         catch (OperationCanceledException) { }
         catch (Exception) { ImgPreview.Source = null; }
-        finally { HideLoading(); }
+        finally { MainWindow.Instance.HideLoading(); }
     }
 
     // Reset image preview zoom factor when new image is selected
@@ -1152,10 +1119,8 @@ public sealed partial class MainWindow : Window
 
     private async void OnBrowseCustomFolderButtonClicked(object sender, RoutedEventArgs e)
     {
-        var folderPicker = new FolderPicker();
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, WinRT.Interop.WindowNative.GetWindowHandle(this));
+        var folderPicker = new FolderPicker(MainWindow.Instance.AppWindow.Id);
         folderPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-        folderPicker.FileTypeFilter.Add("*");
 
         var folder = await folderPicker.PickSingleFolderAsync();
         if (folder == null) return;
