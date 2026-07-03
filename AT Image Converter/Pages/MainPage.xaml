@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Page
     x:Class="ImageConverterAT.Pages.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -96,7 +96,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <ScrollViewer
-                    x:Name="SvSettings"
+                    x:Name="SettingsScrollViewer"
                     Grid.Row="0"
                     CornerRadius="5"
                     VerticalScrollBarVisibility="Hidden">
@@ -108,7 +108,7 @@
                             <TextBlock x:Uid="ImagesTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <Grid Margin="0,7.5,0,0">
                                 <ListView
-                                    x:Name="LvImages"
+                                    x:Name="ImagesListView"
                                     Height="121.5"
                                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                     CornerRadius="5"
@@ -121,7 +121,7 @@
                                     </ListView.ItemTemplate>
                                 </ListView>
                                 <Button
-                                    x:Name="BtDropPlaceholder"
+                                    x:Name="DropPlaceholderButton"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     AllowDrop="True"
@@ -160,7 +160,7 @@
                                     </AppBarButton.KeyboardAccelerators>
                                 </AppBarButton>
                                 <AppBarButton
-                                    x:Name="AbbDelete"
+                                    x:Name="DeleteAppBarButton"
                                     x:Uid="DeleteButton"
                                     Click="OnDeleteImageAppBarButtonClicked"
                                     Icon="Delete"
@@ -169,7 +169,7 @@
                                     x:Uid="ClearButton"
                                     Click="OnClearImageAppBarButtonClicked"
                                     Icon="Clear"
-                                    IsEnabled="{Binding ElementName=AbbDelete, Path=IsEnabled}" />
+                                    IsEnabled="{Binding ElementName=DeleteAppBarButton, Path=IsEnabled}" />
                             </CommandBar>
                         </StackPanel>
                         <StackPanel
@@ -179,7 +179,7 @@
                             Spacing="5">
                             <TextBlock x:Uid="FormatOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ComboBox
-                                x:Name="CbxFormat"
+                                x:Name="FormatComboBox"
                                 x:Uid="OutputFormatComboBox"
                                 HorizontalAlignment="Stretch"
                                 SelectedIndex="0"
@@ -196,7 +196,7 @@
                                 </ComboBox.Items>
                             </ComboBox>
                             <NumberBox
-                                x:Name="NbQuality"
+                                x:Name="QualityNumberBox"
                                 x:Uid="QualityNumberBox"
                                 HorizontalAlignment="Stretch"
                                 LargeChange="10"
@@ -207,19 +207,19 @@
                                 Value="80" />
                         </StackPanel>
                         <StackPanel
-                            x:Name="SpRotationSettings"
+                            x:Name="RotationSettingsStackPanel"
                             Padding="10,3.5,10,10"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                             CornerRadius="5"
                             Spacing="5">
                             <TextBlock x:Uid="RotationOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ToggleSwitch
-                                x:Name="TsRotation"
+                                x:Name="RotationToggleSwitch"
                                 x:Uid="RotationToggleSwitch"
                                 IsOn="True"
                                 Toggled="OnRotationToggleSwitchToggled" />
                             <ComboBox
-                                x:Name="CbxRotationSettings"
+                                x:Name="RotationSettingsComboBox"
                                 x:Uid="RotationSettingsComboBox"
                                 HorizontalAlignment="Stretch"
                                 SelectedIndex="0">
@@ -232,14 +232,14 @@
                             </ComboBox>
                         </StackPanel>
                         <StackPanel
-                            x:Name="SpSizeSettings"
+                            x:Name="SizeSettingsStackPanel"
                             Padding="10,3.5,10,10"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                             CornerRadius="5"
                             Spacing="5">
                             <TextBlock x:Uid="SizeOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ComboBox
-                                x:Name="CbxSizeSettings"
+                                x:Name="SizeSettingsComboBox"
                                 x:Uid="SizeSettingsComboBox"
                                 HorizontalAlignment="Stretch"
                                 SelectionChanged="OnSizeSettingsComboBoxSelectionChanged">
@@ -252,7 +252,7 @@
                                 </ComboBox.Items>
                             </ComboBox>
                             <ComboBox
-                                x:Name="CbxSizeUnit"
+                                x:Name="SizeUnitComboBox"
                                 x:Uid="SizeUnitComboBox"
                                 HorizontalAlignment="Stretch"
                                 SelectionChanged="OnSizeUnitComboBoxSelectionChanged">
@@ -275,19 +275,19 @@
                                     <ComboBoxItem x:Uid="ResizeInterpolationLanczosItem" />
                                 </ComboBox.Items>
                             </ComboBox>
-                            <Grid x:Name="GdSize" ColumnSpacing="5">
+                            <Grid x:Name="SizeGrid" ColumnSpacing="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <NumberBox
-                                    x:Name="NbxWidth"
+                                    x:Name="WidthNumberBox"
                                     Grid.Column="0"
                                     HorizontalAlignment="Stretch"
                                     Header="Width"
                                     Minimum="0" />
                                 <NumberBox
-                                    x:Name="NbxHeight"
+                                    x:Name="HeightNumberBox"
                                     Grid.Column="1"
                                     HorizontalAlignment="Stretch"
                                     Header="Height"
@@ -362,18 +362,18 @@
                             Spacing="5">
                             <TextBlock x:Uid="SaveOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <TextBox
-                                x:Name="TbxPrefix"
+                                x:Name="PrefixTextBox"
                                 x:Uid="PrefixTextBox"
                                 HorizontalAlignment="Stretch"
                                 Text="ATIC_"
                                 TextChanged="OnPrefixTextBoxTextChanged" />
                             <TextBox
-                                x:Name="TbxPrefixPreview"
+                                x:Name="PrefixPreviewTextBox"
                                 x:Uid="PrefixPreviewTextBox"
                                 HorizontalAlignment="Stretch"
                                 IsTabStop="False" />
                             <ToggleSwitch
-                                x:Name="TsOverwriteFile"
+                                x:Name="OverwriteFileToggleSwitch"
                                 x:Uid="OverwriteFileToggleSwitch"
                                 IsOn="True" />
                         </StackPanel>
@@ -389,13 +389,13 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <RadioButton
-                                    x:Name="RbSameFolder"
+                                    x:Name="SameFolderRadioButton"
                                     x:Uid="SameFolderRadioButton"
                                     Grid.Column="0"
                                     GroupName="OutputFolder"
                                     IsChecked="True" />
                                 <Button
-                                    x:Name="BtOpenSameFolder"
+                                    x:Name="OpenSameFolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Click="OnOpenSameFolderButtonClicked"
@@ -409,7 +409,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <RadioButton
-                                    x:Name="RbPhotoFolder"
+                                    x:Name="PhotoFolderRadioButton"
                                     x:Uid="PhotoFolderRadioButton"
                                     Grid.Column="0"
                                     GroupName="OutputFolder" />
@@ -426,12 +426,12 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <RadioButton
-                                    x:Name="RbCustomFolder"
+                                    x:Name="CustomFolderRadioButton"
                                     x:Uid="CustomFolderRadioButton"
                                     Grid.Column="0"
                                     GroupName="OutputFolder" />
                                 <Button
-                                    x:Name="BtOpenCustomFolder"
+                                    x:Name="OpenCustomFolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Click="OnOpenCustomFolderButtonClicked"
@@ -445,7 +445,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBox
-                                    x:Name="TbxCustomFolderPath"
+                                    x:Name="CustomFolderPathTextBox"
                                     Grid.Column="0"
                                     HorizontalAlignment="Stretch"
                                     IsReadOnly="True" />
@@ -462,12 +462,12 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <RadioButton
-                                    x:Name="RbSubfolder"
+                                    x:Name="SubfolderRadioButton"
                                     x:Uid="SubfolderRadioButton"
                                     Grid.Column="0"
                                     GroupName="OutputFolder" />
                                 <Button
-                                    x:Name="BtOpenSubfolder"
+                                    x:Name="OpenSubfolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Click="OnOpenSubfolderButtonClicked"
@@ -476,7 +476,7 @@
                                 </Button>
                             </Grid>
                             <TextBox
-                                x:Name="TbxSubfolderName"
+                                x:Name="SubfolderNameTextBox"
                                 Margin="28,0,0,0"
                                 HorizontalAlignment="Stretch"
                                 PlaceholderText="output"
@@ -489,22 +489,22 @@
                             Spacing="5">
                             <TextBlock x:Uid="ConversionOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ToggleSwitch
-                                x:Name="TsParallelExecution"
+                                x:Name="ParallelExecutionToggleSwitch"
                                 x:Uid="ParallelExecutionToggleSwitch"
                                 IsOn="True" />
                             <ToggleSwitch
-                                x:Name="TsPreserveFileDate"
+                                x:Name="PreserveFileDateToggleSwitch"
                                 x:Uid="PreserveFileDateToggleSwitch"
                                 IsOn="True" />
                             <ToggleSwitch
-                                x:Name="TsPreserveExif"
+                                x:Name="PreserveExifToggleSwitch"
                                 x:Uid="PreserveExifToggleSwitch"
                                 IsOn="True" />
                             <ToggleSwitch
-                                x:Name="TsPreserveAnimation"
+                                x:Name="PreserveAnimationToggleSwitch"
                                 x:Uid="PreserveAnimationToggleSwitch"
                                 IsOn="True" />
-                            <ToggleSwitch x:Name="TsDeleteOriginal" x:Uid="DeleteOriginalToggleSwitch" />
+                            <ToggleSwitch x:Name="DeleteOriginalToggleSwitch" x:Uid="DeleteOriginalToggleSwitch" />
                             <Grid ColumnSpacing="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -525,16 +525,16 @@
                     </StackPanel>
                 </ScrollViewer>
                 <Button
-                    x:Name="BtConvert"
+                    x:Name="ConvertButton"
                     Grid.Row="1"
                     Margin="0,10,0,0"
                     HorizontalAlignment="Stretch"
                     Click="OnConvertButtonClicked"
                     IsEnabled="False" />
             </Grid>
-            <Frame x:Name="FrPreview" Grid.Column="1">
+            <Frame x:Name="PreviewFrame" Grid.Column="1">
                 <Grid
-                    x:Name="GdPreview"
+                    x:Name="PreviewGrid"
                     Margin="10"
                     Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                     CornerRadius="5">
@@ -543,7 +543,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <ScrollViewer
-                        x:Name="SvPreview"
+                        x:Name="PreviewScrollViewer"
                         Grid.Row="0"
                         Margin="10,10,10,0"
                         CornerRadius="5"
@@ -552,13 +552,13 @@
                         VerticalScrollBarVisibility="Auto"
                         ZoomMode="Enabled">
                         <Image
-                            x:Name="ImgPreview"
+                            x:Name="PreviewImage"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             ImageOpened="OnImagePreviewImageOpened" />
                     </ScrollViewer>
                     <StackPanel
-                        x:Name="SpNoPreview"
+                        x:Name="NoPreviewStackPanel"
                         Grid.Row="0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -592,14 +592,14 @@
                 </Grid>
             </Frame>
             <Grid
-                x:Name="GdProgress"
+                x:Name="ProgressGrid"
                 Grid.Row="1"
                 Grid.Column="1"
                 Margin="10,0,10,10"
                 Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                 CornerRadius="5"
                 Visibility="Collapsed">
-                <ListView x:Name="LvProgressLog" Height="150">
+                <ListView x:Name="ProgressLogListView" Height="150">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" />

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Window
     x:Class="ImageConverterAT.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -32,12 +32,12 @@
         </TitleBar>
 
         <Frame
-            x:Name="FrMain"
+            x:Name="AppFrame"
             Grid.Row="1"
             Background="{ThemeResource LayerFillColorDefaultBrush}" />
 
         <Grid
-            x:Name="GdLoading"
+            x:Name="LoadingGrid"
             Grid.RowSpan="2"
             Visibility="Collapsed">
             <Grid.Background>
@@ -53,7 +53,7 @@
                     Height="80"
                     IsIndeterminate="True" />
                 <TextBlock
-                    x:Name="TbLoading"
+                    x:Name="LoadingTextBlock"
                     HorizontalAlignment="Center"
                     FontWeight="Bold"
                     Foreground="White" />

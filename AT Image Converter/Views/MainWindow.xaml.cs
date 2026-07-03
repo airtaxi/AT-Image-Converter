@@ -1,4 +1,4 @@
-using ImageConverterAT.Pages;
+﻿using ImageConverterAT.Pages;
 using Microsoft.UI.Xaml;
 using System;
 using System.IO;
@@ -23,7 +23,7 @@ public sealed partial class MainWindow : Window
 
         // Add files from command line arguments if any
         var launchFilePaths = GetLaunchFilePaths();
-        FrMain.Navigate(typeof(MainPage), launchFilePaths);
+        AppFrame.Navigate(typeof(MainPage), launchFilePaths);
     }
 
     private static string[] GetLaunchFilePaths()
@@ -50,13 +50,13 @@ public sealed partial class MainWindow : Window
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            GdLoading.Visibility = Visibility.Visible;
+            LoadingGrid.Visibility = Visibility.Visible;
             if (!string.IsNullOrEmpty(message))
             {
-                TbLoading.Text = message;
-                TbLoading.Visibility = Visibility.Visible;
+                LoadingTextBlock.Text = message;
+                LoadingTextBlock.Visibility = Visibility.Visible;
             }
-            else TbLoading.Visibility = Visibility.Collapsed;
+            else LoadingTextBlock.Visibility = Visibility.Collapsed;
         });
     }
 
@@ -64,9 +64,9 @@ public sealed partial class MainWindow : Window
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            GdLoading.Visibility = Visibility.Collapsed;
-            TbLoading.Visibility = Visibility.Collapsed;
-            TbLoading.Text = "";
+            LoadingGrid.Visibility = Visibility.Collapsed;
+            LoadingTextBlock.Visibility = Visibility.Collapsed;
+            LoadingTextBlock.Text = "";
         });
     }
 }
