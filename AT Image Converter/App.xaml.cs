@@ -1,4 +1,4 @@
-﻿using ImageConverterAT.Helpers;
+using ImageConverterAT.Helpers;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel.Resources;
 
@@ -8,10 +8,7 @@ public partial class App : Application
 {
     private Window _window;
 
-	public App()
-    {
-        InitializeComponent();
-    }
+	public App() => InitializeComponent();
 
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
 	{

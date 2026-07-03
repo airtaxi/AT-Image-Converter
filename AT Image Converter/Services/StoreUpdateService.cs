@@ -20,6 +20,5 @@ public static class StoreUpdateService
         return storePackageUpdates.Count;
     }
 
-    public static async Task<bool> OpenStoreProductPageAsync() => await Launcher.LaunchUriAsync(s_storePackageFamilyNameProductPageAddress)
-        || await Launcher.LaunchUriAsync(s_storeProductIdentifierProductPageAddress);
+    public static async Task<bool> OpenStoreProductPageAsync() => await Launcher.LaunchUriAsync(s_storePackageFamilyNameProductPageAddress) || await Launcher.LaunchUriAsync(s_storeProductIdentifierProductPageAddress);
 }

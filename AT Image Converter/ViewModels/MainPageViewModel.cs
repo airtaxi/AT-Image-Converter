@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using ImageConverterAT.Enums;
@@ -335,17 +335,10 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         if (string.IsNullOrWhiteSpace(colorValue)) return CreateDefaultCropBackgroundColor();
 
         var normalizedColorValue = colorValue.Trim().TrimStart('#');
-        if (normalizedColorValue.Length == 6 &&
-            TryParseHexadecimalByte(normalizedColorValue[0..2], out var redComponent) &&
-            TryParseHexadecimalByte(normalizedColorValue[2..4], out var greenComponent) &&
-            TryParseHexadecimalByte(normalizedColorValue[4..6], out var blueComponent))
+        if (normalizedColorValue.Length == 6 && TryParseHexadecimalByte(normalizedColorValue[0..2], out var redComponent) && TryParseHexadecimalByte(normalizedColorValue[2..4], out var greenComponent) && TryParseHexadecimalByte(normalizedColorValue[4..6], out var blueComponent))
             return Color.FromArgb(byte.MaxValue, redComponent, greenComponent, blueComponent);
 
-        if (normalizedColorValue.Length == 8 &&
-            TryParseHexadecimalByte(normalizedColorValue[0..2], out var alphaComponent) &&
-            TryParseHexadecimalByte(normalizedColorValue[2..4], out var redComponentWithAlpha) &&
-            TryParseHexadecimalByte(normalizedColorValue[4..6], out var greenComponentWithAlpha) &&
-            TryParseHexadecimalByte(normalizedColorValue[6..8], out var blueComponentWithAlpha))
+        if (normalizedColorValue.Length == 8 && TryParseHexadecimalByte(normalizedColorValue[0..2], out var alphaComponent) && TryParseHexadecimalByte(normalizedColorValue[2..4], out var redComponentWithAlpha) && TryParseHexadecimalByte(normalizedColorValue[4..6], out var greenComponentWithAlpha) && TryParseHexadecimalByte(normalizedColorValue[6..8], out var blueComponentWithAlpha))
             return Color.FromArgb(alphaComponent, redComponentWithAlpha, greenComponentWithAlpha, blueComponentWithAlpha);
 
         return CreateDefaultCropBackgroundColor();
@@ -422,12 +415,9 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         using var originalSvgImage = imageFileViewModel.CreateMagickImage();
         var originalWidth = (uint)originalSvgImage.Width;
         var originalHeight = (uint)originalSvgImage.Height;
-        if (sizeSetting == SizeSetting.ResizeToFill)
-            return (GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalWidth, width)), GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalHeight, height)));
-        if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio)
-            return (GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalWidth, width)), null);
-        if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio)
-            return (null, GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalHeight, height)));
+        if (sizeSetting == SizeSetting.ResizeToFill) return (GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalWidth, width)), GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalHeight, height)));
+        if (sizeSetting == SizeSetting.ResizeToWidthAndKeepAspectRatio) return (GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalWidth, width)), null);
+        if (sizeSetting == SizeSetting.ResizeToHeightAndKeepAspectRatio) return (null, GetPositiveDimensionOrNull(ScaleDimensionByPercent(originalHeight, height)));
         return (null, null);
     }
 
@@ -460,9 +450,10 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         {
             try
             {
-                if (File.Exists(Path.Combine(dir, "gswin64c.exe")) ||
-                    File.Exists(Path.Combine(dir, "gswin32c.exe")))
+                if (File.Exists(Path.Combine(dir, "gswin64c.exe")) || File.Exists(Path.Combine(dir, "gswin32c.exe")))
+                {
                     return true;
+                }
             }
             catch { }
         }
@@ -556,17 +547,10 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         if (languageTagSegments.Length == 0) return "en-US";
         if (!string.Equals(languageTagSegments[0], "zh", StringComparison.OrdinalIgnoreCase)) return languageTag;
 
-        var isTraditionalChinese = languageTagSegments.Any(segment =>
-            string.Equals(segment, "Hant", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(segment, "TW", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(segment, "HK", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(segment, "MO", StringComparison.OrdinalIgnoreCase));
+        var isTraditionalChinese = languageTagSegments.Any(segment => string.Equals(segment, "Hant", StringComparison.OrdinalIgnoreCase) || string.Equals(segment, "TW", StringComparison.OrdinalIgnoreCase) || string.Equals(segment, "HK", StringComparison.OrdinalIgnoreCase) || string.Equals(segment, "MO", StringComparison.OrdinalIgnoreCase));
         if (isTraditionalChinese) return "zh-Hant";
 
-        var isSimplifiedChinese = languageTagSegments.Any(segment =>
-            string.Equals(segment, "Hans", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(segment, "CN", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(segment, "SG", StringComparison.OrdinalIgnoreCase));
+        var isSimplifiedChinese = languageTagSegments.Any(segment => string.Equals(segment, "Hans", StringComparison.OrdinalIgnoreCase) || string.Equals(segment, "CN", StringComparison.OrdinalIgnoreCase) || string.Equals(segment, "SG", StringComparison.OrdinalIgnoreCase));
         if (isSimplifiedChinese) return "zh-Hans";
 
         return "zh-Hans";
@@ -673,45 +657,32 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
             MainWindow.Instance.HideLoading();
             if (availableUpdateCount <= 0)
             {
-                await MainWindow.Instance.Content.ShowMessageDialogAsync(
-                    _resourceLoader.GetString("NoUpdatesDialogContent"),
-                    _resourceLoader.GetString("NoUpdatesDialogTitle"));
+                await MainWindow.Instance.Content.ShowMessageDialogAsync(_resourceLoader.GetString("NoUpdatesDialogContent"), _resourceLoader.GetString("NoUpdatesDialogTitle"));
                 return;
             }
 
-            var dialogResult = await MainWindow.Instance.Content.ShowMessageDialogAsync(
-                string.Format(_resourceLoader.GetString("UpdateAvailableDialogContent"), availableUpdateCount),
-                _resourceLoader.GetString("UpdateAvailableDialogTitle"),
-                showCancel: true);
+            var dialogResult = await MainWindow.Instance.Content.ShowMessageDialogAsync(string.Format(_resourceLoader.GetString("UpdateAvailableDialogContent"), availableUpdateCount), _resourceLoader.GetString("UpdateAvailableDialogTitle"), showCancel: true);
             if (dialogResult != ContentDialogResult.Primary) return;
 
             var openedStoreProductPage = await StoreUpdateService.OpenStoreProductPageAsync();
             if (openedStoreProductPage) return;
 
-            await MainWindow.Instance.Content.ShowMessageDialogAsync(
-                _resourceLoader.GetString("OpenStoreFailedDialogContent"),
-                _resourceLoader.GetString("OpenStoreFailedDialogTitle"));
+            await MainWindow.Instance.Content.ShowMessageDialogAsync(_resourceLoader.GetString("OpenStoreFailedDialogContent"), _resourceLoader.GetString("OpenStoreFailedDialogTitle"));
         }
         catch (COMException)
         {
             MainWindow.Instance.HideLoading();
-            await MainWindow.Instance.Content.ShowMessageDialogAsync(
-                _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
-                _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
+            await MainWindow.Instance.Content.ShowMessageDialogAsync(_resourceLoader.GetString("UpdateCheckFailedDialogContent"), _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
         }
         catch (InvalidOperationException)
         {
             MainWindow.Instance.HideLoading();
-            await MainWindow.Instance.Content.ShowMessageDialogAsync(
-                _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
-                _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
+            await MainWindow.Instance.Content.ShowMessageDialogAsync(_resourceLoader.GetString("UpdateCheckFailedDialogContent"), _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
         }
         catch (UnauthorizedAccessException)
         {
             MainWindow.Instance.HideLoading();
-            await MainWindow.Instance.Content.ShowMessageDialogAsync(
-                _resourceLoader.GetString("UpdateCheckFailedDialogContent"),
-                _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
+            await MainWindow.Instance.Content.ShowMessageDialogAsync(_resourceLoader.GetString("UpdateCheckFailedDialogContent"), _resourceLoader.GetString("UpdateCheckFailedDialogTitle"));
         }
     }
 
@@ -721,9 +692,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         var openedGitHubRepositoryPage = await Launcher.LaunchUriAsync(s_gitHubRepositoryPageAddress);
         if (openedGitHubRepositoryPage) return;
 
-        await MainWindow.Instance.Content.ShowMessageDialogAsync(
-            _resourceLoader.GetString("OpenGitHubFailedDialogContent"),
-            _resourceLoader.GetString("OpenGitHubFailedDialogTitle"));
+        await MainWindow.Instance.Content.ShowMessageDialogAsync(_resourceLoader.GetString("OpenGitHubFailedDialogContent"), _resourceLoader.GetString("OpenGitHubFailedDialogTitle"));
     }
 
     [RelayCommand]
@@ -738,9 +707,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         UpdateLanguageMenuFlyoutItems();
 
         var resourceLoader = new ResourceLoader();
-        await MainWindow.Instance.Content.ShowMessageDialogAsync(
-            resourceLoader.GetString("LanguageChangeDialogContent"),
-            resourceLoader.GetString("LanguageChangeDialogTitle"));
+        await MainWindow.Instance.Content.ShowMessageDialogAsync(resourceLoader.GetString("LanguageChangeDialogContent"), resourceLoader.GetString("LanguageChangeDialogTitle"));
     }
 
     [RelayCommand]
@@ -761,14 +728,11 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
 
     private async Task ConvertImagesAsync()
     {
-        var hasPdfFiles = ImageFileViewModels.Any(viewModel =>
-            Path.GetExtension(viewModel.FilePath).Equals(".pdf", StringComparison.OrdinalIgnoreCase));
+        var hasPdfFiles = ImageFileViewModels.Any(viewModel => Path.GetExtension(viewModel.FilePath).Equals(".pdf", StringComparison.OrdinalIgnoreCase));
 
         if (hasPdfFiles && !IsGhostscriptInstalled())
         {
-            await MainWindow.Instance.Content.ShowMessageDialogAsync(
-                _resourceLoader.GetString("GhostscriptRequiredDialogContent"),
-                _resourceLoader.GetString("GhostscriptRequiredDialogTitle"));
+            await MainWindow.Instance.Content.ShowMessageDialogAsync(_resourceLoader.GetString("GhostscriptRequiredDialogContent"), _resourceLoader.GetString("GhostscriptRequiredDialogTitle"));
             return;
         }
 
@@ -804,12 +768,9 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         {
             var sourceDirectory = Path.GetDirectoryName(sourceFilePath);
             if (outputFolderSetting == OutputFolderSetting.SameFolder) return sourceDirectory;
-            if (outputFolderSetting == OutputFolderSetting.PhotoFolder)
-                return Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-            if (outputFolderSetting == OutputFolderSetting.CustomFolder && !string.IsNullOrEmpty(customFolderPath))
-                return customFolderPath;
-            if (outputFolderSetting == OutputFolderSetting.Subfolder && !string.IsNullOrEmpty(subfolderName))
-                return Path.Combine(sourceDirectory, subfolderName);
+            if (outputFolderSetting == OutputFolderSetting.PhotoFolder) return Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            if (outputFolderSetting == OutputFolderSetting.CustomFolder && !string.IsNullOrEmpty(customFolderPath)) return customFolderPath;
+            if (outputFolderSetting == OutputFolderSetting.Subfolder && !string.IsNullOrEmpty(subfolderName)) return Path.Combine(sourceDirectory, subfolderName);
             return sourceDirectory;
         }
 
@@ -968,14 +929,21 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
             }
         }
 
-        if (parallelExecution) await Parallel.ForEachAsync(ImageFileViewModels.ToList(), async (viewModel, _) => await ConvertSingleImageAsync(viewModel));
-        else foreach (var viewModel in ImageFileViewModels.ToList()) await ConvertSingleImageAsync(viewModel);
+        if (parallelExecution)
+        {
+            await Parallel.ForEachAsync(ImageFileViewModels.ToList(), async (viewModel, _) => await ConvertSingleImageAsync(viewModel));
+        }
+        else
+        {
+            foreach (var viewModel in ImageFileViewModels.ToList())
+            {
+                await ConvertSingleImageAsync(viewModel);
+            }
+        }
 
         AddProgressLog(_resourceLoader.GetString("ConversionComplete"));
 
-        await MainWindow.Instance.Content.ShowMessageDialogAsync(
-            string.Format(_resourceLoader.GetString("ConversionCompleteDialogContent"), ImageFileViewModels.Count),
-            _resourceLoader.GetString("ConversionCompleteDialogTitle"));
+        await MainWindow.Instance.Content.ShowMessageDialogAsync(string.Format(_resourceLoader.GetString("ConversionCompleteDialogContent"), ImageFileViewModels.Count), _resourceLoader.GetString("ConversionCompleteDialogTitle"));
 
         IsConverting = false;
         ProgressLog.Clear();
@@ -1030,8 +998,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         Height = (double)values["Height"];
         if (values.TryGetValue("CropHorizontalAnchorIndex", out var cropHorizontalAnchorIndex)) CropHorizontalAnchorIndex = (int)cropHorizontalAnchorIndex;
         if (values.TryGetValue("CropVerticalAnchorIndex", out var cropVerticalAnchorIndex)) CropVerticalAnchorIndex = (int)cropVerticalAnchorIndex;
-        if (values.TryGetValue("CropBackgroundColor", out var cropBackgroundColorSettingValue) && cropBackgroundColorSettingValue is string cropBackgroundColorText)
-            CropBackgroundColor = ConvertSettingValueToColor(cropBackgroundColorText);
+        if (values.TryGetValue("CropBackgroundColor", out var cropBackgroundColorSettingValue) && cropBackgroundColorSettingValue is string cropBackgroundColorText) CropBackgroundColor = ConvertSettingValueToColor(cropBackgroundColorText);
         Prefix = (string)values["Prefix"];
         OverwriteFile = (bool)values["OverwriteFile"];
 
@@ -1042,8 +1009,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         ParallelExecution = (bool)values["ParallelExecution"];
         PreserveFileDate = (bool)values["PreserveFileDate"];
         PreserveExif = (bool)values["PreserveExif"];
-        if (values.TryGetValue("PreserveAnimation", out var preserveAnimationValue))
-            PreserveAnimation = (bool)preserveAnimationValue;
+        if (values.TryGetValue("PreserveAnimation", out var preserveAnimationValue)) PreserveAnimation = (bool)preserveAnimationValue;
         DeleteOriginal = (bool)values["DeleteOriginal"];
     }
 

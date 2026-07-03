@@ -54,21 +54,18 @@ public sealed partial class MainPage : Page,
     {
         base.OnNavigatedTo(e);
 
-        if (e.Parameter is string[] launchFilePaths && launchFilePaths.Length > 0)
-            WeakReferenceMessenger.Default.Send(new AddImageFilesMessage(launchFilePaths));
+        if (e.Parameter is string[] launchFilePaths && launchFilePaths.Length > 0) WeakReferenceMessenger.Default.Send(new AddImageFilesMessage(launchFilePaths));
     }
 
     public async void Receive(ShowFileOpenPickerMessage _)
     {
         var filePicker = new FileOpenPicker(MainWindow.Instance.AppWindow.Id);
-        foreach (var imageFileFormat in Constants.ImageFileFormats)
-            filePicker.FileTypeFilter.Add(imageFileFormat);
+        foreach (var imageFileFormat in Constants.ImageFileFormats) filePicker.FileTypeFilter.Add(imageFileFormat);
         filePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
 
         var files = await filePicker.PickMultipleFilesAsync();
         var filePaths = files.Select(file => file.Path).ToList();
-        if (filePaths.Count > 0)
-            WeakReferenceMessenger.Default.Send(new AddImageFilesMessage(filePaths));
+        if (filePaths.Count > 0) WeakReferenceMessenger.Default.Send(new AddImageFilesMessage(filePaths));
     }
 
     public async void Receive(ShowFolderPickerMessage _)
@@ -170,7 +167,10 @@ public sealed partial class MainPage : Page,
 
             try
             {
-                if (Directory.EnumerateFiles(gsDir, "gswin*c.exe", SearchOption.AllDirectories).Any()) return true;
+                if (Directory.EnumerateFiles(gsDir, "gswin*c.exe", SearchOption.AllDirectories).Any())
+                {
+                    return true;
+                }
             }
             catch { }
         }
@@ -180,9 +180,10 @@ public sealed partial class MainPage : Page,
         {
             try
             {
-                if (File.Exists(Path.Combine(dir, "gswin64c.exe")) ||
-                    File.Exists(Path.Combine(dir, "gswin32c.exe")))
+                if (File.Exists(Path.Combine(dir, "gswin64c.exe")) || File.Exists(Path.Combine(dir, "gswin32c.exe")))
+                {
                     return true;
+                }
             }
             catch { }
         }
@@ -194,13 +195,14 @@ public sealed partial class MainPage : Page,
 
     private void OnPreviewScrollViewerSizeChanged(object sender, SizeChangedEventArgs e) => ResetImagePreviewZoomFactor();
 
-    private void OnDropPlaceholderButtonClicked(object sender, RoutedEventArgs e) =>
-        WeakReferenceMessenger.Default.Send(ShowFileOpenPickerMessage.Instance);
+    private void OnDropPlaceholderButtonClicked(object sender, RoutedEventArgs e) => WeakReferenceMessenger.Default.Send(ShowFileOpenPickerMessage.Instance);
 
     private void OnDropPlaceholderButtonDragOver(object sender, DragEventArgs e)
     {
         if (e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
             e.AcceptedOperation = DataPackageOperation.Copy;
+        }
     }
 
     private async void OnDropPlaceholderButtonDrop(object sender, DragEventArgs e)
@@ -216,8 +218,7 @@ public sealed partial class MainPage : Page,
             .Select(file => file.Path)
             .ToList();
 
-        if (filePaths.Count > 0)
-            WeakReferenceMessenger.Default.Send(new AddImageFilesMessage(filePaths));
+        if (filePaths.Count > 0) WeakReferenceMessenger.Default.Send(new AddImageFilesMessage(filePaths));
     }
 
     private void OnAddImageAppBarButtonKeyboardAcceleratorInvoked(object sender, KeyboardAcceleratorInvokedEventArgs e)
