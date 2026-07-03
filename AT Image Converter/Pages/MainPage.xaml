@@ -90,8 +90,8 @@
             <Grid
                 Grid.RowSpan="2"
                 Grid.Column="0"
-                Margin="0,10,0,0"
-                Padding="10,0,0,10">
+                Margin="0,8,0,0"
+                Padding="8,0,0,8">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
@@ -99,21 +99,21 @@
                 <ScrollViewer
                     x:Name="SettingsScrollViewer"
                     Grid.Row="0"
-                    CornerRadius="5"
+                    CornerRadius="4"
                     IsEnabled="{x:Bind ViewModel.IsConverting, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
                     VerticalScrollBarVisibility="Hidden">
-                    <StackPanel Spacing="10">
+                    <StackPanel Spacing="12">
                         <StackPanel
-                            Padding="10,3.5,10,0"
+                            Padding="8,4,8,0"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                            CornerRadius="5">
+                            CornerRadius="4">
                             <TextBlock x:Uid="ImagesTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
-                            <Grid Margin="0,7.5,0,0">
+                            <Grid Margin="0,8,0,0">
                                 <ListView
                                     x:Name="ImagesListView"
                                     Height="121.5"
                                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                    CornerRadius="5"
+                                    CornerRadius="4"
                                     ItemsSource="{x:Bind ViewModel.ImageFileViewModels, Mode=OneWay}"
                                     SelectedIndex="0"
                                     SelectedItem="{x:Bind ViewModel.SelectedImageFile, Mode=TwoWay}"
@@ -132,7 +132,7 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Click="OnDropPlaceholderButtonClicked"
-                                    CornerRadius="5"
+                                    CornerRadius="4"
                                     DragOver="OnDropPlaceholderButtonDragOver"
                                     Drop="OnDropPlaceholderButtonDrop"
                                     Visibility="{x:Bind ViewModel.IsDropPlaceholderVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -178,10 +178,10 @@
                             </CommandBar>
                         </StackPanel>
                         <StackPanel
-                            Padding="10,3.5,10,10"
+                            Padding="8,4,8,8"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                            CornerRadius="5"
-                            Spacing="5">
+                            CornerRadius="4"
+                            Spacing="8">
                             <TextBlock x:Uid="FormatOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ComboBox
                                 x:Name="FormatComboBox"
@@ -213,10 +213,10 @@
                         </StackPanel>
                         <StackPanel
                             x:Name="RotationSettingsStackPanel"
-                            Padding="10,3.5,10,10"
+                            Padding="8,4,8,8"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                            CornerRadius="5"
-                            Spacing="5"
+                            CornerRadius="4"
+                            Spacing="8"
                             Visibility="{x:Bind ViewModel.IsSizeAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock x:Uid="RotationOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ToggleSwitch
@@ -239,10 +239,10 @@
                         </StackPanel>
                         <StackPanel
                             x:Name="SizeSettingsStackPanel"
-                            Padding="10,3.5,10,10"
+                            Padding="8,4,8,8"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                            CornerRadius="5"
-                            Spacing="5"
+                            CornerRadius="4"
+                            Spacing="8"
                             Visibility="{x:Bind ViewModel.IsSizeAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock x:Uid="SizeOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ComboBox
@@ -286,7 +286,7 @@
                             </ComboBox>
                             <Grid
                                 x:Name="SizeGrid"
-                                ColumnSpacing="5"
+                                ColumnSpacing="8"
                                 Visibility="{x:Bind ViewModel.IsSizeGridVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -311,9 +311,9 @@
                             </Grid>
                             <StackPanel
                                 x:Name="CropSettingsPanel"
-                                Spacing="5"
+                                Spacing="8"
                                 Visibility="{x:Bind ViewModel.IsCropVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <Grid ColumnSpacing="5">
+                                <Grid ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
@@ -346,7 +346,7 @@
                                     <StackPanel
                                         HorizontalAlignment="Left"
                                         Orientation="Horizontal"
-                                        Spacing="10">
+                                        Spacing="8">
                                         <Border
                                             x:Name="CropBackgroundColorPreviewBorder"
                                             Width="20"
@@ -373,10 +373,10 @@
                             </StackPanel>
                         </StackPanel>
                         <StackPanel
-                            Padding="10,3.5,10,10"
+                            Padding="8,4,8,8"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                            CornerRadius="5"
-                            Spacing="5">
+                            CornerRadius="4"
+                            Spacing="8">
                             <TextBlock x:Uid="SaveOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <TextBox
                                 x:Name="PrefixTextBox"
@@ -396,12 +396,15 @@
                                 IsOn="{x:Bind ViewModel.OverwriteFile, Mode=TwoWay}" />
                         </StackPanel>
                         <StackPanel
-                            Padding="10,3.5,10,10"
+                            Padding="8,4,8,8"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                            CornerRadius="5"
-                            Spacing="5">
-                            <TextBlock x:Uid="OutputFolderTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
-                            <Grid ColumnSpacing="5">
+                            CornerRadius="4"
+                            Spacing="4">
+                            <TextBlock
+                                x:Uid="OutputFolderTitle"
+                                Margin="0,0,0,4"
+                                Style="{ThemeResource SubtitleTextBlockStyle}" />
+                            <Grid ColumnSpacing="8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -423,7 +426,7 @@
                                     <FontIcon FontSize="14" Glyph="&#xED25;" />
                                 </Button>
                             </Grid>
-                            <Grid ColumnSpacing="5">
+                            <Grid ColumnSpacing="8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -443,7 +446,7 @@
                                     <FontIcon FontSize="14" Glyph="&#xED25;" />
                                 </Button>
                             </Grid>
-                            <Grid ColumnSpacing="5">
+                            <Grid ColumnSpacing="8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -465,7 +468,7 @@
                                     <FontIcon FontSize="14" Glyph="&#xED25;" />
                                 </Button>
                             </Grid>
-                            <Grid Margin="28,0,0,0" ColumnSpacing="5">
+                            <Grid Margin="28,0,0,0" ColumnSpacing="8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -483,7 +486,7 @@
                                     <FontIcon FontSize="14" Glyph="&#xE712;" />
                                 </Button>
                             </Grid>
-                            <Grid ColumnSpacing="5">
+                            <Grid ColumnSpacing="8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -513,11 +516,14 @@
                                 Text="{x:Bind ViewModel.SubfolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                         <StackPanel
-                            Padding="10,3.5,10,10"
+                            Padding="8,4,8,8"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                            CornerRadius="5"
-                            Spacing="5">
-                            <TextBlock x:Uid="ConversionOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                            CornerRadius="4"
+                            Spacing="4">
+                            <TextBlock
+                                x:Uid="ConversionOptionsTitle"
+                                Margin="0,0,0,4"
+                                Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ToggleSwitch
                                 x:Name="ParallelExecutionToggleSwitch"
                                 x:Uid="ParallelExecutionToggleSwitch"
@@ -538,7 +544,7 @@
                                 x:Name="DeleteOriginalToggleSwitch"
                                 x:Uid="DeleteOriginalToggleSwitch"
                                 IsOn="{x:Bind ViewModel.DeleteOriginal, Mode=TwoWay}" />
-                            <Grid ColumnSpacing="5">
+                            <Grid ColumnSpacing="8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
@@ -560,7 +566,7 @@
                 <Button
                     x:Name="ConvertButton"
                     Grid.Row="1"
-                    Margin="0,10,0,0"
+                    Margin="0,8,0,0"
                     HorizontalAlignment="Stretch"
                     Command="{x:Bind ViewModel.ConvertCommand}"
                     Content="{x:Bind ViewModel.ConvertButtonContent, Mode=OneWay}"
@@ -572,9 +578,9 @@
                 IsEnabled="{x:Bind ViewModel.IsConverting, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}">
                 <Grid
                     x:Name="PreviewGrid"
-                    Margin="10"
+                    Margin="8"
                     Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                    CornerRadius="5">
+                    CornerRadius="4">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
@@ -582,8 +588,8 @@
                     <ScrollViewer
                         x:Name="PreviewScrollViewer"
                         Grid.Row="0"
-                        Margin="10,10,10,0"
-                        CornerRadius="5"
+                        Margin="8,8,8,0"
+                        CornerRadius="4"
                         HorizontalScrollBarVisibility="Auto"
                         SizeChanged="OnPreviewScrollViewerSizeChanged"
                         VerticalScrollBarVisibility="Auto"
@@ -633,9 +639,9 @@
                 x:Name="ProgressGrid"
                 Grid.Row="1"
                 Grid.Column="1"
-                Margin="10,0,10,10"
+                Margin="8,0,8,8"
                 Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                CornerRadius="5"
+                CornerRadius="4"
                 Visibility="{x:Bind ViewModel.IsProgressVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <ListView
                     x:Name="ProgressLogListView"
