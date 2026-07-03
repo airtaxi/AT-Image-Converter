@@ -22,7 +22,6 @@
                     AccessKey="O"
                     Command="{x:Bind ViewModel.AddImagesCommand}" />
                 <MenuFlyoutItem
-                    x:Name="FileStartConversionMenuFlyoutItem"
                     x:Uid="FileStartConversionMenuFlyoutItem"
                     AccessKey="C"
                     Command="{x:Bind ViewModel.ConvertCommand}"
@@ -97,7 +96,6 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <ScrollViewer
-                    x:Name="SettingsScrollViewer"
                     Grid.Row="0"
                     CornerRadius="4"
                     IsEnabled="{x:Bind ViewModel.IsConverting, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
@@ -110,7 +108,6 @@
                             <TextBlock x:Uid="ImagesTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <Grid Margin="0,8,0,0">
                                 <ListView
-                                    x:Name="ImagesListView"
                                     Height="121.5"
                                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                     CornerRadius="4"
@@ -125,7 +122,6 @@
                                     </ListView.ItemTemplate>
                                 </ListView>
                                 <Button
-                                    x:Name="DropPlaceholderButton"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     AllowDrop="True"
@@ -165,7 +161,6 @@
                                     </AppBarButton.KeyboardAccelerators>
                                 </AppBarButton>
                                 <AppBarButton
-                                    x:Name="DeleteAppBarButton"
                                     x:Uid="DeleteButton"
                                     Command="{x:Bind ViewModel.DeleteImageCommand}"
                                     Icon="Delete"
@@ -184,7 +179,6 @@
                             Spacing="8">
                             <TextBlock x:Uid="FormatOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ComboBox
-                                x:Name="FormatComboBox"
                                 x:Uid="OutputFormatComboBox"
                                 HorizontalAlignment="Stretch"
                                 SelectedIndex="{x:Bind ViewModel.FormatIndex, Mode=TwoWay}">
@@ -200,7 +194,6 @@
                                 </ComboBox.Items>
                             </ComboBox>
                             <NumberBox
-                                x:Name="QualityNumberBox"
                                 x:Uid="QualityNumberBox"
                                 HorizontalAlignment="Stretch"
                                 LargeChange="10"
@@ -210,16 +203,12 @@
                                 SpinButtonPlacementMode="Inline"
                                 Visibility="{x:Bind ViewModel.IsQualityAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Value="{x:Bind ViewModel.Quality, Mode=TwoWay}" />
-                            <SplitButton
-                                x:Name="TransparentColorSplitButton"
-                                HorizontalAlignment="Stretch"
-                                Visibility="{x:Bind ViewModel.IsTransparentColorVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <SplitButton HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.IsTransparentColorVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <StackPanel
                                     HorizontalAlignment="Left"
                                     Orientation="Horizontal"
                                     Spacing="10">
                                     <Border
-                                        x:Name="TransparentColorPreviewBorder"
                                         Width="20"
                                         Height="20"
                                         Background="{x:Bind ViewModel.TransparentColorBrush, Mode=OneWay}"
@@ -234,7 +223,6 @@
                                 <SplitButton.Flyout>
                                     <Flyout Placement="BottomEdgeAlignedLeft">
                                         <ColorPicker
-                                            x:Name="TransparentColorPicker"
                                             MinWidth="320"
                                             IsAlphaEnabled="{x:Bind ViewModel.OutputFormatSupportsAlpha, Mode=OneWay}"
                                             Color="{x:Bind ViewModel.TransparentColor, Mode=TwoWay}" />
@@ -243,19 +231,14 @@
                             </SplitButton>
                         </StackPanel>
                         <StackPanel
-                            x:Name="RotationSettingsStackPanel"
                             Padding="8,4,8,8"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                             CornerRadius="4"
                             Spacing="8"
                             Visibility="{x:Bind ViewModel.IsSizeAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock x:Uid="RotationOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
-                            <ToggleSwitch
-                                x:Name="RotationToggleSwitch"
-                                x:Uid="RotationToggleSwitch"
-                                IsOn="{x:Bind ViewModel.RotationEnabled, Mode=TwoWay}" />
+                            <ToggleSwitch x:Uid="RotationToggleSwitch" IsOn="{x:Bind ViewModel.RotationEnabled, Mode=TwoWay}" />
                             <ComboBox
-                                x:Name="RotationSettingsComboBox"
                                 x:Uid="RotationSettingsComboBox"
                                 HorizontalAlignment="Stretch"
                                 SelectedIndex="{x:Bind ViewModel.RotationIndex, Mode=TwoWay}"
@@ -269,7 +252,6 @@
                             </ComboBox>
                         </StackPanel>
                         <StackPanel
-                            x:Name="SizeSettingsStackPanel"
                             Padding="8,4,8,8"
                             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                             CornerRadius="4"
@@ -277,7 +259,6 @@
                             Visibility="{x:Bind ViewModel.IsSizeAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock x:Uid="SizeOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <ComboBox
-                                x:Name="SizeSettingsComboBox"
                                 x:Uid="SizeSettingsComboBox"
                                 HorizontalAlignment="Stretch"
                                 SelectedIndex="{x:Bind ViewModel.SizeSettingIndex, Mode=TwoWay}">
@@ -290,7 +271,6 @@
                                 </ComboBox.Items>
                             </ComboBox>
                             <ComboBox
-                                x:Name="SizeUnitComboBox"
                                 x:Uid="SizeUnitComboBox"
                                 HorizontalAlignment="Stretch"
                                 SelectedIndex="{x:Bind ViewModel.SizeUnitIndex, Mode=TwoWay}"
@@ -301,7 +281,6 @@
                                 </ComboBox.Items>
                             </ComboBox>
                             <ComboBox
-                                x:Name="ResizeInterpolationComboBox"
                                 x:Uid="ResizeInterpolationComboBox"
                                 HorizontalAlignment="Stretch"
                                 SelectedIndex="{x:Bind ViewModel.ResizeInterpolationIndex, Mode=TwoWay}"
@@ -315,16 +294,12 @@
                                     <ComboBoxItem x:Uid="ResizeInterpolationLanczosItem" />
                                 </ComboBox.Items>
                             </ComboBox>
-                            <Grid
-                                x:Name="SizeGrid"
-                                ColumnSpacing="8"
-                                Visibility="{x:Bind ViewModel.IsSizeGridVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Grid ColumnSpacing="8" Visibility="{x:Bind ViewModel.IsSizeGridVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <NumberBox
-                                    x:Name="WidthNumberBox"
                                     Grid.Column="0"
                                     HorizontalAlignment="Stretch"
                                     Header="{x:Bind ViewModel.WidthHeader, Mode=OneWay}"
@@ -332,7 +307,6 @@
                                     Minimum="{x:Bind ViewModel.WidthMinimum, Mode=OneWay}"
                                     Value="{x:Bind ViewModel.Width, Mode=TwoWay}" />
                                 <NumberBox
-                                    x:Name="HeightNumberBox"
                                     Grid.Column="1"
                                     HorizontalAlignment="Stretch"
                                     Header="{x:Bind ViewModel.HeightHeader, Mode=OneWay}"
@@ -340,17 +314,13 @@
                                     Minimum="{x:Bind ViewModel.HeightMinimum, Mode=OneWay}"
                                     Value="{x:Bind ViewModel.Height, Mode=TwoWay}" />
                             </Grid>
-                            <StackPanel
-                                x:Name="CropSettingsPanel"
-                                Spacing="8"
-                                Visibility="{x:Bind ViewModel.IsCropVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.IsCropVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <Grid ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <ComboBox
-                                        x:Name="CropHorizontalAnchorComboBox"
                                         x:Uid="CropHorizontalAnchorComboBox"
                                         HorizontalAlignment="Stretch"
                                         SelectedIndex="{x:Bind ViewModel.CropHorizontalAnchorIndex, Mode=TwoWay}">
@@ -361,7 +331,6 @@
                                         </ComboBox.Items>
                                     </ComboBox>
                                     <ComboBox
-                                        x:Name="CropVerticalAnchorComboBox"
                                         x:Uid="CropVerticalAnchorComboBox"
                                         Grid.Column="1"
                                         HorizontalAlignment="Stretch"
@@ -373,13 +342,12 @@
                                         </ComboBox.Items>
                                     </ComboBox>
                                 </Grid>
-                                <SplitButton x:Name="CropBackgroundColorSplitButton" HorizontalAlignment="Stretch">
+                                <SplitButton HorizontalAlignment="Stretch">
                                     <StackPanel
                                         HorizontalAlignment="Left"
                                         Orientation="Horizontal"
                                         Spacing="8">
                                         <Border
-                                            x:Name="CropBackgroundColorPreviewBorder"
                                             Width="20"
                                             Height="20"
                                             Background="{x:Bind ViewModel.CropBackgroundColorBrush, Mode=OneWay}"
@@ -394,7 +362,6 @@
                                     <SplitButton.Flyout>
                                         <Flyout Placement="BottomEdgeAlignedLeft">
                                             <ColorPicker
-                                                x:Name="CropBackgroundColorPicker"
                                                 MinWidth="320"
                                                 IsAlphaEnabled="{x:Bind ViewModel.OutputFormatSupportsAlpha, Mode=OneWay}"
                                                 Color="{x:Bind ViewModel.CropBackgroundColor, Mode=TwoWay}" />
@@ -410,21 +377,16 @@
                             Spacing="8">
                             <TextBlock x:Uid="SaveOptionsTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <TextBox
-                                x:Name="PrefixTextBox"
                                 x:Uid="PrefixTextBox"
                                 HorizontalAlignment="Stretch"
                                 Text="{x:Bind ViewModel.Prefix, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox
-                                x:Name="PrefixPreviewTextBox"
                                 x:Uid="PrefixPreviewTextBox"
                                 HorizontalAlignment="Stretch"
                                 IsReadOnly="True"
                                 IsTabStop="False"
                                 Text="{x:Bind ViewModel.PrefixPreview, Mode=OneWay}" />
-                            <ToggleSwitch
-                                x:Name="OverwriteFileToggleSwitch"
-                                x:Uid="OverwriteFileToggleSwitch"
-                                IsOn="{x:Bind ViewModel.OverwriteFile, Mode=TwoWay}" />
+                            <ToggleSwitch x:Uid="OverwriteFileToggleSwitch" IsOn="{x:Bind ViewModel.OverwriteFile, Mode=TwoWay}" />
                         </StackPanel>
                         <StackPanel
                             Padding="8,4,8,8"
@@ -441,7 +403,6 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <RadioButton
-                                    x:Name="SameFolderRadioButton"
                                     x:Uid="SameFolderRadioButton"
                                     Grid.Column="0"
                                     Command="{x:Bind ViewModel.SelectOutputFolderCommand}"
@@ -449,7 +410,6 @@
                                     GroupName="OutputFolder"
                                     IsChecked="{x:Bind ViewModel.IsSameFolderChecked, Mode=OneWay}" />
                                 <Button
-                                    x:Name="OpenSameFolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Command="{x:Bind ViewModel.OpenSameFolderCommand}"
@@ -463,7 +423,6 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <RadioButton
-                                    x:Name="PhotoFolderRadioButton"
                                     x:Uid="PhotoFolderRadioButton"
                                     Grid.Column="0"
                                     Command="{x:Bind ViewModel.SelectOutputFolderCommand}"
@@ -483,7 +442,6 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <RadioButton
-                                    x:Name="CustomFolderRadioButton"
                                     x:Uid="CustomFolderRadioButton"
                                     Grid.Column="0"
                                     Command="{x:Bind ViewModel.SelectOutputFolderCommand}"
@@ -491,7 +449,6 @@
                                     GroupName="OutputFolder"
                                     IsChecked="{x:Bind ViewModel.IsCustomFolderChecked, Mode=OneWay}" />
                                 <Button
-                                    x:Name="OpenCustomFolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Command="{x:Bind ViewModel.OpenCustomFolderCommand}"
@@ -505,7 +462,6 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBox
-                                    x:Name="CustomFolderPathTextBox"
                                     Grid.Column="0"
                                     HorizontalAlignment="Stretch"
                                     IsReadOnly="True"
@@ -523,7 +479,6 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <RadioButton
-                                    x:Name="SubfolderRadioButton"
                                     x:Uid="SubfolderRadioButton"
                                     Grid.Column="0"
                                     Command="{x:Bind ViewModel.SelectOutputFolderCommand}"
@@ -531,7 +486,6 @@
                                     GroupName="OutputFolder"
                                     IsChecked="{x:Bind ViewModel.IsSubfolderChecked, Mode=OneWay}" />
                                 <Button
-                                    x:Name="OpenSubfolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Command="{x:Bind ViewModel.OpenSubfolderCommand}"
@@ -540,7 +494,6 @@
                                 </Button>
                             </Grid>
                             <TextBox
-                                x:Name="SubfolderNameTextBox"
                                 Margin="28,0,0,0"
                                 HorizontalAlignment="Stretch"
                                 PlaceholderText="output"
@@ -555,26 +508,11 @@
                                 x:Uid="ConversionOptionsTitle"
                                 Margin="0,0,0,4"
                                 Style="{ThemeResource SubtitleTextBlockStyle}" />
-                            <ToggleSwitch
-                                x:Name="ParallelExecutionToggleSwitch"
-                                x:Uid="ParallelExecutionToggleSwitch"
-                                IsOn="{x:Bind ViewModel.ParallelExecution, Mode=TwoWay}" />
-                            <ToggleSwitch
-                                x:Name="PreserveFileDateToggleSwitch"
-                                x:Uid="PreserveFileDateToggleSwitch"
-                                IsOn="{x:Bind ViewModel.PreserveFileDate, Mode=TwoWay}" />
-                            <ToggleSwitch
-                                x:Name="PreserveExifToggleSwitch"
-                                x:Uid="PreserveExifToggleSwitch"
-                                IsOn="{x:Bind ViewModel.PreserveExif, Mode=TwoWay}" />
-                            <ToggleSwitch
-                                x:Name="PreserveAnimationToggleSwitch"
-                                x:Uid="PreserveAnimationToggleSwitch"
-                                IsOn="{x:Bind ViewModel.PreserveAnimation, Mode=TwoWay}" />
-                            <ToggleSwitch
-                                x:Name="DeleteOriginalToggleSwitch"
-                                x:Uid="DeleteOriginalToggleSwitch"
-                                IsOn="{x:Bind ViewModel.DeleteOriginal, Mode=TwoWay}" />
+                            <ToggleSwitch x:Uid="ParallelExecutionToggleSwitch" IsOn="{x:Bind ViewModel.ParallelExecution, Mode=TwoWay}" />
+                            <ToggleSwitch x:Uid="PreserveFileDateToggleSwitch" IsOn="{x:Bind ViewModel.PreserveFileDate, Mode=TwoWay}" />
+                            <ToggleSwitch x:Uid="PreserveExifToggleSwitch" IsOn="{x:Bind ViewModel.PreserveExif, Mode=TwoWay}" />
+                            <ToggleSwitch x:Uid="PreserveAnimationToggleSwitch" IsOn="{x:Bind ViewModel.PreserveAnimation, Mode=TwoWay}" />
+                            <ToggleSwitch x:Uid="DeleteOriginalToggleSwitch" IsOn="{x:Bind ViewModel.DeleteOriginal, Mode=TwoWay}" />
                             <Grid ColumnSpacing="8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -595,7 +533,6 @@
                     </StackPanel>
                 </ScrollViewer>
                 <Button
-                    x:Name="ConvertButton"
                     Grid.Row="1"
                     Margin="0,8,0,0"
                     HorizontalAlignment="Stretch"
@@ -603,12 +540,8 @@
                     Content="{x:Bind ViewModel.ConvertButtonContent, Mode=OneWay}"
                     IsEnabled="{x:Bind ViewModel.IsConvertEnabled, Mode=OneWay}" />
             </Grid>
-            <Frame
-                x:Name="PreviewFrame"
-                Grid.Column="1"
-                IsEnabled="{x:Bind ViewModel.IsConverting, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}">
+            <Frame Grid.Column="1" IsEnabled="{x:Bind ViewModel.IsConverting, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}">
                 <Grid
-                    x:Name="PreviewGrid"
                     Margin="8"
                     Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                     CornerRadius="4">
@@ -632,7 +565,6 @@
                             ImageOpened="OnImagePreviewImageOpened" />
                     </ScrollViewer>
                     <StackPanel
-                        x:Name="NoPreviewStackPanel"
                         Grid.Row="0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -667,17 +599,13 @@
                 </Grid>
             </Frame>
             <Grid
-                x:Name="ProgressGrid"
                 Grid.Row="1"
                 Grid.Column="1"
                 Margin="8,0,8,8"
                 Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                 CornerRadius="4"
                 Visibility="{x:Bind ViewModel.IsProgressVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                <ListView
-                    x:Name="ProgressLogListView"
-                    Height="150"
-                    ItemsSource="{x:Bind ViewModel.ProgressLog, Mode=OneWay}">
+                <ListView Height="150" ItemsSource="{x:Bind ViewModel.ProgressLog, Mode=OneWay}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" />
