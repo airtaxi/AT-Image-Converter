@@ -73,6 +73,9 @@
   <data name="AutoRotateByExifItem.Content" xml:space="preserve">
     <value>根据EXIF信息自动旋转</value>
   </data>
+  <data name="BrowseCustomFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>浏览输出文件夹</value>
+  </data>
   <data name="CheckForUpdatesMenuFlyoutItem.Text" xml:space="preserve">
     <value>检查更新</value>
   </data>
@@ -221,6 +224,9 @@
   <data name="NoUpdatesDialogTitle" xml:space="preserve">
     <value>检查更新</value>
   </data>
+  <data name="OpenCustomFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>打开输出文件夹</value>
+  </data>
   <data name="OpenGitHubFailedDialogContent" xml:space="preserve">
     <value>无法打开 GitHub 页面。</value>
   </data>
@@ -230,11 +236,20 @@
   <data name="OpenGitHubRepositoryMenuFlyoutItem.Text" xml:space="preserve">
     <value>作者 GitHub</value>
   </data>
+  <data name="OpenPhotoFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>打开输出文件夹</value>
+  </data>
+  <data name="OpenSameFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>打开输出文件夹</value>
+  </data>
   <data name="OpenStoreFailedDialogContent" xml:space="preserve">
     <value>无法打开 Microsoft Store 页面。</value>
   </data>
   <data name="OpenStoreFailedDialogTitle" xml:space="preserve">
     <value>无法打开商店</value>
+  </data>
+  <data name="OpenSubfolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>打开输出文件夹</value>
   </data>
   <data name="OutputFolderTitle.Text" xml:space="preserve">
     <value>输出文件夹</value>

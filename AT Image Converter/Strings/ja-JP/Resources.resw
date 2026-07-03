@@ -73,6 +73,9 @@
   <data name="AutoRotateByExifItem.Content" xml:space="preserve">
     <value>EXIF情報に基づいて自動回転</value>
   </data>
+  <data name="BrowseCustomFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>出力フォルダを参照</value>
+  </data>
   <data name="CheckForUpdatesMenuFlyoutItem.Text" xml:space="preserve">
     <value>更新を確認</value>
   </data>
@@ -221,6 +224,9 @@
   <data name="NoUpdatesDialogTitle" xml:space="preserve">
     <value>更新の確認</value>
   </data>
+  <data name="OpenCustomFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>出力フォルダを開く</value>
+  </data>
   <data name="OpenGitHubFailedDialogContent" xml:space="preserve">
     <value>GitHub ページを開けませんでした。</value>
   </data>
@@ -230,11 +236,20 @@
   <data name="OpenGitHubRepositoryMenuFlyoutItem.Text" xml:space="preserve">
     <value>制作者のGitHub</value>
   </data>
+  <data name="OpenPhotoFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>出力フォルダを開く</value>
+  </data>
+  <data name="OpenSameFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>出力フォルダを開く</value>
+  </data>
   <data name="OpenStoreFailedDialogContent" xml:space="preserve">
     <value>Microsoft Store のページを開けませんでした。</value>
   </data>
   <data name="OpenStoreFailedDialogTitle" xml:space="preserve">
     <value>ストアを開けませんでした</value>
+  </data>
+  <data name="OpenSubfolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>出力フォルダを開く</value>
   </data>
   <data name="OutputFolderTitle.Text" xml:space="preserve">
     <value>出力フォルダ</value>

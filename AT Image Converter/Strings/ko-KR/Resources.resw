@@ -73,6 +73,9 @@
   <data name="AutoRotateByExifItem.Content" xml:space="preserve">
     <value>EXIF 정보에 따라 회전</value>
   </data>
+  <data name="BrowseCustomFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>출력 폴더 찾아보기</value>
+  </data>
   <data name="CheckForUpdatesMenuFlyoutItem.Text" xml:space="preserve">
     <value>업데이트 확인</value>
   </data>
@@ -221,6 +224,9 @@
   <data name="NoUpdatesDialogTitle" xml:space="preserve">
     <value>업데이트 확인</value>
   </data>
+  <data name="OpenCustomFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>출력 폴더 열기</value>
+  </data>
   <data name="OpenGitHubFailedDialogContent" xml:space="preserve">
     <value>GitHub 페이지를 열지 못했습니다.</value>
   </data>
@@ -230,11 +236,20 @@
   <data name="OpenGitHubRepositoryMenuFlyoutItem.Text" xml:space="preserve">
     <value>제작자 GitHub</value>
   </data>
+  <data name="OpenPhotoFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>출력 폴더 열기</value>
+  </data>
+  <data name="OpenSameFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>출력 폴더 열기</value>
+  </data>
   <data name="OpenStoreFailedDialogContent" xml:space="preserve">
     <value>Microsoft Store 페이지를 열지 못했습니다.</value>
   </data>
   <data name="OpenStoreFailedDialogTitle" xml:space="preserve">
     <value>스토어 열기 실패</value>
+  </data>
+  <data name="OpenSubfolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>출력 폴더 열기</value>
   </data>
   <data name="OutputFolderTitle.Text" xml:space="preserve">
     <value>출력 폴더</value>

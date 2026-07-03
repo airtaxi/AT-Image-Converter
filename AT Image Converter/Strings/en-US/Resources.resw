@@ -73,6 +73,9 @@
   <data name="AutoRotateByExifItem.Content" xml:space="preserve">
     <value>Auto-rotate based on EXIF</value>
   </data>
+  <data name="BrowseCustomFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Browse for output folder</value>
+  </data>
   <data name="CheckForUpdatesMenuFlyoutItem.Text" xml:space="preserve">
     <value>Check for Updates</value>
   </data>
@@ -221,6 +224,9 @@ Download: https://www.ghostscript.com/releases/gsdnld.html</value>
   <data name="NoUpdatesDialogTitle" xml:space="preserve">
     <value>Check for Updates</value>
   </data>
+  <data name="OpenCustomFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Open output folder</value>
+  </data>
   <data name="OpenGitHubFailedDialogContent" xml:space="preserve">
     <value>Could not open the GitHub page.</value>
   </data>
@@ -230,11 +236,20 @@ Download: https://www.ghostscript.com/releases/gsdnld.html</value>
   <data name="OpenGitHubRepositoryMenuFlyoutItem.Text" xml:space="preserve">
     <value>Creator GitHub</value>
   </data>
+  <data name="OpenPhotoFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Open output folder</value>
+  </data>
+  <data name="OpenSameFolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Open output folder</value>
+  </data>
   <data name="OpenStoreFailedDialogContent" xml:space="preserve">
     <value>Could not open the Microsoft Store page.</value>
   </data>
   <data name="OpenStoreFailedDialogTitle" xml:space="preserve">
     <value>Failed to Open Store</value>
+  </data>
+  <data name="OpenSubfolderButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Open output folder</value>
   </data>
   <data name="OutputFolderTitle.Text" xml:space="preserve">
     <value>Output Folder</value>

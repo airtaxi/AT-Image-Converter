@@ -410,6 +410,7 @@
                                     GroupName="OutputFolder"
                                     IsChecked="{x:Bind ViewModel.IsSameFolderChecked, Mode=OneWay}" />
                                 <Button
+                                    x:Uid="OpenSameFolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Command="{x:Bind ViewModel.OpenSameFolderCommand}"
@@ -430,6 +431,7 @@
                                     GroupName="OutputFolder"
                                     IsChecked="{x:Bind ViewModel.IsPhotoFolderChecked, Mode=OneWay}" />
                                 <Button
+                                    x:Uid="OpenPhotoFolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Command="{x:Bind ViewModel.OpenPhotoFolderCommand}">
@@ -449,6 +451,7 @@
                                     GroupName="OutputFolder"
                                     IsChecked="{x:Bind ViewModel.IsCustomFolderChecked, Mode=OneWay}" />
                                 <Button
+                                    x:Uid="OpenCustomFolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Command="{x:Bind ViewModel.OpenCustomFolderCommand}"
@@ -467,6 +470,7 @@
                                     IsReadOnly="True"
                                     Text="{x:Bind ViewModel.CustomFolderPath, Mode=OneWay}" />
                                 <Button
+                                    x:Uid="BrowseCustomFolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Bottom"
                                     Command="{x:Bind ViewModel.BrowseCustomFolderCommand}">
@@ -486,6 +490,7 @@
                                     GroupName="OutputFolder"
                                     IsChecked="{x:Bind ViewModel.IsSubfolderChecked, Mode=OneWay}" />
                                 <Button
+                                    x:Uid="OpenSubfolderButton"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Command="{x:Bind ViewModel.OpenSubfolderCommand}"
