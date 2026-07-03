@@ -16,4 +16,9 @@ public static class Constants
     {
         "WEBP"
     };
+
+    public readonly static HashSet<string> AlphaSupportingInputExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".png", ".gif", ".webp", ".tiff", ".ico", ".svg", ".pdf", ".psd", ".xcf"
+    };
 }

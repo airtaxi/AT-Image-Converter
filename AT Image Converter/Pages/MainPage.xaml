@@ -210,6 +210,37 @@
                                 SpinButtonPlacementMode="Inline"
                                 Visibility="{x:Bind ViewModel.IsQualityAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Value="{x:Bind ViewModel.Quality, Mode=TwoWay}" />
+                            <SplitButton
+                                x:Name="TransparentColorSplitButton"
+                                HorizontalAlignment="Stretch"
+                                Visibility="{x:Bind ViewModel.IsTransparentColorVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <StackPanel
+                                    HorizontalAlignment="Left"
+                                    Orientation="Horizontal"
+                                    Spacing="10">
+                                    <Border
+                                        x:Name="TransparentColorPreviewBorder"
+                                        Width="20"
+                                        Height="20"
+                                        Background="{x:Bind ViewModel.TransparentColorBrush, Mode=OneWay}"
+                                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="4" />
+                                    <StackPanel Spacing="2">
+                                        <TextBlock x:Uid="TransparentColorTextBlock" />
+                                        <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="{x:Bind ViewModel.TransparentColorDisplayValue, Mode=OneWay}" />
+                                    </StackPanel>
+                                </StackPanel>
+                                <SplitButton.Flyout>
+                                    <Flyout Placement="BottomEdgeAlignedLeft">
+                                        <ColorPicker
+                                            x:Name="TransparentColorPicker"
+                                            MinWidth="320"
+                                            IsAlphaEnabled="{x:Bind ViewModel.OutputFormatSupportsAlpha, Mode=OneWay}"
+                                            Color="{x:Bind ViewModel.TransparentColor, Mode=TwoWay}" />
+                                    </Flyout>
+                                </SplitButton.Flyout>
+                            </SplitButton>
                         </StackPanel>
                         <StackPanel
                             x:Name="RotationSettingsStackPanel"

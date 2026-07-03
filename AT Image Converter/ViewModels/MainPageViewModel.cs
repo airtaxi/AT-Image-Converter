@@ -31,6 +31,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
 {
     private static readonly Uri s_gitHubRepositoryPageAddress = new("https://github.com/airtaxi/AT-Image-Converter");
     private static Color CreateDefaultCropBackgroundColor() => Color.FromArgb(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
+    private static Color CreateDefaultTransparentColor() => Color.FromArgb(byte.MaxValue, 0, 0, 0);
 
     private readonly ResourceLoader _resourceLoader = new();
     private readonly ApplicationDataContainer _localSettings = ApplicationData.Current.LocalSettings;
@@ -39,6 +40,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
     public ObservableCollection<string> ProgressLog { get; } = [];
 
     public SolidColorBrush CropBackgroundColorBrush => new(CropBackgroundColor);
+    public SolidColorBrush TransparentColorBrush => new(TransparentColor);
     public string ConvertButtonContent => HasImages ? _resourceLoader.GetString("ConvertButtonContent") : _resourceLoader.GetString("ConvertButtonNoImagesContent");
     public bool IsSameFolderChecked => OutputFolderSetting == OutputFolderSetting.SameFolder;
     public bool IsPhotoFolderChecked => OutputFolderSetting == OutputFolderSetting.PhotoFolder;
@@ -60,6 +62,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
     [NotifyPropertyChangedFor(nameof(IsSizeAvailable))]
     [NotifyPropertyChangedFor(nameof(OutputFormatSupportsAlpha))]
     [NotifyPropertyChangedFor(nameof(CropBackgroundColorDisplayValue))]
+    [NotifyPropertyChangedFor(nameof(TransparentColorDisplayValue))]
+    [NotifyPropertyChangedFor(nameof(IsTransparentColorVisible))]
     [NotifyPropertyChangedFor(nameof(CurrentOutputFormat))]
     public partial int FormatIndex { get; set; }
 
@@ -108,6 +112,11 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
     [NotifyPropertyChangedFor(nameof(CropBackgroundColorDisplayValue))]
     [NotifyPropertyChangedFor(nameof(CropBackgroundColorBrush))]
     public partial Color CropBackgroundColor { get; set; } = CreateDefaultCropBackgroundColor();
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TransparentColorDisplayValue))]
+    [NotifyPropertyChangedFor(nameof(TransparentColorBrush))]
+    public partial Color TransparentColor { get; set; } = CreateDefaultTransparentColor();
 
     [ObservableProperty]
     public partial string Prefix { get; set; } = "ATIC_";
@@ -179,6 +188,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
     public bool IsSizeUnitVisible => SizeSetting != SizeSetting.NoResize;
     public bool IsResizeInterpolationVisible => SizeSetting is not SizeSetting.NoResize and not SizeSetting.CropToSize;
     public bool IsCropVisible => SizeSetting == SizeSetting.CropToSize;
+    public bool HasAlphaSupportingInputImages => ImageFileViewModels.Any(viewModel => Constants.AlphaSupportingInputExtensions.Contains(Path.GetExtension(viewModel.FilePath)));
+    public bool IsTransparentColorVisible => HasAlphaSupportingInputImages && !OutputFormatSupportsAlpha;
     public bool IsWidthEnabled => SizeSetting is SizeSetting.ResizeToFill or SizeSetting.CropToSize or SizeSetting.ResizeToWidthAndKeepAspectRatio;
     public bool IsHeightEnabled => SizeSetting is SizeSetting.ResizeToFill or SizeSetting.CropToSize or SizeSetting.ResizeToHeightAndKeepAspectRatio;
     public bool IsRotationSettingsVisible => RotationEnabled;
@@ -203,6 +214,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
     public bool OutputFormatSupportsAlpha => CurrentOutputFormat is ".png" or ".jxl" or ".webp" or ".avif" or ".ico" or ".tiff";
 
     public string CropBackgroundColorDisplayValue => GetDisplayedColorValue(CropBackgroundColor, OutputFormatSupportsAlpha);
+    public string TransparentColorDisplayValue => GetDisplayedColorValue(TransparentColor, OutputFormatSupportsAlpha);
 
     public string WidthHeader => SizeUnit == SizeUnit.Percent ? _resourceLoader.GetString("WidthPercent") : _resourceLoader.GetString("WidthPixel");
     public string HeightHeader => SizeUnit == SizeUnit.Percent ? _resourceLoader.GetString("HeightPercent") : _resourceLoader.GetString("HeightPixel");
@@ -227,6 +239,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
     partial void OnFormatIndexChanged(int value)
     {
         if (CropBackgroundColor.A < byte.MaxValue && !OutputFormatSupportsAlpha) CropBackgroundColor = CreateOpaqueColor(CropBackgroundColor);
+        if (TransparentColor.A < byte.MaxValue && !OutputFormatSupportsAlpha) TransparentColor = CreateOpaqueColor(TransparentColor);
         UpdatePrefixFormatPreview();
     }
 
@@ -264,6 +277,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         OnPropertyChanged(nameof(IsDropPlaceholderVisible));
         OnPropertyChanged(nameof(IsNoPreviewVisible));
         OnPropertyChanged(nameof(ConvertButtonContent));
+        OnPropertyChanged(nameof(HasAlphaSupportingInputImages));
+        OnPropertyChanged(nameof(IsTransparentColorVisible));
     }
 
     private void AddImageFiles(IEnumerable<string> paths)
@@ -405,6 +420,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         if (preserveAlpha) background.Composite(image, CompositeOperator.CopyAlpha);
         else background.Alpha(AlphaOption.Off);
         image.CopyPixels(background);
+        if (!preserveAlpha) image.Alpha(AlphaOption.Off);
     }
 
     private static (uint? RasterizedWidth, uint? RasterizedHeight) GetSvgRasterizedDimensions(ImageFileViewModel imageFileViewModel, SizeSetting sizeSetting, SizeUnit sizeUnit, uint width, uint height)
@@ -762,6 +778,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         var horizontalCropAnchor = (HorizontalCropAnchor)CropHorizontalAnchorIndex;
         var verticalCropAnchor = (VerticalCropAnchor)CropVerticalAnchorIndex;
         var cropBackgroundColor = CreateMagickColor(outputFormatSupportsAlpha ? CropBackgroundColor : CreateOpaqueColor(CropBackgroundColor));
+        var transparentColor = CreateMagickColor(outputFormatSupportsAlpha ? TransparentColor : CreateOpaqueColor(TransparentColor));
         var parallelExecution = ParallelExecution;
         var preserveFileDate = PreserveFileDate;
         var preserveExif = PreserveExif;
@@ -819,8 +836,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
                     {
                         var magickFrame = (MagickImage)frame;
                         if (rotationSetting >= 0) RotateImage(magickFrame, rotationSetting);
+                        CleanTransparentPixels(magickFrame, transparentColor, outputFormatSupportsAlpha);
                         ResizeImage(magickFrame, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
-                        CleanTransparentPixels(magickFrame, cropBackgroundColor, outputFormatSupportsAlpha);
                         if (!preserveExif) magickFrame.Strip();
                         else if (rotationSetting > 0) magickFrame.SetAttribute("exif:Orientation", "1");
                         magickFrame.Quality = quality;
@@ -855,8 +872,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
             if (formatName != "ICO") await Task.Run(() =>
             {
                 if (rotationSetting >= 0) RotateImage(image, rotationSetting);
+                CleanTransparentPixels(image, transparentColor, outputFormatSupportsAlpha);
                 ResizeImage(image, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
-                CleanTransparentPixels(image, cropBackgroundColor, outputFormatSupportsAlpha);
             });
             else
             {
@@ -981,6 +998,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         _localSettings.Values["CropHorizontalAnchorIndex"] = CropHorizontalAnchorIndex;
         _localSettings.Values["CropVerticalAnchorIndex"] = CropVerticalAnchorIndex;
         _localSettings.Values["CropBackgroundColor"] = ConvertColorToSettingValue(CropBackgroundColor);
+        _localSettings.Values["TransparentColor"] = ConvertColorToSettingValue(TransparentColor);
         _localSettings.Values["Prefix"] = Prefix;
         _localSettings.Values["OverwriteFile"] = OverwriteFile;
         _localSettings.Values["OutputFolderSetting"] = (int)OutputFolderSetting;
@@ -1010,6 +1028,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         if (values.TryGetValue("CropHorizontalAnchorIndex", out var cropHorizontalAnchorIndex)) CropHorizontalAnchorIndex = (int)cropHorizontalAnchorIndex;
         if (values.TryGetValue("CropVerticalAnchorIndex", out var cropVerticalAnchorIndex)) CropVerticalAnchorIndex = (int)cropVerticalAnchorIndex;
         if (values.TryGetValue("CropBackgroundColor", out var cropBackgroundColorSettingValue) && cropBackgroundColorSettingValue is string cropBackgroundColorText) CropBackgroundColor = ConvertSettingValueToColor(cropBackgroundColorText);
+        if (values.TryGetValue("TransparentColor", out var transparentColorSettingValue) && transparentColorSettingValue is string transparentColorText) TransparentColor = ConvertSettingValueToColor(transparentColorText);
         Prefix = (string)values["Prefix"];
         OverwriteFile = (bool)values["OverwriteFile"];
 
@@ -1040,6 +1059,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         CropHorizontalAnchorIndex = 1;
         CropVerticalAnchorIndex = 1;
         CropBackgroundColor = CreateDefaultCropBackgroundColor();
+        TransparentColor = CreateDefaultTransparentColor();
         Prefix = "ATIC_";
         OverwriteFile = true;
         OutputFolderSetting = OutputFolderSetting.SameFolder;

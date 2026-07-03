@@ -1,157 +1,431 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
-  <resheader name="version"><value>2.0</value></resheader>
-  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-
-  <!-- Window Title -->
-  <data name="AppTitle" xml:space="preserve"><value>AT Image Converter</value></data>
-  <data name="AppDisplayName" xml:space="preserve"><value>AT Image Converter</value></data>
-  <data name="AppDescription" xml:space="preserve"><value>JPG、PNG、WEBP、AVIF、HEIF、ICOなど、さまざまなフォーマットに対応したシンプルで高速な画像変換ツールです。</value></data>
-
-  <!-- Section Titles -->
-  <data name="ImagesTitle.Text" xml:space="preserve"><value>画像</value></data>
-  <data name="FormatOptionsTitle.Text" xml:space="preserve"><value>フォーマット設定</value></data>
-  <data name="SizeOptionsTitle.Text" xml:space="preserve"><value>サイズ設定</value></data>
-  <data name="SaveOptionsTitle.Text" xml:space="preserve"><value>保存設定</value></data>
-
-  <!-- Menu Bar -->
-  <data name="FileMenu.Title" xml:space="preserve"><value>ファイル</value></data>
-  <data name="FileAddMenuFlyoutItem.Text" xml:space="preserve"><value>ファイルを追加</value></data>
-  <data name="FileStartConversionMenuFlyoutItem.Text" xml:space="preserve"><value>変換開始</value></data>
-  <data name="FileCloseMenuFlyoutItem.Text" xml:space="preserve"><value>閉じる</value></data>
-  <data name="LanguageMenu.Title" xml:space="preserve"><value>言語</value></data>
-  <data name="EnglishLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>English</value></data>
-  <data name="KoreanLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>한국어</value></data>
-  <data name="JapaneseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>日本語</value></data>
-  <data name="SimplifiedChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>简体中文</value></data>
-  <data name="TraditionalChineseLanguageMenuFlyoutItem.Text" xml:space="preserve"><value>繁體中文</value></data>
-  <data name="HelpMenu.Title" xml:space="preserve"><value>ヘルプ</value></data>
-  <data name="CheckForUpdatesMenuFlyoutItem.Text" xml:space="preserve"><value>更新を確認</value></data>
-  <data name="OpenGitHubRepositoryMenuFlyoutItem.Text" xml:space="preserve"><value>制作者のGitHub</value></data>
-
-  <!-- Image List Buttons -->
-  <data name="AddButton.Label" xml:space="preserve"><value>追加</value></data>
-  <data name="DeleteButton.Label" xml:space="preserve"><value>削除</value></data>
-  <data name="ClearButton.Label" xml:space="preserve"><value>クリア</value></data>
-  <data name="DropPlaceholder.Text" xml:space="preserve"><value>画像ファイルをここにドラッグ＆ドロップしてください</value></data>
-
-  <!-- Format Options -->
-  <data name="OutputFormatComboBox.Header" xml:space="preserve"><value>出力形式</value></data>
-  <data name="QualityNumberBox.Header" xml:space="preserve"><value>品質</value></data>
-
-  <!-- Rotation Options -->
-  <data name="RotationOptionsTitle.Text" xml:space="preserve"><value>回転設定</value></data>
-  <data name="RotationToggleSwitch.Header" xml:space="preserve"><value>回転</value></data>
-  <data name="RotationToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
-  <data name="RotationToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
-  <data name="RotationSettingsComboBox.Header" xml:space="preserve"><value>回転設定</value></data>
-  <data name="AutoRotateByExifItem.Content" xml:space="preserve"><value>EXIF情報に基づいて自動回転</value></data>
-  <data name="RotateClockwise90Item.Content" xml:space="preserve"><value>時計回りに90度回転</value></data>
-  <data name="RotateCounterClockwise90Item.Content" xml:space="preserve"><value>反時計回りに90度回転</value></data>
-  <data name="Rotate180Item.Content" xml:space="preserve"><value>180度回転</value></data>
-
-  <!-- Size Options -->
-  <data name="SizeSettingsComboBox.Header" xml:space="preserve"><value>サイズ設定</value></data>
-  <data name="SizeUnitComboBox.Header" xml:space="preserve"><value>サイズ単位</value></data>
-  <data name="NoResizeItem.Content" xml:space="preserve"><value>リサイズしない</value></data>
-  <data name="ResizeToFillItem.Content" xml:space="preserve"><value>フィルにリサイズ</value></data>
-  <data name="ResizeToWidthItem.Content" xml:space="preserve"><value>幅に合わせてアスペクト比を維持</value></data>
-  <data name="ResizeToHeightItem.Content" xml:space="preserve"><value>高さに合わせてアスペクト比を維持</value></data>
-  <data name="ResizeToCropItem.Content" xml:space="preserve"><value>サイズに合わせて切り抜き</value></data>
-  <data name="PixelItem.Content" xml:space="preserve"><value>ピクセル</value></data>
-  <data name="PercentItem.Content" xml:space="preserve"><value>パーセント</value></data>
-  <data name="ResizeInterpolationComboBox.Header" xml:space="preserve"><value>リサイズ補間</value></data>
-  <data name="ResizeInterpolationDefaultItem.Content" xml:space="preserve"><value>既定</value></data>
-  <data name="ResizeInterpolationNoneItem.Content" xml:space="preserve"><value>補間なし (Nearest neighbor)</value></data>
-  <data name="ResizeInterpolationBoxItem.Content" xml:space="preserve"><value>Box</value></data>
-  <data name="ResizeInterpolationTriangleItem.Content" xml:space="preserve"><value>Triangle</value></data>
-  <data name="ResizeInterpolationCubicItem.Content" xml:space="preserve"><value>Cubic</value></data>
-  <data name="ResizeInterpolationLanczosItem.Content" xml:space="preserve"><value>Lanczos</value></data>
-  <data name="CropHorizontalAnchorComboBox.Header" xml:space="preserve"><value>横方向の切り抜き基準</value></data>
-  <data name="CropVerticalAnchorComboBox.Header" xml:space="preserve"><value>縦方向の切り抜き基準</value></data>
-  <data name="CropHorizontalLeftItem.Content" xml:space="preserve"><value>左</value></data>
-  <data name="CropHorizontalCenterItem.Content" xml:space="preserve"><value>中央</value></data>
-  <data name="CropHorizontalRightItem.Content" xml:space="preserve"><value>右</value></data>
-  <data name="CropVerticalTopItem.Content" xml:space="preserve"><value>上</value></data>
-  <data name="CropVerticalCenterItem.Content" xml:space="preserve"><value>中央</value></data>
-  <data name="CropVerticalBottomItem.Content" xml:space="preserve"><value>下</value></data>
-  <data name="CropBackgroundColorTextBlock.Text" xml:space="preserve"><value>余白の色</value></data>
-
-  <!-- Save Options -->
-  <data name="PrefixTextBox.Header" xml:space="preserve"><value>ファイル名接頭辞</value></data>
-  <data name="PrefixPreviewTextBox.Header" xml:space="preserve"><value>ファイル名接頭辞（プレビュー）</value></data>
-  <data name="PrefixPreviewTextBox.PlaceholderText" xml:space="preserve"><value>画像が選択されていません</value></data>
-  <data name="OverwriteFileToggleSwitch.OnContent" xml:space="preserve"><value>ファイル名が重複する場合は上書き</value></data>
-  <data name="OverwriteFileToggleSwitch.OffContent" xml:space="preserve"><value>ファイル名が重複する場合は名前変更</value></data>
-
-  <!-- Output Folder -->
-  <data name="OutputFolderTitle.Text" xml:space="preserve"><value>出力フォルダ</value></data>
-  <data name="SameFolderRadioButton.Content" xml:space="preserve"><value>同じフォルダに保存</value></data>
-  <data name="PhotoFolderRadioButton.Content" xml:space="preserve"><value>写真フォルダに保存</value></data>
-  <data name="CustomFolderRadioButton.Content" xml:space="preserve"><value>指定フォルダに保存:</value></data>
-  <data name="SubfolderRadioButton.Content" xml:space="preserve"><value>サブフォルダに保存:</value></data>
-
-  <!-- Conversion Options -->
-  <data name="ConversionOptionsTitle.Text" xml:space="preserve"><value>変換設定</value></data>
-  <data name="ParallelExecutionToggleSwitch.Header" xml:space="preserve"><value>並列実行</value></data>
-  <data name="ParallelExecutionToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
-  <data name="ParallelExecutionToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
-  <data name="PreserveFileDateToggleSwitch.Header" xml:space="preserve"><value>ファイル日付を保持</value></data>
-  <data name="PreserveFileDateToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
-  <data name="PreserveFileDateToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
-  <data name="PreserveExifToggleSwitch.Header" xml:space="preserve"><value>EXIF情報を保持</value></data>
-  <data name="PreserveExifToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
-  <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
-  <data name="PreserveAnimationToggleSwitch.Header" xml:space="preserve"><value>アニメーションを保持</value></data>
-  <data name="PreserveAnimationToggleSwitch.OnContent" xml:space="preserve"><value>オン</value></data>
-  <data name="PreserveAnimationToggleSwitch.OffContent" xml:space="preserve"><value>オフ</value></data>
-  <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve"><value>変換後に元のファイルを削除</value></data>
-  <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve"><value>変換後に元のファイルを保持</value></data>
-  <data name="SaveDefaultsButton.Content" xml:space="preserve"><value>デフォルトとして保存</value></data>
-  <data name="ResetDefaultsButton.Content" xml:space="preserve"><value>デフォルトに戻す</value></data>
-
-  <!-- Convert Button -->
-  <data name="ConvertButtonContent" xml:space="preserve"><value>変換</value></data>
-  <data name="ConvertButtonNoImagesContent" xml:space="preserve"><value>画像を追加してください</value></data>
-
-  <!-- Preview Buttons -->
-  <data name="ZoomInButton.Label" xml:space="preserve"><value>拡大</value></data>
-  <data name="ZoomOutButton.Label" xml:space="preserve"><value>縮小</value></data>
-  <data name="ResetZoomButton.Label" xml:space="preserve"><value>ズームリセット</value></data>
-
-  <!-- Code-behind Strings -->
-  <data name="WidthPixel" xml:space="preserve"><value>幅 (px)</value></data>
-  <data name="HeightPixel" xml:space="preserve"><value>高さ (px)</value></data>
-  <data name="WidthPercent" xml:space="preserve"><value>幅 (%)</value></data>
-  <data name="HeightPercent" xml:space="preserve"><value>高さ (%)</value></data>
-  <data name="ConversionStarted" xml:space="preserve"><value>変換開始</value></data>
-  <data name="ConvertingFile" xml:space="preserve"><value>{0} を変換中</value></data>
-  <data name="ConversionFileComplete" xml:space="preserve"><value>{0} → {1} 完了！</value></data>
-  <data name="ConversionComplete" xml:space="preserve"><value>変換完了！</value></data>
-  <data name="ConversionCompleteDialogTitle" xml:space="preserve"><value>変換完了</value></data>
-  <data name="ConversionCompleteDialogContent" xml:space="preserve"><value>{0}個のファイルが正常に変換されました。</value></data>
-  <data name="DialogOkButton" xml:space="preserve"><value>OK</value></data>
-  <data name="DialogCancelButton" xml:space="preserve"><value>キャンセル</value></data>
-  <data name="GhostscriptRequiredDialogTitle" xml:space="preserve"><value>Ghostscriptが必要です</value></data>
-  <data name="GhostscriptRequiredDialogContent" xml:space="preserve"><value>PDFファイルの変換にはGhostscriptのインストールが必要です。Ghostscriptをインストールしてから再試行してください。
-ダウンロード: https://www.ghostscript.com/releases/gsdnld.html</value></data>
-  <data name="ConversionFileFailed" xml:space="preserve"><value>{0} 失敗: {1}</value></data>
-  <data name="PreviewLoading" xml:space="preserve"><value>プレビューを読み込み中...</value></data>
-  <data name="UpdateCheckLoading" xml:space="preserve"><value>更新を確認中...</value></data>
-  <data name="NoPreviewText.Text" xml:space="preserve"><value>プレビューなし</value></data>
-  <data name="LanguageChangeDialogTitle" xml:space="preserve"><value>言語変更</value></data>
-  <data name="LanguageChangeDialogContent" xml:space="preserve"><value>言語変更はアプリの再起動後に適用されます。</value></data>
-  <data name="NoUpdatesDialogTitle" xml:space="preserve"><value>更新の確認</value></data>
-  <data name="NoUpdatesDialogContent" xml:space="preserve"><value>すでに最新バージョンを使用しています。</value></data>
-  <data name="UpdateAvailableDialogTitle" xml:space="preserve"><value>更新があります</value></data>
-  <data name="UpdateAvailableDialogContent" xml:space="preserve"><value>利用可能な更新が {0} 件あります。OK を押すと Microsoft Store を開きます。</value></data>
-  <data name="OpenStoreFailedDialogTitle" xml:space="preserve"><value>ストアを開けませんでした</value></data>
-  <data name="OpenStoreFailedDialogContent" xml:space="preserve"><value>Microsoft Store のページを開けませんでした。</value></data>
-  <data name="OpenGitHubFailedDialogTitle" xml:space="preserve"><value>GitHubを開けませんでした</value></data>
-  <data name="OpenGitHubFailedDialogContent" xml:space="preserve"><value>GitHub ページを開けませんでした。</value></data>
-  <data name="UpdateCheckFailedDialogTitle" xml:space="preserve"><value>更新の確認に失敗しました</value></data>
-  <data name="UpdateCheckFailedDialogContent" xml:space="preserve"><value>更新を確認できませんでした。しばらくしてからもう一度お試しください。</value></data>
-
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddButton.Label" xml:space="preserve">
+    <value>追加</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>JPG、PNG、WEBP、AVIF、HEIF、ICOなど、さまざまなフォーマットに対応したシンプルで高速な画像変換ツールです。</value>
+  </data>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>AT Image Converter</value>
+  </data>
+  <data name="AppTitle" xml:space="preserve">
+    <value>AT Image Converter</value>
+  </data>
+  <data name="AutoRotateByExifItem.Content" xml:space="preserve">
+    <value>EXIF情報に基づいて自動回転</value>
+  </data>
+  <data name="CheckForUpdatesMenuFlyoutItem.Text" xml:space="preserve">
+    <value>更新を確認</value>
+  </data>
+  <data name="ClearButton.Label" xml:space="preserve">
+    <value>クリア</value>
+  </data>
+  <data name="ConversionComplete" xml:space="preserve">
+    <value>変換完了！</value>
+  </data>
+  <data name="ConversionCompleteDialogContent" xml:space="preserve">
+    <value>{0}個のファイルが正常に変換されました。</value>
+  </data>
+  <data name="ConversionCompleteDialogTitle" xml:space="preserve">
+    <value>変換完了</value>
+  </data>
+  <data name="ConversionFileComplete" xml:space="preserve">
+    <value>{0} → {1} 完了！</value>
+  </data>
+  <data name="ConversionFileFailed" xml:space="preserve">
+    <value>{0} 失敗: {1}</value>
+  </data>
+  <data name="ConversionOptionsTitle.Text" xml:space="preserve">
+    <value>変換設定</value>
+  </data>
+  <data name="ConversionStarted" xml:space="preserve">
+    <value>変換開始</value>
+  </data>
+  <data name="ConvertButtonContent" xml:space="preserve">
+    <value>変換</value>
+  </data>
+  <data name="ConvertButtonNoImagesContent" xml:space="preserve">
+    <value>画像を追加してください</value>
+  </data>
+  <data name="ConvertingFile" xml:space="preserve">
+    <value>{0} を変換中</value>
+  </data>
+  <data name="CropBackgroundColorTextBlock.Text" xml:space="preserve">
+    <value>余白の色</value>
+  </data>
+  <data name="CropHorizontalAnchorComboBox.Header" xml:space="preserve">
+    <value>横方向の切り抜き基準</value>
+  </data>
+  <data name="CropHorizontalCenterItem.Content" xml:space="preserve">
+    <value>中央</value>
+  </data>
+  <data name="CropHorizontalLeftItem.Content" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="CropHorizontalRightItem.Content" xml:space="preserve">
+    <value>右</value>
+  </data>
+  <data name="CropVerticalAnchorComboBox.Header" xml:space="preserve">
+    <value>縦方向の切り抜き基準</value>
+  </data>
+  <data name="CropVerticalBottomItem.Content" xml:space="preserve">
+    <value>下</value>
+  </data>
+  <data name="CropVerticalCenterItem.Content" xml:space="preserve">
+    <value>中央</value>
+  </data>
+  <data name="CropVerticalTopItem.Content" xml:space="preserve">
+    <value>上</value>
+  </data>
+  <data name="CustomFolderRadioButton.Content" xml:space="preserve">
+    <value>指定フォルダに保存:</value>
+  </data>
+  <data name="DeleteButton.Label" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="DeleteOriginalToggleSwitch.OffContent" xml:space="preserve">
+    <value>変換後に元のファイルを保持</value>
+  </data>
+  <data name="DeleteOriginalToggleSwitch.OnContent" xml:space="preserve">
+    <value>変換後に元のファイルを削除</value>
+  </data>
+  <data name="DialogCancelButton" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="DialogOkButton" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="DropPlaceholder.Text" xml:space="preserve">
+    <value>画像ファイルをここにドラッグ＆ドロップしてください</value>
+  </data>
+  <data name="EnglishLanguageMenuFlyoutItem.Text" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="FileAddMenuFlyoutItem.Text" xml:space="preserve">
+    <value>ファイルを追加</value>
+  </data>
+  <data name="FileCloseMenuFlyoutItem.Text" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="FileMenu.Title" xml:space="preserve">
+    <value>ファイル</value>
+  </data>
+  <data name="FileStartConversionMenuFlyoutItem.Text" xml:space="preserve">
+    <value>変換開始</value>
+  </data>
+  <data name="FormatOptionsTitle.Text" xml:space="preserve">
+    <value>フォーマット設定</value>
+  </data>
+  <data name="GhostscriptRequiredDialogContent" xml:space="preserve">
+    <value>PDFファイルの変換にはGhostscriptのインストールが必要です。Ghostscriptをインストールしてから再試行してください。
+ダウンロード: https://www.ghostscript.com/releases/gsdnld.html</value>
+  </data>
+  <data name="GhostscriptRequiredDialogTitle" xml:space="preserve">
+    <value>Ghostscriptが必要です</value>
+  </data>
+  <data name="HeightPercent" xml:space="preserve">
+    <value>高さ (%)</value>
+  </data>
+  <data name="HeightPixel" xml:space="preserve">
+    <value>高さ (px)</value>
+  </data>
+  <data name="HelpMenu.Title" xml:space="preserve">
+    <value>ヘルプ</value>
+  </data>
+  <data name="ImagesTitle.Text" xml:space="preserve">
+    <value>画像</value>
+  </data>
+  <data name="JapaneseLanguageMenuFlyoutItem.Text" xml:space="preserve">
+    <value>日本語</value>
+  </data>
+  <data name="KoreanLanguageMenuFlyoutItem.Text" xml:space="preserve">
+    <value>한국어</value>
+  </data>
+  <data name="LanguageChangeDialogContent" xml:space="preserve">
+    <value>言語変更はアプリの再起動後に適用されます。</value>
+  </data>
+  <data name="LanguageChangeDialogTitle" xml:space="preserve">
+    <value>言語変更</value>
+  </data>
+  <data name="LanguageMenu.Title" xml:space="preserve">
+    <value>言語</value>
+  </data>
+  <data name="NoPreviewText.Text" xml:space="preserve">
+    <value>プレビューなし</value>
+  </data>
+  <data name="NoResizeItem.Content" xml:space="preserve">
+    <value>リサイズしない</value>
+  </data>
+  <data name="NoUpdatesDialogContent" xml:space="preserve">
+    <value>すでに最新バージョンを使用しています。</value>
+  </data>
+  <data name="NoUpdatesDialogTitle" xml:space="preserve">
+    <value>更新の確認</value>
+  </data>
+  <data name="OpenGitHubFailedDialogContent" xml:space="preserve">
+    <value>GitHub ページを開けませんでした。</value>
+  </data>
+  <data name="OpenGitHubFailedDialogTitle" xml:space="preserve">
+    <value>GitHubを開けませんでした</value>
+  </data>
+  <data name="OpenGitHubRepositoryMenuFlyoutItem.Text" xml:space="preserve">
+    <value>制作者のGitHub</value>
+  </data>
+  <data name="OpenStoreFailedDialogContent" xml:space="preserve">
+    <value>Microsoft Store のページを開けませんでした。</value>
+  </data>
+  <data name="OpenStoreFailedDialogTitle" xml:space="preserve">
+    <value>ストアを開けませんでした</value>
+  </data>
+  <data name="OutputFolderTitle.Text" xml:space="preserve">
+    <value>出力フォルダ</value>
+  </data>
+  <data name="OutputFormatComboBox.Header" xml:space="preserve">
+    <value>出力形式</value>
+  </data>
+  <data name="OverwriteFileToggleSwitch.OffContent" xml:space="preserve">
+    <value>ファイル名が重複する場合は名前変更</value>
+  </data>
+  <data name="OverwriteFileToggleSwitch.OnContent" xml:space="preserve">
+    <value>ファイル名が重複する場合は上書き</value>
+  </data>
+  <data name="ParallelExecutionToggleSwitch.Header" xml:space="preserve">
+    <value>並列実行</value>
+  </data>
+  <data name="ParallelExecutionToggleSwitch.OffContent" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="ParallelExecutionToggleSwitch.OnContent" xml:space="preserve">
+    <value>オン</value>
+  </data>
+  <data name="PercentItem.Content" xml:space="preserve">
+    <value>パーセント</value>
+  </data>
+  <data name="PhotoFolderRadioButton.Content" xml:space="preserve">
+    <value>写真フォルダに保存</value>
+  </data>
+  <data name="PixelItem.Content" xml:space="preserve">
+    <value>ピクセル</value>
+  </data>
+  <data name="PrefixPreviewTextBox.Header" xml:space="preserve">
+    <value>ファイル名接頭辞（プレビュー）</value>
+  </data>
+  <data name="PrefixPreviewTextBox.PlaceholderText" xml:space="preserve">
+    <value>画像が選択されていません</value>
+  </data>
+  <data name="PrefixTextBox.Header" xml:space="preserve">
+    <value>ファイル名接頭辞</value>
+  </data>
+  <data name="PreserveAnimationToggleSwitch.Header" xml:space="preserve">
+    <value>アニメーションを保持</value>
+  </data>
+  <data name="PreserveAnimationToggleSwitch.OffContent" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="PreserveAnimationToggleSwitch.OnContent" xml:space="preserve">
+    <value>オン</value>
+  </data>
+  <data name="PreserveExifToggleSwitch.Header" xml:space="preserve">
+    <value>EXIF情報を保持</value>
+  </data>
+  <data name="PreserveExifToggleSwitch.OffContent" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="PreserveExifToggleSwitch.OnContent" xml:space="preserve">
+    <value>オン</value>
+  </data>
+  <data name="PreserveFileDateToggleSwitch.Header" xml:space="preserve">
+    <value>ファイル日付を保持</value>
+  </data>
+  <data name="PreserveFileDateToggleSwitch.OffContent" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="PreserveFileDateToggleSwitch.OnContent" xml:space="preserve">
+    <value>オン</value>
+  </data>
+  <data name="PreviewLoading" xml:space="preserve">
+    <value>プレビューを読み込み中...</value>
+  </data>
+  <data name="QualityNumberBox.Header" xml:space="preserve">
+    <value>品質</value>
+  </data>
+  <data name="ResetDefaultsButton.Content" xml:space="preserve">
+    <value>デフォルトに戻す</value>
+  </data>
+  <data name="ResetZoomButton.Label" xml:space="preserve">
+    <value>ズームリセット</value>
+  </data>
+  <data name="ResizeInterpolationBoxItem.Content" xml:space="preserve">
+    <value>Box</value>
+  </data>
+  <data name="ResizeInterpolationComboBox.Header" xml:space="preserve">
+    <value>リサイズ補間</value>
+  </data>
+  <data name="ResizeInterpolationCubicItem.Content" xml:space="preserve">
+    <value>Cubic</value>
+  </data>
+  <data name="ResizeInterpolationDefaultItem.Content" xml:space="preserve">
+    <value>既定</value>
+  </data>
+  <data name="ResizeInterpolationLanczosItem.Content" xml:space="preserve">
+    <value>Lanczos</value>
+  </data>
+  <data name="ResizeInterpolationNoneItem.Content" xml:space="preserve">
+    <value>補間なし (Nearest neighbor)</value>
+  </data>
+  <data name="ResizeInterpolationTriangleItem.Content" xml:space="preserve">
+    <value>Triangle</value>
+  </data>
+  <data name="ResizeToCropItem.Content" xml:space="preserve">
+    <value>サイズに合わせて切り抜き</value>
+  </data>
+  <data name="ResizeToFillItem.Content" xml:space="preserve">
+    <value>フィルにリサイズ</value>
+  </data>
+  <data name="ResizeToHeightItem.Content" xml:space="preserve">
+    <value>高さに合わせてアスペクト比を維持</value>
+  </data>
+  <data name="ResizeToWidthItem.Content" xml:space="preserve">
+    <value>幅に合わせてアスペクト比を維持</value>
+  </data>
+  <data name="Rotate180Item.Content" xml:space="preserve">
+    <value>180度回転</value>
+  </data>
+  <data name="RotateClockwise90Item.Content" xml:space="preserve">
+    <value>時計回りに90度回転</value>
+  </data>
+  <data name="RotateCounterClockwise90Item.Content" xml:space="preserve">
+    <value>反時計回りに90度回転</value>
+  </data>
+  <data name="RotationOptionsTitle.Text" xml:space="preserve">
+    <value>回転設定</value>
+  </data>
+  <data name="RotationSettingsComboBox.Header" xml:space="preserve">
+    <value>回転設定</value>
+  </data>
+  <data name="RotationToggleSwitch.Header" xml:space="preserve">
+    <value>回転</value>
+  </data>
+  <data name="RotationToggleSwitch.OffContent" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="RotationToggleSwitch.OnContent" xml:space="preserve">
+    <value>オン</value>
+  </data>
+  <data name="SameFolderRadioButton.Content" xml:space="preserve">
+    <value>同じフォルダに保存</value>
+  </data>
+  <data name="SaveDefaultsButton.Content" xml:space="preserve">
+    <value>デフォルトとして保存</value>
+  </data>
+  <data name="SaveOptionsTitle.Text" xml:space="preserve">
+    <value>保存設定</value>
+  </data>
+  <data name="SimplifiedChineseLanguageMenuFlyoutItem.Text" xml:space="preserve">
+    <value>简体中文</value>
+  </data>
+  <data name="SizeOptionsTitle.Text" xml:space="preserve">
+    <value>サイズ設定</value>
+  </data>
+  <data name="SizeSettingsComboBox.Header" xml:space="preserve">
+    <value>サイズ設定</value>
+  </data>
+  <data name="SizeUnitComboBox.Header" xml:space="preserve">
+    <value>サイズ単位</value>
+  </data>
+  <data name="SubfolderRadioButton.Content" xml:space="preserve">
+    <value>サブフォルダに保存:</value>
+  </data>
+  <data name="TraditionalChineseLanguageMenuFlyoutItem.Text" xml:space="preserve">
+    <value>繁體中文</value>
+  </data>
+  <data name="TransparentColorTextBlock.Text" xml:space="preserve">
+    <value>透明領域の色</value>
+  </data>
+  <data name="UpdateAvailableDialogContent" xml:space="preserve">
+    <value>利用可能な更新が {0} 件あります。OK を押すと Microsoft Store を開きます。</value>
+  </data>
+  <data name="UpdateAvailableDialogTitle" xml:space="preserve">
+    <value>更新があります</value>
+  </data>
+  <data name="UpdateCheckFailedDialogContent" xml:space="preserve">
+    <value>更新を確認できませんでした。しばらくしてからもう一度お試しください。</value>
+  </data>
+  <data name="UpdateCheckFailedDialogTitle" xml:space="preserve">
+    <value>更新の確認に失敗しました</value>
+  </data>
+  <data name="UpdateCheckLoading" xml:space="preserve">
+    <value>更新を確認中...</value>
+  </data>
+  <data name="WidthPercent" xml:space="preserve">
+    <value>幅 (%)</value>
+  </data>
+  <data name="WidthPixel" xml:space="preserve">
+    <value>幅 (px)</value>
+  </data>
+  <data name="ZoomInButton.Label" xml:space="preserve">
+    <value>拡大</value>
+  </data>
+  <data name="ZoomOutButton.Label" xml:space="preserve">
+    <value>縮小</value>
+  </data>
 </root>
