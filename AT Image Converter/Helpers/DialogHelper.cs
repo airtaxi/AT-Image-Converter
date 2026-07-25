@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 
-namespace ImageConverterAT;
+namespace ImageConverterAT.Helpers;
 
 public static class DialogHelper
 {
