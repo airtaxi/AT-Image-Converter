@@ -30,9 +30,9 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.251219" />
-		<PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.14.0" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="2.2.0" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2270" />
+		<PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.15.0" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="2.3.1" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2526" />
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
 
