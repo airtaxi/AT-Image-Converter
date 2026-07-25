@@ -26,6 +26,8 @@ public sealed partial class MainWindow : Window
         AppFrame.Navigate(typeof(MainPage), launchFilePaths);
     }
 
+    public static void ReloadMainPage() => Instance.AppFrame.Navigate(typeof(MainPage));
+
     private static string[] GetLaunchFilePaths()
     {
         var args = Environment.GetCommandLineArgs();

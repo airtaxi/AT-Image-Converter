@@ -203,6 +203,12 @@
   <data name="KoreanLanguageMenuFlyoutItem.Text" xml:space="preserve">
     <value>한국어</value>
   </data>
+  <data name="LanguageChangeApplyNowDialogContent" xml:space="preserve">
+    <value>立即套用新語言嗎？未儲存的變更將會遺失。</value>
+  </data>
+  <data name="LanguageChangeApplyNowDialogTitle" xml:space="preserve">
+    <value>套用語言變更</value>
+  </data>
   <data name="LanguageChangeDialogContent" xml:space="preserve">
     <value>重新啟動應用程式後，語言變更才會生效。</value>
   </data>

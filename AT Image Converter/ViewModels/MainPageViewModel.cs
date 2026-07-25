@@ -733,7 +733,9 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         UpdateLanguageMenuFlyoutItems();
 
         var resourceLoader = new ResourceLoader();
-        await MainWindow.Instance.Content.ShowMessageDialogAsync(resourceLoader.GetString("LanguageChangeDialogContent"), resourceLoader.GetString("LanguageChangeDialogTitle"));
+        var applyNowResult = await MainWindow.Instance.Content.ShowMessageDialogAsync(resourceLoader.GetString("LanguageChangeApplyNowDialogContent"), resourceLoader.GetString("LanguageChangeApplyNowDialogTitle"), showCancel: true);
+        if (applyNowResult == ContentDialogResult.Primary) MainWindow.ReloadMainPage();
+        else await MainWindow.Instance.Content.ShowMessageDialogAsync(resourceLoader.GetString("LanguageChangeDialogContent"), resourceLoader.GetString("LanguageChangeDialogTitle"));
     }
 
     [RelayCommand]

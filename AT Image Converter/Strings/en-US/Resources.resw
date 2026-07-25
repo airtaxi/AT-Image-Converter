@@ -203,6 +203,12 @@ Download: https://www.ghostscript.com/releases/gsdnld.html</value>
   <data name="KoreanLanguageMenuFlyoutItem.Text" xml:space="preserve">
     <value>한국어</value>
   </data>
+  <data name="LanguageChangeApplyNowDialogContent" xml:space="preserve">
+    <value>Apply the new language now? Unsaved changes will be lost.</value>
+  </data>
+  <data name="LanguageChangeApplyNowDialogTitle" xml:space="preserve">
+    <value>Apply Language Change</value>
+  </data>
   <data name="LanguageChangeDialogContent" xml:space="preserve">
     <value>Restart the app to apply the language change.</value>
   </data>
