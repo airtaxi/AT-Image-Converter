@@ -44,8 +44,8 @@ public class ImageFileViewModel(string filePath) : ObservableObject
             }
         }
 
-        var image = new MagickImage();
-        image.Read(FilePath);
-        return image;
+        var resultImage = new MagickImage();
+        resultImage.Read(FilePath);
+        return resultImage;
     }
 }
