@@ -88,6 +88,18 @@
   <data name="ConversionCompleteDialogContent" xml:space="preserve">
     <value>{0}個のファイルが正常に変換されました。</value>
   </data>
+  <data name="ConversionCompleteDialogConversionFailedSuffix" xml:space="preserve">
+    <value>
+
+{0} 個のファイルの変換に失敗しました。詳細はログを確認してください。</value>
+    <comment>変換に失敗した件数がある場合、完了ダイアログの本文に追加されます。{0}は変換失敗件数です。</comment>
+  </data>
+  <data name="ConversionCompleteDialogDeleteFailedSuffix" xml:space="preserve">
+    <value>
+
+元のファイル {0} 個を削除できませんでした。詳細はログを確認してください。</value>
+    <comment>元のファイルの削除に失敗した件数がある場合、完了ダイアログの本文に追加されます。{0}は削除失敗件数です。</comment>
+  </data>
   <data name="ConversionCompleteDialogTitle" xml:space="preserve">
     <value>変換完了</value>
   </data>
@@ -99,6 +111,10 @@
   </data>
   <data name="ConversionOptionsTitle.Text" xml:space="preserve">
     <value>変換設定</value>
+  </data>
+  <data name="ConversionOriginalFileDeleteFailed" xml:space="preserve">
+    <value>{0} 元のファイル削除に失敗: {1}</value>
+    <comment>変換は成功したが元のファイルの削除に失敗したときに進行ログに表示されます。{0}はファイル名、{1}はエラーメッセージです。</comment>
   </data>
   <data name="ConversionStarted" xml:space="preserve">
     <value>変換開始</value>

@@ -88,6 +88,18 @@
   <data name="ConversionCompleteDialogContent" xml:space="preserve">
     <value>已成功轉換 {0} 個檔案。</value>
   </data>
+  <data name="ConversionCompleteDialogConversionFailedSuffix" xml:space="preserve">
+    <value>
+
+{0} 個檔案轉換失敗。請查看記錄了解詳情。</value>
+    <comment>存在轉換失敗的檔案時追加到完成對話方塊正文。{0}為轉換失敗數量。</comment>
+  </data>
+  <data name="ConversionCompleteDialogDeleteFailedSuffix" xml:space="preserve">
+    <value>
+
+{0} 個原始檔案無法刪除。請查看記錄了解詳情。</value>
+    <comment>存在原始檔案刪除失敗時追加到完成對話方塊正文。{0}為刪除失敗數量。</comment>
+  </data>
   <data name="ConversionCompleteDialogTitle" xml:space="preserve">
     <value>轉換完成</value>
   </data>
@@ -99,6 +111,10 @@
   </data>
   <data name="ConversionOptionsTitle.Text" xml:space="preserve">
     <value>轉換選項</value>
+  </data>
+  <data name="ConversionOriginalFileDeleteFailed" xml:space="preserve">
+    <value>{0} 原始檔案刪除失敗: {1}</value>
+    <comment>轉換成功但刪除原始檔案失敗時顯示在進度記錄中。{0}為檔案名稱，{1}為錯誤訊息。</comment>
   </data>
   <data name="ConversionStarted" xml:space="preserve">
     <value>開始轉換</value>

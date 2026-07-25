@@ -768,6 +768,10 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         ProgressLog.Clear();
         AddProgressLog(_resourceLoader.GetString("ConversionStarted"));
 
+        var convertedCount = 0;
+        var conversionFailedCount = 0;
+        var deleteFailedCount = 0;
+
         var formatName = CurrentOutputFormatName;
         var rotationSetting = RotationEnabled ? (RotationSetting)RotationIndex : (RotationSetting)(-1);
         var sizeSetting = SizeSetting;
@@ -805,94 +809,156 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
 
         async Task ConvertSingleImageAsync(ImageFileViewModel viewModel)
         {
-            var directoryPath = GetOutputDirectory(viewModel.FilePath);
-            Directory.CreateDirectory(directoryPath);
-            AddProgressLog(string.Format(_resourceLoader.GetString("ConvertingFile"), viewModel.FileName));
-
-            var fileName = GetSavedFileName(viewModel, prefix, format);
-            var filePath = Path.Combine(directoryPath, fileName);
-
-            if (!overwriteFile && File.Exists(filePath))
+            try
             {
-                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-                var extension = Path.GetExtension(fileName);
-                var counter = 1;
-                do
+                var directoryPath = GetOutputDirectory(viewModel.FilePath);
+                Directory.CreateDirectory(directoryPath);
+                AddProgressLog(string.Format(_resourceLoader.GetString("ConvertingFile"), viewModel.FileName));
+
+                var fileName = GetSavedFileName(viewModel, prefix, format);
+                var filePath = Path.Combine(directoryPath, fileName);
+
+                if (!overwriteFile && File.Exists(filePath))
                 {
-                    fileName = $"{fileNameWithoutExtension} ({counter}){extension}";
-                    filePath = Path.Combine(directoryPath, fileName);
-                    counter++;
-                } while (File.Exists(filePath));
-            }
-
-            var originalCreationTime = preserveFileDate ? File.GetCreationTime(viewModel.FilePath) : default;
-            var originalLastWriteTime = preserveFileDate ? File.GetLastWriteTime(viewModel.FilePath) : default;
-
-            if (preserveAnimation && Constants.AnimatedOutputFormats.Contains(formatName) && Constants.AnimatedInputExtensions.Contains(Path.GetExtension(viewModel.FilePath)))
-            {
-                var isAnimated = await Task.Run(() =>
-                {
-                    using var collection = new MagickImageCollection(viewModel.FilePath);
-                    if (collection.Count <= 1) return false;
-
-                    foreach (var frame in collection)
+                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                    var extension = Path.GetExtension(fileName);
+                    var counter = 1;
+                    do
                     {
-                        var magickFrame = (MagickImage)frame;
-                        if (rotationSetting >= 0) RotateImage(magickFrame, rotationSetting);
-                        CleanTransparentPixels(magickFrame, transparentColor, outputFormatSupportsAlpha);
-                        ResizeImage(magickFrame, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
-                        if (!preserveExif) magickFrame.Strip();
-                        else if (rotationSetting > 0) magickFrame.SetAttribute("exif:Orientation", "1");
-                        magickFrame.Quality = quality;
-                    }
+                        fileName = $"{fileNameWithoutExtension} ({counter}){extension}";
+                        filePath = Path.Combine(directoryPath, fileName);
+                        counter++;
+                    } while (File.Exists(filePath));
+                }
 
-                    collection.Write(filePath);
-                    return true;
-                });
+                var originalCreationTime = preserveFileDate ? File.GetCreationTime(viewModel.FilePath) : default;
+                var originalLastWriteTime = preserveFileDate ? File.GetLastWriteTime(viewModel.FilePath) : default;
 
-                if (isAnimated)
+                bool DeleteOriginalFileIfNeeded()
                 {
-                    if (preserveFileDate)
+                    if (!deleteOriginal || filePath == viewModel.FilePath) return true;
+                    try { File.Delete(viewModel.FilePath); }
+                    catch (Exception exception)
                     {
-                        File.SetCreationTime(filePath, originalCreationTime);
-                        File.SetLastWriteTime(filePath, originalLastWriteTime);
+                        AddProgressLog(string.Format(_resourceLoader.GetString("ConversionOriginalFileDeleteFailed"), viewModel.FileName, exception.Message));
+                        return false;
                     }
-
-                    AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
-
-                    if (deleteOriginal && filePath != viewModel.FilePath)
+                    var dispatcherQueue = MainWindow.Instance.DispatcherQueue;
+                    if (dispatcherQueue.HasThreadAccess)
                     {
                         ImageFileViewModels.Remove(viewModel);
                         UpdateImageListDependentProperties();
-                        File.Delete(viewModel.FilePath);
                     }
-                    return;
+                    else
+                    {
+                        dispatcherQueue.TryEnqueue(() =>
+                        {
+                            ImageFileViewModels.Remove(viewModel);
+                            UpdateImageListDependentProperties();
+                        });
+                    }
+                    return true;
                 }
-            }
 
-            using var image = CreateConversionMagickImage(viewModel, sizeSetting, sizeUnit, width, height);
-
-            if (formatName != "ICO") await Task.Run(() =>
-            {
-                if (rotationSetting >= 0) RotateImage(image, rotationSetting);
-                CleanTransparentPixels(image, transparentColor, outputFormatSupportsAlpha);
-                ResizeImage(image, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
-            });
-            else
-            {
-                using var collection = new MagickImageCollection();
-
-                uint[] sizes = [16, 32, 48, 64, 128, 256];
-
-                foreach (var size in sizes)
+                if (preserveAnimation && Constants.AnimatedOutputFormats.Contains(formatName) && Constants.AnimatedInputExtensions.Contains(Path.GetExtension(viewModel.FilePath)))
                 {
-                    var iconImage = viewModel.CreateMagickImage(size, size);
-                    if (rotationSetting >= 0) RotateImage(iconImage, rotationSetting);
-                    iconImage.Resize(size, size);
-                    collection.Add(iconImage);
+                    var isAnimated = await Task.Run(() =>
+                    {
+                        using var collection = new MagickImageCollection(viewModel.FilePath);
+                        if (collection.Count <= 1) return false;
+
+                        foreach (var frame in collection)
+                        {
+                            var magickFrame = (MagickImage)frame;
+                            if (rotationSetting >= 0) RotateImage(magickFrame, rotationSetting);
+                            CleanTransparentPixels(magickFrame, transparentColor, outputFormatSupportsAlpha);
+                            ResizeImage(magickFrame, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
+                            if (!preserveExif) magickFrame.Strip();
+                            else if (rotationSetting > 0) magickFrame.SetAttribute("exif:Orientation", "1");
+                            magickFrame.Quality = quality;
+                        }
+
+                        collection.Write(filePath);
+                        return true;
+                    });
+
+                    if (isAnimated)
+                    {
+                        if (preserveFileDate)
+                        {
+                            File.SetCreationTime(filePath, originalCreationTime);
+                            File.SetLastWriteTime(filePath, originalLastWriteTime);
+                        }
+
+                        AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
+                        Interlocked.Increment(ref convertedCount);
+                        if (!DeleteOriginalFileIfNeeded()) Interlocked.Increment(ref deleteFailedCount);
+                        return;
+                    }
                 }
 
-                collection.Write(filePath, MagickFormat.Ico);
+                using (var image = CreateConversionMagickImage(viewModel, sizeSetting, sizeUnit, width, height))
+                {
+                    if (formatName == "ICO")
+                    {
+                        using (var collection = new MagickImageCollection())
+                        {
+                            uint[] sizes = [16, 32, 48, 64, 128, 256];
+
+                            foreach (var size in sizes)
+                            {
+                                var iconImage = viewModel.CreateMagickImage(size, size);
+                                if (rotationSetting >= 0) RotateImage(iconImage, rotationSetting);
+                                iconImage.Resize(size, size);
+                                collection.Add(iconImage);
+                            }
+
+                            collection.Write(filePath, MagickFormat.Ico);
+                        }
+                    }
+                    else
+                    {
+                        await Task.Run(() =>
+                        {
+                            if (rotationSetting >= 0) RotateImage(image, rotationSetting);
+                            CleanTransparentPixels(image, transparentColor, outputFormatSupportsAlpha);
+                            ResizeImage(image, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
+                        });
+
+                        if (!preserveExif) image.Strip();
+                        else if (rotationSetting > 0) image.SetAttribute("exif:Orientation", "1");
+
+                        if (formatName == "JPG")
+                        {
+                            image.Format = MagickFormat.Jpeg;
+                            image.Quality = quality;
+                        }
+                        else if (formatName == "JXL")
+                        {
+                            image.Format = MagickFormat.Jxl;
+                            image.Quality = quality;
+                        }
+                        else if (formatName == "WEBP")
+                        {
+                            image.Format = MagickFormat.WebP;
+                            image.Quality = quality;
+                        }
+                        else if (formatName == "AVIF")
+                        {
+                            image.Format = MagickFormat.Avif;
+                            image.Quality = quality;
+                        }
+                        else if (formatName == "TIFF")
+                        {
+                            image.Format = MagickFormat.Tiff;
+                            image.Quality = quality;
+                        }
+                        else if (formatName == "PNG") image.Format = MagickFormat.Png;
+                        else if (formatName == "BMP") image.Format = MagickFormat.Bmp;
+
+                        await Task.Run(() => image.Write(filePath));
+                    }
+                }
 
                 if (preserveFileDate)
                 {
@@ -901,83 +967,42 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
                 }
 
                 AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
+                Interlocked.Increment(ref convertedCount);
+                if (!DeleteOriginalFileIfNeeded()) Interlocked.Increment(ref deleteFailedCount);
+            }
+            catch (Exception exception)
+            {
+                AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileFailed"), viewModel.FileName, exception.Message));
+                Interlocked.Increment(ref conversionFailedCount);
+            }
+        }
 
-                if (deleteOriginal && filePath != viewModel.FilePath)
+        try
+        {
+            if (parallelExecution)
+            {
+                await Parallel.ForEachAsync(ImageFileViewModels.ToList(), async (viewModel, _) => await ConvertSingleImageAsync(viewModel));
+            }
+            else
+            {
+                foreach (var viewModel in ImageFileViewModels.ToList())
                 {
-                    ImageFileViewModels.Remove(viewModel);
-                    UpdateImageListDependentProperties();
-                    File.Delete(viewModel.FilePath);
+                    await ConvertSingleImageAsync(viewModel);
                 }
-                return;
             }
 
-            if (!preserveExif) image.Strip();
-            else if (rotationSetting > 0) image.SetAttribute("exif:Orientation", "1");
+            AddProgressLog(_resourceLoader.GetString("ConversionComplete"));
 
-            if (formatName == "JPG")
-            {
-                image.Format = MagickFormat.Jpeg;
-                image.Quality = quality;
-            }
-            else if (formatName == "JXL")
-            {
-                image.Format = MagickFormat.Jxl;
-                image.Quality = quality;
-            }
-            else if (formatName == "WEBP")
-            {
-                image.Format = MagickFormat.WebP;
-                image.Quality = quality;
-            }
-            else if (formatName == "AVIF")
-            {
-                image.Format = MagickFormat.Avif;
-                image.Quality = quality;
-            }
-            else if (formatName == "TIFF")
-            {
-                image.Format = MagickFormat.Tiff;
-                image.Quality = quality;
-            }
-            else if (formatName == "PNG") image.Format = MagickFormat.Png;
-            else if (formatName == "BMP") image.Format = MagickFormat.Bmp;
-
-            await Task.Run(() => image.Write(filePath));
-
-            if (preserveFileDate)
-            {
-                File.SetCreationTime(filePath, originalCreationTime);
-                File.SetLastWriteTime(filePath, originalLastWriteTime);
-            }
-
-            AddProgressLog(string.Format(_resourceLoader.GetString("ConversionFileComplete"), viewModel.FileName, fileName));
-
-            if (deleteOriginal && filePath != viewModel.FilePath)
-            {
-                ImageFileViewModels.Remove(viewModel);
-                UpdateImageListDependentProperties();
-                File.Delete(viewModel.FilePath);
-            }
+            var completionMessage = string.Format(_resourceLoader.GetString("ConversionCompleteDialogContent"), convertedCount);
+            if (conversionFailedCount > 0) completionMessage += string.Format(_resourceLoader.GetString("ConversionCompleteDialogConversionFailedSuffix"), conversionFailedCount);
+            if (deleteFailedCount > 0) completionMessage += string.Format(_resourceLoader.GetString("ConversionCompleteDialogDeleteFailedSuffix"), deleteFailedCount);
+            await MainWindow.Instance.Content.ShowMessageDialogAsync(completionMessage, _resourceLoader.GetString("ConversionCompleteDialogTitle"));
         }
-
-        if (parallelExecution)
+        finally
         {
-            await Parallel.ForEachAsync(ImageFileViewModels.ToList(), async (viewModel, _) => await ConvertSingleImageAsync(viewModel));
+            IsConverting = false;
+            ProgressLog.Clear();
         }
-        else
-        {
-            foreach (var viewModel in ImageFileViewModels.ToList())
-            {
-                await ConvertSingleImageAsync(viewModel);
-            }
-        }
-
-        AddProgressLog(_resourceLoader.GetString("ConversionComplete"));
-
-        await MainWindow.Instance.Content.ShowMessageDialogAsync(string.Format(_resourceLoader.GetString("ConversionCompleteDialogContent"), ImageFileViewModels.Count), _resourceLoader.GetString("ConversionCompleteDialogTitle"));
-
-        IsConverting = false;
-        ProgressLog.Clear();
     }
 
     public void AddProgressLog(string message)

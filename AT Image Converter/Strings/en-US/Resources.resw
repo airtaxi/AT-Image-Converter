@@ -88,6 +88,18 @@
   <data name="ConversionCompleteDialogContent" xml:space="preserve">
     <value>{0} file(s) converted successfully.</value>
   </data>
+  <data name="ConversionCompleteDialogConversionFailedSuffix" xml:space="preserve">
+    <value>
+
+{0} file(s) failed to convert. See the log for details.</value>
+    <comment>Appended to ConversionCompleteDialogContent when some conversions failed. {0} is the count of files that failed to convert.</comment>
+  </data>
+  <data name="ConversionCompleteDialogDeleteFailedSuffix" xml:space="preserve">
+    <value>
+
+{0} original file(s) could not be deleted. See the log for details.</value>
+    <comment>Appended to ConversionCompleteDialogContent when some original-file deletes failed. {0} is the count of files that could not be deleted.</comment>
+  </data>
   <data name="ConversionCompleteDialogTitle" xml:space="preserve">
     <value>Conversion Complete</value>
   </data>
@@ -99,6 +111,10 @@
   </data>
   <data name="ConversionOptionsTitle.Text" xml:space="preserve">
     <value>Conversion Options</value>
+  </data>
+  <data name="ConversionOriginalFileDeleteFailed" xml:space="preserve">
+    <value>{0} original delete failed: {1}</value>
+    <comment>Shown in the progress log when conversion succeeded but deleting the original file failed. {0} is the file name, {1} is the error message.</comment>
   </data>
   <data name="ConversionStarted" xml:space="preserve">
     <value>Conversion started</value>

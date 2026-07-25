@@ -88,6 +88,18 @@
   <data name="ConversionCompleteDialogContent" xml:space="preserve">
     <value>{0}개의 파일이 성공적으로 변환되었습니다.</value>
   </data>
+  <data name="ConversionCompleteDialogConversionFailedSuffix" xml:space="preserve">
+    <value>
+
+{0}개 파일 변환 실패. 자세한 내용은 로그를 확인해 주세요.</value>
+    <comment>변환에 실패한 건수가 있을 때 완료 다이얼로그 본문에 추가됩니다. {0}은 변환 실패 건수입니다.</comment>
+  </data>
+  <data name="ConversionCompleteDialogDeleteFailedSuffix" xml:space="preserve">
+    <value>
+
+원본 파일 {0}개를 삭제하지 못했습니다. 자세한 내용은 로그를 확인해 주세요.</value>
+    <comment>원본 파일 삭제에 실패한 건수가 있을 때 완료 다이얼로그 본문에 추가됩니다. {0}은 원본 삭제 실패 건수입니다.</comment>
+  </data>
   <data name="ConversionCompleteDialogTitle" xml:space="preserve">
     <value>변환 완료</value>
   </data>
@@ -99,6 +111,10 @@
   </data>
   <data name="ConversionOptionsTitle.Text" xml:space="preserve">
     <value>변환 옵션</value>
+  </data>
+  <data name="ConversionOriginalFileDeleteFailed" xml:space="preserve">
+    <value>{0} 원본 삭제 실패: {1}</value>
+    <comment>변환은 성공했지만 원본 파일 삭제에 실패했을 때 진행 로그에 표시됩니다. {0}은 파일명, {1}은 오류 메시지입니다.</comment>
   </data>
   <data name="ConversionStarted" xml:space="preserve">
     <value>변환 시작</value>
