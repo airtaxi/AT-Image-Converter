@@ -15,9 +15,9 @@ A batch image converter built with WinUI 3 and Magick.NET.
 
 ## Supported Formats
 
-| Input Formats (16) | Output Formats (8) |
+| Input Formats (16) | Output Formats (9) |
 |---|---|
-| PNG, JPG, JPEG, BMP, GIF, TIFF, ICO, SVG, WEBP, HEIC, HEIF, HEIX, PDF, PSD, XCF, RAW | JPG, JXL, PNG, BMP, WEBP, AVIF, ICO, TIFF |
+| PNG, JPG, JPEG, BMP, GIF, TIFF, ICO, SVG, WEBP, HEIC, HEIF, HEIX, PDF, PSD, XCF, RAW | JPG, JXL, PNG, BMP, WEBP, AVIF, ICO, TIFF, GIF |
 
 ## Features
 
@@ -31,6 +31,7 @@ A batch image converter built with WinUI 3 and Magick.NET.
 - **Duplicate file handling**: overwrite or auto-rename
 - **Preserve file dates and EXIF data** options
 - **Image preview** with zoom in/out
+- **Animation preservation** when converting animated GIF and WEBP files to GIF or WEBP, with optional file size optimization for animated GIF output
 - **ICO export** with automatic multi-size generation (16-256px)
 - **SVG input** with transparency support
 - **Save/reset default settings**

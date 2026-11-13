@@ -15,9 +15,9 @@ WinUI 3와 Magick.NET 기반의 강력한 일괄 이미지 변환 도구입니�
 
 ## 지원 포맷
 
-| 입력 포맷 (16종) | 출력 포맷 (8종) |
+| 입력 포맷 (16종) | 출력 포맷 (9종) |
 |---|---|
-| PNG, JPG, JPEG, BMP, GIF, TIFF, ICO, SVG, WEBP, HEIC, HEIF, HEIX, PDF, PSD, XCF, RAW | JPG, JXL, PNG, BMP, WEBP, AVIF, ICO, TIFF |
+| PNG, JPG, JPEG, BMP, GIF, TIFF, ICO, SVG, WEBP, HEIC, HEIF, HEIX, PDF, PSD, XCF, RAW | JPG, JXL, PNG, BMP, WEBP, AVIF, ICO, TIFF, GIF |
 
 ## 주요 기능
 
@@ -31,6 +31,7 @@ WinUI 3와 Magick.NET 기반의 강력한 일괄 이미지 변환 도구입니�
 - **파일명 중복 처리** — 덮어쓰기 또는 자동 이름 변경
 - **파일 날짜 및 EXIF 데이터 유지** 옵션
 - **이미지 미리보기** 및 확대/축소
+- **애니메이션 유지** — 애니메이션 GIF, WEBP를 GIF 또는 WEBP로 변환할 때 프레임 유지, 애니메이션 GIF 용량 최적화 옵션 지원
 - **ICO 변환** 시 다중 크기 자동 생성 (16–256px)
 - **SVG 입력** 시 투명도 유지
 - **설정 저장 및 초기화**

@@ -273,6 +273,12 @@
   <data name="OpenSubfolderButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>출력 폴더 열기</value>
   </data>
+  <data name="OptimizeAnimatedGifToggleSwitch.OffContent" xml:space="preserve">
+    <value>애니메이션 GIF 용량 최적화 안 함</value>
+  </data>
+  <data name="OptimizeAnimatedGifToggleSwitch.OnContent" xml:space="preserve">
+    <value>애니메이션 GIF 용량 최적화</value>
+  </data>
   <data name="OutputFolderTitle.Text" xml:space="preserve">
     <value>출력 폴더</value>
   </data>

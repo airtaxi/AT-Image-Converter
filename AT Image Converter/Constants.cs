@@ -14,7 +14,7 @@ public static class Constants
 
     public readonly static HashSet<string> AnimatedOutputFormats = new(StringComparer.OrdinalIgnoreCase)
     {
-        "WEBP"
+        "WEBP", "GIF"
     };
 
     public readonly static HashSet<string> AlphaSupportingInputExtensions = new(StringComparer.OrdinalIgnoreCase)

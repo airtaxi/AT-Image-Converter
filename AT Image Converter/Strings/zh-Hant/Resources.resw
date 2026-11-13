@@ -273,6 +273,12 @@
   <data name="OpenSubfolderButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>開啟輸出資料夾</value>
   </data>
+  <data name="OptimizeAnimatedGifToggleSwitch.OffContent" xml:space="preserve">
+    <value>不最佳化動畫 GIF 大小</value>
+  </data>
+  <data name="OptimizeAnimatedGifToggleSwitch.OnContent" xml:space="preserve">
+    <value>最佳化動畫 GIF 大小</value>
+  </data>
   <data name="OutputFolderTitle.Text" xml:space="preserve">
     <value>輸出資料夾</value>
   </data>

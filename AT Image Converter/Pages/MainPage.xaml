@@ -191,6 +191,7 @@
                                     <x:String>AVIF</x:String>
                                     <x:String>ICO</x:String>
                                     <x:String>TIFF</x:String>
+                                    <x:String>GIF</x:String>
                                 </ComboBox.Items>
                             </ComboBox>
                             <NumberBox
@@ -203,6 +204,10 @@
                                 SpinButtonPlacementMode="Inline"
                                 Visibility="{x:Bind ViewModel.IsQualityAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Value="{x:Bind ViewModel.Quality, Mode=TwoWay}" />
+                            <ToggleSwitch
+                                x:Uid="OptimizeAnimatedGifToggleSwitch"
+                                IsOn="{x:Bind ViewModel.OptimizeAnimatedGif, Mode=TwoWay}"
+                                Visibility="{x:Bind ViewModel.IsAnimatedGifOptimizationVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                             <SplitButton HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.IsTransparentColorVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <StackPanel
                                     HorizontalAlignment="Left"

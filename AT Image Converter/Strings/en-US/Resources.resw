@@ -273,6 +273,12 @@ Download: https://www.ghostscript.com/releases/gsdnld.html</value>
   <data name="OpenSubfolderButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Open output folder</value>
   </data>
+  <data name="OptimizeAnimatedGifToggleSwitch.OffContent" xml:space="preserve">
+    <value>Do not optimize animated GIF size</value>
+  </data>
+  <data name="OptimizeAnimatedGifToggleSwitch.OnContent" xml:space="preserve">
+    <value>Optimize animated GIF size</value>
+  </data>
   <data name="OutputFolderTitle.Text" xml:space="preserve">
     <value>Output Folder</value>
   </data>

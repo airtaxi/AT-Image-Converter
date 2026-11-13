@@ -31,6 +31,7 @@ namespace ImageConverterAT.ViewModels;
 public sealed partial class MainPageViewModel : ObservableObject, IRecipient<AddImageFilesMessage>, IRecipient<FolderSelectedMessage>
 {
     private static readonly Uri s_gitHubRepositoryPageAddress = new("https://github.com/airtaxi/AT-Image-Converter");
+    private static readonly Percentage s_animatedGifOptimizationColorFuzz = new(3);
     private static Color CreateDefaultCropBackgroundColor() => Color.FromArgb(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
     private static Color CreateDefaultTransparentColor() => Color.FromArgb(byte.MaxValue, 0, 0, 0);
 
@@ -60,6 +61,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsQualityAvailable))]
+    [NotifyPropertyChangedFor(nameof(IsAnimatedGifOptimizationVisible))]
     [NotifyPropertyChangedFor(nameof(IsSizeAvailable))]
     [NotifyPropertyChangedFor(nameof(OutputFormatSupportsAlpha))]
     [NotifyPropertyChangedFor(nameof(CropBackgroundColorDisplayValue))]
@@ -155,6 +157,9 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
     public partial bool PreserveAnimation { get; set; } = true;
 
     [ObservableProperty]
+    public partial bool OptimizeAnimatedGif { get; set; } = true;
+
+    [ObservableProperty]
     public partial bool DeleteOriginal { get; set; }
 
     [ObservableProperty]
@@ -184,6 +189,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
     public bool IsOpenSubfolderEnabled => SelectedImageFile != null;
     public bool IsOpenCustomFolderEnabled => !string.IsNullOrEmpty(CustomFolderPath);
     public bool IsQualityAvailable => CurrentOutputFormat is ".jpg" or ".jxl" or ".webp" or ".avif" or ".tiff";
+    public bool IsAnimatedGifOptimizationVisible => CurrentOutputFormat == ".gif";
     public bool IsSizeAvailable => CurrentOutputFormat != ".ico";
     public bool IsSizeGridVisible => SizeSetting != SizeSetting.NoResize;
     public bool IsSizeUnitVisible => SizeSetting != SizeSetting.NoResize;
@@ -209,10 +215,11 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         5 => "AVIF",
         6 => "ICO",
         7 => "TIFF",
+        8 => "GIF",
         _ => "JPG"
     };
 
-    public bool OutputFormatSupportsAlpha => CurrentOutputFormat is ".png" or ".jxl" or ".webp" or ".avif" or ".ico" or ".tiff";
+    public bool OutputFormatSupportsAlpha => CurrentOutputFormat is ".png" or ".jxl" or ".webp" or ".avif" or ".ico" or ".tiff" or ".gif";
 
     public string CropBackgroundColorDisplayValue => GetDisplayedColorValue(CropBackgroundColor, OutputFormatSupportsAlpha);
     public string TransparentColorDisplayValue => GetDisplayedColorValue(TransparentColor, OutputFormatSupportsAlpha);
@@ -335,7 +342,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         return (uint)Math.Ceiling(originalDimension * percent / 100d);
     }
 
-    private static bool DoesOutputFormatSupportAlpha(string outputFormat) => outputFormat is ".png" or ".jxl" or ".webp" or ".avif" or ".ico" or ".tiff";
+    private static bool DoesOutputFormatSupportAlpha(string outputFormat) => outputFormat is ".png" or ".jxl" or ".webp" or ".avif" or ".ico" or ".tiff" or ".gif";
 
     private static Color CreateOpaqueColor(Color color) => Color.FromArgb(byte.MaxValue, color.R, color.G, color.B);
 
@@ -792,7 +799,9 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         var overwriteFile = OverwriteFile;
         var deleteOriginal = DeleteOriginal;
         var preserveAnimation = PreserveAnimation;
+        var optimizeAnimatedGif = OptimizeAnimatedGif;
         var quality = (uint)Quality;
+        var isQualityAvailable = IsQualityAvailable;
         var outputFolderSetting = OutputFolderSetting;
         var customFolderPath = CustomFolderPath;
         var subfolderName = SubfolderName;
@@ -867,6 +876,13 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
                         using var collection = new MagickImageCollection(viewModel.FilePath);
                         if (collection.Count <= 1) return false;
 
+                        var isGifOutput = formatName == "GIF";
+                        var shouldOptimizeGifFrames = isGifOutput && optimizeAnimatedGif;
+
+                        // Animated GIF and WEBP files can store frames as partial regions with offsets, so merge them into full canvas frames before resizing, cropping, or optimizing
+                        var requiresCoalescing = sizeSetting != SizeSetting.NoResize || shouldOptimizeGifFrames;
+                        if (requiresCoalescing) collection.Coalesce();
+
                         foreach (var frame in collection)
                         {
                             var magickFrame = (MagickImage)frame;
@@ -875,7 +891,17 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
                             ResizeImage(magickFrame, sizeSetting, sizeUnit, resizeInterpolationSetting, width, height, horizontalCropAnchor, verticalCropAnchor, cropBackgroundColor);
                             if (!preserveExif) magickFrame.Strip();
                             else if (rotationSetting > 0) magickFrame.SetAttribute("exif:Orientation", "1");
-                            magickFrame.Quality = quality;
+                            if (isQualityAvailable) magickFrame.Quality = quality;
+
+                            // Treat nearly identical pixels as unchanged so frame optimization also shrinks lossy sources such as WEBP animations
+                            if (shouldOptimizeGifFrames) magickFrame.ColorFuzz = s_animatedGifOptimizationColorFuzz;
+                        }
+
+                        // GIF stores every coalesced frame at full size, so shrink unchanged regions back into partial and transparent frames
+                        if (requiresCoalescing && isGifOutput)
+                        {
+                            collection.Optimize();
+                            collection.OptimizeTransparency();
                         }
 
                         collection.Write(filePath);
@@ -955,6 +981,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
                         }
                         else if (formatName == "PNG") image.Format = MagickFormat.Png;
                         else if (formatName == "BMP") image.Format = MagickFormat.Bmp;
+                        else if (formatName == "GIF") image.Format = MagickFormat.Gif;
 
                         await Task.Run(() => image.Write(filePath));
                     }
@@ -1036,6 +1063,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         _localSettings.Values["PreserveFileDate"] = PreserveFileDate;
         _localSettings.Values["PreserveExif"] = PreserveExif;
         _localSettings.Values["PreserveAnimation"] = PreserveAnimation;
+        _localSettings.Values["OptimizeAnimatedGif"] = OptimizeAnimatedGif;
         _localSettings.Values["DeleteOriginal"] = DeleteOriginal;
     }
 
@@ -1068,6 +1096,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         PreserveFileDate = (bool)values["PreserveFileDate"];
         PreserveExif = (bool)values["PreserveExif"];
         if (values.TryGetValue("PreserveAnimation", out var preserveAnimationValue)) PreserveAnimation = (bool)preserveAnimationValue;
+        if (values.TryGetValue("OptimizeAnimatedGif", out var optimizeAnimatedGifValue)) OptimizeAnimatedGif = (bool)optimizeAnimatedGifValue;
         DeleteOriginal = (bool)values["DeleteOriginal"];
     }
 
@@ -1097,6 +1126,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IRecipient<Add
         PreserveFileDate = true;
         PreserveExif = true;
         PreserveAnimation = true;
+        OptimizeAnimatedGif = true;
         DeleteOriginal = false;
     }
 }
